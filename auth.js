@@ -185,7 +185,12 @@
       const { data, error } = await sb.auth.signUp({
         email,
         password,
-        options: { data: { username } },
+        options: {
+          data: { username },
+          // After confirming their email, return them to this account page
+          // (where supabase-js auto-establishes the session from the link).
+          emailRedirectTo: window.location.origin + window.location.pathname,
+        },
       });
 
       if (error) {
