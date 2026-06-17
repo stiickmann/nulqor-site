@@ -7,6 +7,7 @@
 //   url     = "Project URL"
 //   anonKey = "Project API keys" -> "anon public"
 window.NULQOR_SUPABASE = {
-  url: "YOUR_SUPABASE_URL",
-  anonKey: "YOUR_SUPABASE_ANON_KEY",
+  url: "https://qxtpplrwrqjijptfmsij.supabase.co",
+  anonKey:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF4dHBwbHJ3cnFqaWpwdGZtc2lqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2Njc3NzgsImV4cCI6MjA5NzI0Mzc3OH0.s5uY2e1K387jLNr05kbP8Y1HM9CYxPGAW5EX2VlV1JQ",
 };
