@@ -1708,6 +1708,101 @@ h3 {
   color: var(--muted);
 }
 
+/* Floating account badge (bottom-left) */
+.account-chip {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 230px;
+  padding: 7px 14px 7px 7px;
+  border: 1px solid rgba(168, 202, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(8, 12, 19, 0.88);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.account-chip[hidden] {
+  display: none;
+}
+
+.account-chip:hover,
+.account-chip:focus-visible {
+  border-color: rgba(80, 215, 255, 0.42);
+  transform: translateY(-1px);
+}
+
+.account-chip-avatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #031016;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.95rem;
+  background: linear-gradient(135deg, #72e2ff, #9d8cff);
+}
+
+.account-chip-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.account-chip-name {
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 750;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-chip-role {
+  color: var(--cyan);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Role accents */
+.account-chip[data-role="Site Admin"] .account-chip-role {
+  color: #ffd479;
+}
+.account-chip[data-role="Site Admin"] .account-chip-avatar {
+  background: linear-gradient(135deg, #ffd479, #ff9d6c);
+}
+.account-chip[data-role="Site Tester"] .account-chip-role {
+  color: #8effc1;
+}
+.account-chip[data-role="Site Tester"] .account-chip-avatar {
+  background: linear-gradient(135deg, #8effc1, #50d7ff);
+}
+.account-chip[data-role="Site Creator"] .account-chip-role,
+.account-chip[data-role="Creator"] .account-chip-role {
+  color: #c4b5ff;
+}
+.account-chip[data-role="Site Creator"] .account-chip-avatar,
+.account-chip[data-role="Creator"] .account-chip-avatar {
+  background: linear-gradient(135deg, #c4b5ff, #9d8cff);
+}
+
 .auth-note {
   max-width: 460px;
   margin: 14px auto 0;

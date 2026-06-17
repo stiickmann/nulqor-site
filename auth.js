@@ -64,21 +64,65 @@
 
   async function loadProfile(userId) {
     try {
-      const { data } = await sb
+      let { data, error } = await sb
         .from("profiles")
-        .select("username")
+        .select("username, role")
         .eq("id", userId)
         .maybeSingle();
-      return data && data.username ? data.username : "";
+      if (error) {
+        // role column may not exist yet — fall back to username only.
+        const res = await sb.from("profiles").select("username").eq("id", userId).maybeSingle();
+        data = res.data;
+      }
+      return {
+        username: (data && data.username) || "",
+        role: (data && data.role) || "Free",
+      };
     } catch (_e) {
-      return "";
+      return { username: "", role: "Free" };
     }
+  }
+
+  // Floating account badge (bottom-left, all pages when logged in).
+  let chipEl = null;
+  function buildChip() {
+    if (chipEl) return;
+    chipEl = document.createElement("a");
+    chipEl.className = "account-chip";
+    chipEl.href = "account.html";
+    chipEl.hidden = true;
+    chipEl.innerHTML =
+      '<span class="account-chip-avatar" data-chip-avatar>N</span>' +
+      '<span class="account-chip-text">' +
+      '<span class="account-chip-name" data-chip-name></span>' +
+      '<span class="account-chip-role" data-chip-role></span>' +
+      "</span>";
+    document.body.appendChild(chipEl);
+  }
+  function updateChip(loggedIn, profile) {
+    if (!chipEl) return;
+    if (!loggedIn) {
+      chipEl.hidden = true;
+      return;
+    }
+    const name = profile.username || "Member";
+    const role = profile.role || "Free";
+    chipEl.querySelector("[data-chip-name]").textContent = name;
+    chipEl.querySelector("[data-chip-role]").textContent = role;
+    chipEl.querySelector("[data-chip-avatar]").textContent = (name[0] || "N").toUpperCase();
+    chipEl.setAttribute("data-role", role);
+    chipEl.hidden = false;
   }
 
   async function renderSession(session) {
     setNav(session);
-    if (!page) return;
     const loggedIn = Boolean(session && session.user);
+    let profile = { username: "", role: "Free" };
+    if (loggedIn) profile = await loadProfile(session.user.id);
+
+    updateChip(loggedIn, profile); // every page
+
+    if (!page) return; // the rest is account-page only
     if (formsWrap) formsWrap.hidden = loggedIn;
     if (sessionCard) sessionCard.hidden = !loggedIn;
     if (!loggedIn) {
@@ -87,10 +131,9 @@
     }
     currentUserId = session.user.id;
     if (sessionEmail) sessionEmail.textContent = session.user.email;
-    const username = await loadProfile(session.user.id);
-    if (sessionUsername) sessionUsername.textContent = username || "—";
+    if (sessionUsername) sessionUsername.textContent = profile.username || "—";
     if (usernameInput && document.activeElement !== usernameInput) {
-      usernameInput.value = username || "";
+      usernameInput.value = profile.username || "";
     }
   }
 
@@ -109,6 +152,7 @@
     return;
   }
 
+  buildChip();
   setMode("login");
   sb.auth.getSession().then(({ data }) => renderSession(data.session));
   sb.auth.onAuthStateChange((_event, session) => renderSession(session));
@@ -205,8 +249,9 @@
       return;
     }
 
-    if (sessionUsername) sessionUsername.textContent = username;
     showNote("Username saved.", true);
+    const { data } = await sb.auth.getSession();
+    renderSession(data.session);
   }
 
   if (saveUsernameButton) {
