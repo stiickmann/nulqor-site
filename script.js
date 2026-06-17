@@ -254,6 +254,22 @@ if (accessForm && formNote) {
       if (submitButton) submitButton.disabled = false;
 
       if (error) {
+        // 23505 = unique violation -> this email is already on the waitlist.
+        const alreadyJoined = error.code === "23505" || /duplicate key/i.test(error.message || "");
+        if (alreadyJoined) {
+          formNote.textContent = "This email is already on the Nulqor early access list.";
+          formNote.classList.remove("is-error");
+          formNote.classList.add("is-success");
+          accessForm.reset();
+          accessForm.querySelectorAll("[data-select]").forEach((select) => {
+            select.querySelector("[data-select-input]").value = "";
+            select.querySelector("[data-select-value]").textContent = "Select one";
+            select.querySelectorAll("[role='option']").forEach((option) => {
+              option.setAttribute("aria-selected", "false");
+            });
+          });
+          return;
+        }
         formNote.textContent = "Something went wrong — please try again.";
         formNote.classList.remove("is-success");
         formNote.classList.add("is-error");

@@ -18,5 +18,14 @@
     return;
   }
 
-  window.nulqorSupabase = window.supabase.createClient(cfg.url, cfg.anonKey);
+  window.nulqorSupabase = window.supabase.createClient(cfg.url, cfg.anonKey, {
+    auth: {
+      // Keep users logged in across page reloads and navigation until they
+      // explicitly sign out (session is stored in localStorage and the access
+      // token is refreshed automatically in the background).
+      persistSession: true,
+      autoRefreshToken: true,
+      storage: window.localStorage,
+    },
+  });
 })();
