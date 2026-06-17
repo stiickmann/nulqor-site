@@ -110,35 +110,6 @@ document.querySelectorAll(".nav-links a, .policy-sidebar a").forEach((link) => {
 });
 updateActiveNavigation();
 
-const pricingButtons = document.querySelectorAll("[data-pricing-mode]");
-const planPrices = document.querySelectorAll(".plan-price");
-const pricingNote = document.querySelector("#pricingNote");
-const pricingNotes = {
-  soon: "Pricing is hidden on the launch page until access opens.",
-  early: "Founder access pricing for early testers and first creators.",
-  public: "Planned public launch pricing after the early access window.",
-};
-
-pricingButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const mode = button.dataset.pricingMode;
-
-    pricingButtons.forEach((item) => {
-      const isActive = item === button;
-      item.classList.toggle("is-active", isActive);
-      item.setAttribute("aria-pressed", String(isActive));
-    });
-
-    planPrices.forEach((price) => {
-      price.textContent = price.dataset[mode] || price.dataset.soon;
-    });
-
-    if (pricingNote) {
-      pricingNote.textContent = pricingNotes[mode] || pricingNotes.soon;
-    }
-  });
-});
-
 const customSelects = document.querySelectorAll("[data-select]");
 
 function closeCustomSelects(exceptSelect = null) {
@@ -265,8 +236,8 @@ if (accessForm && formNote) {
     // Future backend: POST this payload to the waitlist/email capture service.
     // Future backend: tag role/use case for tester cohorts and early access waves.
     formNote.textContent = name
-      ? `${name}, you are on the Nulqor early access list.`
-      : "You are on the Nulqor early access list.";
+      ? `${name}, you are on the Nulqor early access list. Plan details and founder pricing are coming to your email.`
+      : "You are on the Nulqor early access list. Plan details and founder pricing are coming to your email.";
     formNote.classList.add("is-success");
     accessForm.reset();
     accessForm.querySelectorAll("[data-select]").forEach((select) => {
