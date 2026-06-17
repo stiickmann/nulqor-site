@@ -1713,3 +1713,10 @@ h3 {
 .form-note.is-error {
   color: #ff8a8a;
 }
+
+/* The [hidden] attribute must beat .access-form's display:grid, so toggled
+   forms / the signed-in card actually hide. */
+.access-form[hidden],
+[data-auth-forms][hidden] {
+  display: none;
+}
