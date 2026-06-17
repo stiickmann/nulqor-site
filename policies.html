@@ -8,7 +8,7 @@
       content="Nulqor legal policies for Forge Studio, accounts, subscriptions, downloads, early access, privacy, refunds, acceptable use, and support."
     />
     <title>Nulqor | Policies</title>
-    <link rel="stylesheet" href="styles.css?v=20260617-cool" />
+    <link rel="stylesheet" href="styles.css?v=20260617-auth" />
   </head>
   <body>
     <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
@@ -25,6 +25,7 @@
           <a href="index.html#plans">Pricing</a>
           <a href="policies.html" aria-current="page">Policy</a>
           <a href="index.html#access">Access</a>
+          <a href="account.html" data-account-link>Log in</a>
         </nav>
 
         <!-- Future backend: connect login/account system, license/session protection, and protected app downloads here. -->
@@ -356,6 +357,10 @@
       </footer>
     </div>
 
-    <script src="script.js?v=20260617-cool"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js?v=20260617-auth"></script>
+    <script src="supabase-client.js?v=20260617-auth"></script>
+    <script src="script.js?v=20260617-auth"></script>
+    <script src="auth.js?v=20260617-auth"></script>
   </body>
 </html>

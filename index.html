@@ -8,7 +8,7 @@
       content="Nulqor is a private AI lab building intelligent creation systems. Forge Studio is the first Nulqor product: an AI-assisted 3D creation studio."
     />
     <title>Nulqor | Private Creation Systems</title>
-    <link rel="stylesheet" href="styles.css?v=20260617-cool" />
+    <link rel="stylesheet" href="styles.css?v=20260617-auth" />
   </head>
   <body>
     <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
@@ -25,6 +25,7 @@
           <a href="#plans">Pricing</a>
           <a href="policies.html">Policy</a>
           <a href="#access">Access</a>
+          <a href="account.html" data-account-link>Log in</a>
         </nav>
 
         <!-- Future backend: connect login/account system, license/session protection, and protected app downloads here. -->
@@ -447,6 +448,10 @@
     </div>
 
     <!-- Future backend: add marketplace, cloud saves, team dashboard, protected downloads, and app session APIs as the product ships. -->
-    <script src="script.js?v=20260617-cool"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js?v=20260617-auth"></script>
+    <script src="supabase-client.js?v=20260617-auth"></script>
+    <script src="script.js?v=20260617-auth"></script>
+    <script src="auth.js?v=20260617-auth"></script>
   </body>
 </html>

@@ -217,7 +217,7 @@ const accessForm = document.querySelector("#accessForm");
 const formNote = document.querySelector("#formNote");
 
 if (accessForm && formNote) {
-  accessForm.addEventListener("submit", (event) => {
+  accessForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const roleInput = accessForm.querySelector("[data-select-input]");
@@ -226,18 +226,45 @@ if (accessForm && formNote) {
     if (roleInput && !roleInput.value) {
       roleSelect?.classList.add("is-invalid");
       formNote.textContent = "Choose a use case before requesting access.";
-      formNote.classList.remove("is-success");
+      formNote.classList.remove("is-success", "is-error");
       return;
     }
 
     const formData = new FormData(accessForm);
     const name = String(formData.get("name") || "").trim();
+    const email = String(formData.get("email") || "").trim();
+    const role = String(formData.get("role") || "").trim();
 
-    // Future backend: POST this payload to the waitlist/email capture service.
-    // Future backend: tag role/use case for tester cohorts and early access waves.
+    // Save the signup to the Supabase "waitlist" table when the backend is configured.
+    const sb = window.nulqorSupabase;
+    if (sb) {
+      const submitButton = accessForm.querySelector("button[type='submit']");
+      if (submitButton) submitButton.disabled = true;
+      formNote.classList.remove("is-success", "is-error");
+      formNote.textContent = "Sending your request…";
+
+      const { data: sessionData } = await sb.auth.getSession();
+      const { error } = await sb.from("waitlist").insert({
+        name: name || null,
+        email,
+        role: role || null,
+        user_id: sessionData?.session?.user?.id ?? null,
+      });
+
+      if (submitButton) submitButton.disabled = false;
+
+      if (error) {
+        formNote.textContent = "Something went wrong — please try again.";
+        formNote.classList.remove("is-success");
+        formNote.classList.add("is-error");
+        return;
+      }
+    }
+
     formNote.textContent = name
       ? `${name}, you are on the Nulqor early access list. Plan details and founder pricing are coming to your email.`
       : "You are on the Nulqor early access list. Plan details and founder pricing are coming to your email.";
+    formNote.classList.remove("is-error");
     formNote.classList.add("is-success");
     accessForm.reset();
     accessForm.querySelectorAll("[data-select]").forEach((select) => {

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Log in or create your Nulqor account to track early access, downloads, and your Forge Studio license."
+    />
+    <title>Nulqor | Account</title>
+    <link rel="stylesheet" href="styles.css?v=20260617-auth" />
+  </head>
+  <body>
+    <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
+    <div class="site-shell">
+      <header class="site-header" id="top">
+        <a class="brand-mark" href="index.html#top" aria-label="Nulqor home">
+          <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
+          <span class="brand-name">Nulqor</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="index.html#product">Product</a>
+          <a href="index.html#learn">Learn</a>
+          <a href="index.html#plans">Pricing</a>
+          <a href="policies.html">Policy</a>
+          <a href="account.html" data-account-link>Log in</a>
+        </nav>
+
+        <a class="nav-action" href="index.html#access">Request Access</a>
+      </header>
+
+      <main>
+        <section class="content-band auth-band" data-auth-page aria-labelledby="auth-title">
+          <div class="section-heading centered">
+            <p class="eyebrow">Nulqor account</p>
+            <h2 id="auth-title">
+              Log in or <span class="text-cyan">create your account.</span>
+            </h2>
+            <p>
+              Your Nulqor account will hold your early access status, protected
+              downloads, and Forge Studio license as launch opens.
+            </p>
+          </div>
+
+          <div data-auth-forms>
+            <div class="pricing-control auth-tabs" role="tablist" aria-label="Account mode">
+              <button class="is-active" type="button" data-auth-mode="login" aria-pressed="true">
+                Log in
+              </button>
+              <button type="button" data-auth-mode="signup" aria-pressed="false">
+                Create account
+              </button>
+            </div>
+
+            <!-- Future backend: connect license/session protection and protected downloads to the logged-in account. -->
+            <form class="access-form auth-form" id="loginForm">
+              <label>
+                <span>Email</span>
+                <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+              </label>
+              <label>
+                <span>Password</span>
+                <input type="password" name="password" autocomplete="current-password" placeholder="Your password" required />
+              </label>
+              <button class="button button-primary" type="submit">Log in</button>
+            </form>
+
+            <form class="access-form auth-form" id="signupForm" hidden>
+              <label>
+                <span>Email</span>
+                <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+              </label>
+              <label>
+                <span>Password</span>
+                <input type="password" name="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required />
+              </label>
+              <button class="button button-primary" type="submit">Create account</button>
+            </form>
+          </div>
+
+          <div class="access-form auth-form" id="authSession" hidden>
+            <p class="eyebrow">Signed in</p>
+            <p class="session-line">You are logged in as <strong id="sessionEmail"></strong>.</p>
+            <button class="button button-secondary" type="button" id="logoutButton">Log out</button>
+          </div>
+
+          <p class="form-note auth-note" id="authNote" role="status" aria-live="polite"></p>
+        </section>
+      </main>
+
+      <footer class="site-footer" id="contact">
+        <div>
+          <a class="brand-mark" href="index.html#top" aria-label="Nulqor home">
+            <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
+            <span class="brand-name">Nulqor</span>
+          </a>
+          <p>Private intelligence for serious creation tools.</p>
+        </div>
+        <nav aria-label="Footer navigation">
+          <a href="policies.html#terms">Terms</a>
+          <a href="policies.html#privacy">Privacy</a>
+          <a href="policies.html#refunds">Refunds</a>
+          <a href="policies.html#acceptable-use">Acceptable Use</a>
+          <a href="policies.html#support">Support</a>
+          <a href="mailto:teamnulqor@gmail.com">Contact</a>
+        </nav>
+        <p class="copyright">&copy; 2026 Nulqor. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js?v=20260617-auth"></script>
+    <script src="supabase-client.js?v=20260617-auth"></script>
+    <script src="script.js?v=20260617-auth"></script>
+    <script src="auth.js?v=20260617-auth"></script>
+  </body>
+</html>

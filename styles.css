@@ -1680,3 +1680,36 @@ h3 {
     transition-duration: 1ms !important;
   }
 }
+
+/* Account / auth page */
+.auth-band {
+  padding-bottom: clamp(58px, 8vw, 104px);
+}
+
+.auth-tabs {
+  margin: 0 auto 16px;
+}
+
+.auth-form {
+  max-width: 460px;
+  margin-inline: auto;
+}
+
+.auth-form + .auth-form {
+  margin-top: 14px;
+}
+
+.session-line {
+  color: var(--silver);
+  font-size: 0.96rem;
+}
+
+.auth-note {
+  max-width: 460px;
+  margin: 14px auto 0;
+  text-align: center;
+}
+
+.form-note.is-error {
+  color: #ff8a8a;
+}
