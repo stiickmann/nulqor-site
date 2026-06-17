@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Nulqor is a private AI lab building intelligent creation systems. Forge Studio is the first Nulqor product: an AI-assisted 3D creation studio."
+    />
+    <title>Nulqor | Private Creation Systems</title>
+    <link rel="stylesheet" href="styles.css?v=20260617-cool" />
+  </head>
+  <body>
+    <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
+    <div class="site-shell">
+      <header class="site-header" id="top">
+        <a class="brand-mark" href="#top" aria-label="Nulqor home">
+          <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
+          <span class="brand-name">Nulqor</span>
+        </a>
+
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#product">Product</a>
+          <a href="#learn">Learn</a>
+          <a href="#plans">Pricing</a>
+          <a href="policies.html">Policy</a>
+          <a href="#access">Access</a>
+        </nav>
+
+        <!-- Future backend: connect login/account system, license/session protection, and protected app downloads here. -->
+        <a class="nav-action" href="#access">Request Access</a>
+      </header>
+
+      <main>
+        <section class="hero-section" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="eyebrow">Private AI lab / intelligent creation systems</p>
+            <h1 id="hero-title">Nulqor</h1>
+            <p class="hero-line">
+              Create what they told you was <span class="text-flare">impossible.</span>
+            </p>
+            <p class="hero-text">
+              Forge Studio is the first Nulqor system &mdash; an AI-assisted 3D
+              creation studio for modeling, rigging, animation, materials, and
+              export.
+            </p>
+            <div class="hero-actions" aria-label="Primary calls to action">
+              <a class="button button-primary" href="#access">Request Access</a>
+              <a class="button button-secondary" href="#plans">View Plans</a>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-label="Nulqor AI core visual">
+            <div class="visual-frame">
+              <!-- Replace assets/nulqor-core.png with official Forge Studio/Nulqor product imagery when available. -->
+              <img
+                src="assets/nulqor-core.png"
+                alt="A dark floating AI core glowing with cyan and violet light"
+              />
+              <div class="core-status" aria-hidden="true">
+                <span>Nulqor core</span>
+                <strong>Forge Studio</strong>
+              </div>
+            </div>
+            <div class="product-panel" aria-hidden="true">
+              <div class="panel-top">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <div class="workspace-grid">
+                <div class="tool-rail"></div>
+                <div class="viewport-cube"></div>
+                <div class="property-stack">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+              <div class="timeline">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="signal-strip" aria-label="Nulqor focus areas">
+          <div>
+            <span>01</span>
+            <strong>AI-assisted creation</strong>
+          </div>
+          <div>
+            <span>02</span>
+            <strong>Hidden-engine automation</strong>
+          </div>
+          <div>
+            <span>03</span>
+            <strong>Production-ready tools</strong>
+          </div>
+        </section>
+
+        <section class="content-band" aria-labelledby="nulqor-title">
+          <div class="section-heading">
+            <p class="eyebrow">What Nulqor is</p>
+            <h2 id="nulqor-title">
+              Intelligence behind <span class="text-cyan">clean control.</span>
+            </h2>
+          </div>
+          <div class="two-column">
+            <p class="lead">
+              Nulqor builds intelligent creation systems that hide complex
+              engines behind clean control.
+            </p>
+            <div class="brief-grid">
+              <article>
+                <h3>Guided workflows</h3>
+                <p>
+                  Tools that keep creators moving through modeling, rigging,
+                  animation, materials, and export.
+                </p>
+              </article>
+              <article>
+                <h3>Hidden-engine automation</h3>
+                <p>
+                  Complicated checks, fixes, and generation steps happen under
+                  the surface without turning the workspace into noise.
+                </p>
+              </article>
+              <article>
+                <h3>Production systems</h3>
+                <p>
+                  Built toward subscriptions, accounts, protected downloads,
+                  cloud saves, assets, and team workflows.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-band learn-band" id="learn" aria-labelledby="learn-title">
+          <div class="section-heading centered">
+            <p class="eyebrow">Learn</p>
+            <h2 id="learn-title">
+              A company built around <span class="text-violet">hidden complexity.</span>
+            </h2>
+            <p>
+              Nulqor is the parent ecosystem for serious creation tools, account
+              systems, protected downloads, AI assistance, cloud features, and
+              production workflows. More company details can be added here as
+              the launch gets closer.
+            </p>
+          </div>
+
+          <div class="learn-grid" aria-label="Learn about Nulqor">
+            <article>
+              <span>Company</span>
+              <h3>Nulqor is the lab and ecosystem.</h3>
+              <p>
+                Nulqor owns the platform, subscriptions, accounts, access,
+                downloads, policies, and long-term product direction.
+              </p>
+            </article>
+            <article>
+              <span>First system</span>
+              <h3>Forge Studio starts the product line.</h3>
+              <p>
+                Forge Studio is the first Nulqor product: a desktop 3D creation
+                studio for creators who want power without a messy workflow.
+              </p>
+            </article>
+            <article>
+              <span>Creator-first</span>
+              <h3>Free should still be useful.</h3>
+              <p>
+                Nulqor Free is designed to let people build real projects.
+                Creator and Studio unlock speed, scale, intelligence, and team
+                workflows.
+              </p>
+            </article>
+            <article>
+              <span>Future platform</span>
+              <h3>Built for more than one app.</h3>
+              <p>
+                The roadmap points toward cloud saves, marketplace assets, team
+                libraries, protected downloads, billing, licenses, and support
+                systems.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-band product-band" id="product" aria-labelledby="forge-title">
+          <div class="section-heading centered">
+            <p class="eyebrow">First Nulqor product</p>
+            <h2 id="forge-title">Forge <span class="text-cyan">Studio</span></h2>
+            <p>
+              Forge Studio brings modeling, rigging, animation, materials, and
+              export into one guided desktop workspace &mdash; with AI help built
+              around the creator instead of replacing them.
+            </p>
+          </div>
+
+          <!-- Future backend: connect download page, app download protection, license checks, and release channels here. -->
+          <div class="feature-grid" aria-label="Forge Studio features">
+            <article>
+              <span>Model</span>
+              <p>Shape objects, parts, scenes, and reusable 3D assets.</p>
+            </article>
+            <article>
+              <span>Rig</span>
+              <p>Build skeletons, test poses, and diagnose rig issues.</p>
+            </article>
+            <article>
+              <span>Animate</span>
+              <p>Use a timeline built for poses, motion, cleanup, and export.</p>
+            </article>
+            <article>
+              <span>Materials</span>
+              <p>Create surfaces, shaders, effects, and visual styles.</p>
+            </article>
+            <article>
+              <span>Save</span>
+              <p>Save, load, organize, and eventually sync projects to cloud.</p>
+            </article>
+            <article>
+              <span>Export</span>
+              <p>Move work into basic and advanced formats as projects mature.</p>
+            </article>
+            <article>
+              <span>Ask AI</span>
+              <p>Get guidance when something breaks or a workflow gets unclear.</p>
+            </article>
+            <article>
+              <span>Extend</span>
+              <p>Prepare for templates, marketplace assets, and team libraries.</p>
+            </article>
+          </div>
+
+          <div class="product-info-panel">
+            <div>
+              <p class="eyebrow">Product info</p>
+              <h3>Forge Studio is planned as a guided desktop creation app.</h3>
+              <p>
+                The goal is a workspace that feels powerful enough for serious
+                3D creation, but cleaner and easier to understand when creators
+                get stuck.
+              </p>
+            </div>
+            <ul class="info-list">
+              <li>Electron + Three.js desktop application direction</li>
+              <li>Modeling, rigging, posing, animation, materials, and export</li>
+              <li>AI help for workflow guidance, cleanup, and troubleshooting</li>
+              <li>Future cloud saves, templates, marketplace, and collaboration</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="core-band" aria-labelledby="core-title">
+          <div class="core-copy">
+            <p class="eyebrow">Core intelligence</p>
+            <h2 id="core-title">
+              Complex engines. <span class="text-flare">Simple control.</span>
+            </h2>
+            <p>
+              The user sees creation. Nulqor handles the hard parts:
+              rigging checks, topology cleanup, animation fixes, material
+              generation, and export guidance through intelligent systems behind
+              the interface.
+            </p>
+          </div>
+          <div class="system-stack" aria-label="Core intelligence systems">
+            <div>
+              <span>Rig doctor</span>
+              <strong>Detects weak joints and broken pose behavior.</strong>
+            </div>
+            <div>
+              <span>Topology cleaner</span>
+              <strong>Finds messy geometry before it becomes production debt.</strong>
+            </div>
+            <div>
+              <span>Material generator</span>
+              <strong>Turns direction into reusable surface systems.</strong>
+            </div>
+            <div>
+              <span>Animation cleanup</span>
+              <strong>Refines rough poses into cleaner motion.</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-band" id="plans" aria-labelledby="plans-title">
+          <div class="section-heading centered">
+            <p class="eyebrow">Subscription preview</p>
+            <h2 id="plans-title">
+              Basic creation stays <span class="text-cyan">open.</span>
+            </h2>
+            <p>
+              Creator unlocks speed, scale, intelligence, and production power.
+            </p>
+          </div>
+
+          <div class="pricing-control" aria-label="Pricing display">
+            <button class="is-active" type="button" data-pricing-mode="soon" aria-pressed="true">
+              Coming Soon
+            </button>
+            <button type="button" data-pricing-mode="early" aria-pressed="false">
+              Early Access
+            </button>
+            <button type="button" data-pricing-mode="public" aria-pressed="false">
+              Public Launch
+            </button>
+          </div>
+          <p class="pricing-note" id="pricingNote">
+            Pricing is hidden on the launch page until access opens.
+          </p>
+
+          <!-- Future backend: connect Stripe/subscription billing, entitlements, plan limits, and account upgrades here. -->
+          <div class="pricing-grid" aria-label="Nulqor subscription tiers">
+            <article class="pricing-card">
+              <div class="plan-head">
+                <h3>Nulqor Free</h3>
+                <span class="plan-price" data-soon="Coming Soon" data-early="$0" data-public="$0">Coming Soon</span>
+              </div>
+              <p class="plan-purpose">Free lets you create.</p>
+              <ul>
+                <li>Basic modeling tools</li>
+                <li>Basic rigging and animation timeline</li>
+                <li>Basic materials</li>
+                <li>Save/load projects</li>
+                <li>Basic exports</li>
+                <li>Limited AI help per day</li>
+                <li>Community and local assets</li>
+              </ul>
+              <p class="plan-note">Real creation, not a crippled demo.</p>
+              <a class="button button-secondary" href="#access">Join Waitlist</a>
+            </article>
+
+            <article class="pricing-card featured-plan">
+              <div class="recommended">Recommended</div>
+              <div class="plan-head">
+                <h3>Nulqor Creator</h3>
+                <span class="plan-price" data-soon="Coming Soon" data-early="$10/mo" data-public="$15/mo">Coming Soon</span>
+              </div>
+              <p class="plan-purpose">
+                Create faster, cleaner, bigger, and with less frustration.
+              </p>
+              <ul>
+                <li>Everything in Free</li>
+                <li>More AI messages and guidance</li>
+                <li>Advanced rigging and animation tools</li>
+                <li>More export formats</li>
+                <li>AI rig doctor and topology cleaner</li>
+                <li>AI material generator</li>
+                <li>Pose-to-animation and auto lip-sync</li>
+                <li>Cloud storage, templates, marketplace discounts</li>
+              </ul>
+              <p class="plan-note">The main paid plan for solo creators.</p>
+              <a class="button button-primary" href="#access">Request Access</a>
+            </article>
+
+            <article class="pricing-card">
+              <div class="plan-head">
+                <h3>Nulqor Studio</h3>
+                <span class="plan-price" data-soon="Coming Soon" data-early="$25/seat/mo" data-public="$35/seat/mo">Coming Soon</span>
+              </div>
+              <p class="plan-purpose">
+                For teams, schools, studios, and production workflows.
+              </p>
+              <ul>
+                <li>Shared projects</li>
+                <li>Version history</li>
+                <li>Team asset libraries</li>
+                <li>Private collaboration</li>
+                <li>Commercial license options</li>
+                <li>Higher AI limits</li>
+                <li>Admin controls and private team assets</li>
+              </ul>
+              <p class="plan-note">Premium workflows, never required for solo work.</p>
+              <a class="button button-secondary" href="#access">Contact for Access</a>
+            </article>
+          </div>
+        </section>
+
+        <section class="access-band" id="access" aria-labelledby="access-title">
+          <div class="access-copy">
+            <p class="eyebrow">Early access</p>
+            <h2 id="access-title">
+              Join the first <span class="text-violet">Forge Studio</span> testers.
+            </h2>
+            <p>
+              Request access, become a tester, or join the Nulqor waitlist as
+              Forge Studio moves toward production.
+            </p>
+          </div>
+
+          <!-- Future backend: connect waitlist backend, email capture, CRM tagging, tester invites, and confirmation emails here. -->
+          <form class="access-form" id="accessForm">
+            <label>
+              <span>Name</span>
+              <input type="text" name="name" autocomplete="name" placeholder="Your name" required />
+            </label>
+            <label>
+              <span>Email</span>
+              <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+            </label>
+            <div class="field-label">
+              <span>Use case / role</span>
+              <div class="custom-select" data-select>
+                <input type="hidden" name="role" value="" data-select-input />
+                <button
+                  class="select-trigger"
+                  type="button"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                >
+                  <span data-select-value>Select one</span>
+                  <span class="select-arrow" aria-hidden="true"></span>
+                </button>
+                <div class="select-menu" role="listbox" aria-label="Use case / role">
+                  <button type="button" role="option" data-value="Solo creator">Solo creator</button>
+                  <button type="button" role="option" data-value="Game developer">Game developer</button>
+                  <button type="button" role="option" data-value="Animator">Animator</button>
+                  <button type="button" role="option" data-value="Studio / team">Studio / team</button>
+                  <button type="button" role="option" data-value="School / program">School / program</button>
+                  <button type="button" role="option" data-value="Other">Other</button>
+                </div>
+              </div>
+            </div>
+            <button class="button button-primary" type="submit">Request Access</button>
+            <p class="form-note" id="formNote" role="status" aria-live="polite">
+              Frontend placeholder. Backend connection comes next.
+            </p>
+          </form>
+        </section>
+      </main>
+
+      <footer class="site-footer" id="contact">
+        <div>
+          <a class="brand-mark" href="#top" aria-label="Nulqor home">
+            <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
+            <span class="brand-name">Nulqor</span>
+          </a>
+          <p>Private intelligence for serious creation tools.</p>
+        </div>
+        <nav aria-label="Footer navigation">
+          <a href="policies.html#terms">Terms</a>
+          <a href="policies.html#privacy">Privacy</a>
+          <a href="policies.html#refunds">Refunds</a>
+          <a href="policies.html#acceptable-use">Acceptable Use</a>
+          <a href="policies.html#support">Support</a>
+          <a href="mailto:teamnulqor@gmail.com">Contact</a>
+        </nav>
+        <p class="copyright">&copy; 2026 Nulqor. All rights reserved.</p>
+      </footer>
+    </div>
+
+    <!-- Future backend: add marketplace, cloud saves, team dashboard, protected downloads, and app session APIs as the product ships. -->
+    <script src="script.js?v=20260617-cool"></script>
+  </body>
+</html>
