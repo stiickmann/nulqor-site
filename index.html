@@ -8,7 +8,7 @@
       content="Nulqor is a private AI lab building intelligent creation systems. Forge Studio is the first Nulqor product: an AI-assisted 3D creation studio."
     />
     <title>Nulqor | Private Creation Systems</title>
-    <link rel="stylesheet" href="styles.css?v=20260617-auth10" />
+    <link rel="stylesheet" href="styles.css?v=20260617-auth11" />
   </head>
   <body>
     <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
@@ -313,6 +313,8 @@
             <article class="pricing-card">
               <div class="plan-head">
                 <h3>Nulqor Free</h3>
+              </div>
+              <div class="plan-pricing">
                 <span class="plan-price" data-plan="free">Coming Soon</span>
               </div>
               <p class="plan-purpose">Free lets you create.</p>
@@ -326,13 +328,15 @@
                 <li>Community and local assets</li>
               </ul>
               <p class="plan-note">Real creation, not a crippled demo.</p>
-              <a class="button button-secondary" href="#access">Join Waitlist</a>
+              <a class="button button-secondary" href="#access" data-plan-cta="free">Join Waitlist</a>
             </article>
 
             <article class="pricing-card featured-plan">
               <div class="recommended">Recommended</div>
               <div class="plan-head">
                 <h3>Nulqor Creator</h3>
+              </div>
+              <div class="plan-pricing">
                 <span class="plan-price" data-plan="creator">Coming Soon</span>
               </div>
               <p class="plan-purpose">
@@ -349,12 +353,14 @@
                 <li>Cloud storage, templates, marketplace discounts</li>
               </ul>
               <p class="plan-note">The main paid plan for solo creators.</p>
-              <a class="button button-primary" href="#access">Request Access</a>
+              <a class="button button-primary" href="#access" data-plan-cta="creator">Request Access</a>
             </article>
 
             <article class="pricing-card">
               <div class="plan-head">
                 <h3>Nulqor Studio</h3>
+              </div>
+              <div class="plan-pricing">
                 <span class="plan-price" data-plan="studio">Coming Soon</span>
               </div>
               <p class="plan-purpose">
@@ -370,7 +376,7 @@
                 <li>Admin controls and private team assets</li>
               </ul>
               <p class="plan-note">Premium workflows, never required for solo work.</p>
-              <a class="button button-secondary" href="#access">Contact for Access</a>
+              <a class="button button-secondary" href="#access" data-plan-cta="studio">Contact for Access</a>
             </article>
           </div>
         </section>
@@ -453,6 +459,6 @@
     <script src="config.js?v=20260617-auth"></script>
     <script src="supabase-client.js?v=20260617-auth3"></script>
     <script src="script.js?v=20260617-auth3"></script>
-    <script src="auth.js?v=20260617-auth10"></script>
+    <script src="auth.js?v=20260617-auth11"></script>
   </body>
 </html>

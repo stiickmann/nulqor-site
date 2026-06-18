@@ -383,10 +383,27 @@
     return left > 0;
   }
 
+  // Swap the pre-launch "Request Access" CTAs for member status once logged in.
+  function relabelCTAs(loggedIn) {
+    document.querySelectorAll("[data-plan-cta]").forEach((btn) => {
+      if (!btn.dataset.ctaDefault) btn.dataset.ctaDefault = btn.textContent.trim();
+      if (loggedIn) {
+        btn.textContent = btn.dataset.planCta === "free" ? "Included free" : "Founder price locked in";
+        btn.classList.add("is-locked");
+        btn.setAttribute("href", "account.html");
+      } else {
+        btn.textContent = btn.dataset.ctaDefault;
+        btn.classList.remove("is-locked");
+        btn.setAttribute("href", "#access");
+      }
+    });
+  }
+
   async function revealPrices(loggedIn) {
     const priceEls = document.querySelectorAll(".plan-price[data-plan]");
     if (!priceEls.length) return;
 
+    relabelCTAs(loggedIn);
     const founderOpen = await updateFounderBanner();
     const map = loggedIn ? await fetchPlans() : null;
 

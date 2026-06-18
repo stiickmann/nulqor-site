@@ -1035,6 +1035,28 @@ h3 {
   text-align: right;
 }
 
+.plan-pricing {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: -4px 0 16px;
+}
+
+.plan-price {
+  color: var(--cyan);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.button.is-locked {
+  background: rgba(142, 255, 193, 0.08);
+  border: 1px solid rgba(142, 255, 193, 0.32);
+  color: #8effc1;
+  cursor: default;
+  box-shadow: none;
+}
+
 .plan-purpose {
   min-height: 46px;
   margin-bottom: 16px;
