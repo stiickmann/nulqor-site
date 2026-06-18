@@ -8,7 +8,7 @@
       content="Log in or create your Nulqor account to track early access, downloads, and your Forge Studio license."
     />
     <title>Nulqor | Account</title>
-    <link rel="stylesheet" href="styles.css?v=20260617-auth5" />
+    <link rel="stylesheet" href="styles.css?v=20260617-auth8" />
   </head>
   <body>
     <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
@@ -89,11 +89,10 @@
               You are <strong id="sessionUsername">—</strong>
               <span class="session-email">(<span id="sessionEmail"></span>)</span>
             </p>
-            <label>
-              <span>Username</span>
-              <input type="text" id="usernameInput" name="username" autocomplete="username" placeholder="your_handle" minlength="3" maxlength="20" />
-            </label>
-            <button class="button button-primary" type="button" id="saveUsernameButton">Save username</button>
+            <p class="session-hint">
+              Manage your profile, avatar, username, and products from your
+              account badge in the bottom-left corner.
+            </p>
             <button class="button button-secondary" type="button" id="logoutButton">Log out</button>
           </div>
 
@@ -125,6 +124,6 @@
     <script src="config.js?v=20260617-auth"></script>
     <script src="supabase-client.js?v=20260617-auth3"></script>
     <script src="script.js?v=20260617-auth3"></script>
-    <script src="auth.js?v=20260617-auth6"></script>
+    <script src="auth.js?v=20260617-auth7"></script>
   </body>
 </html>

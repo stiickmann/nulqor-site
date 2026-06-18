@@ -1803,6 +1803,229 @@ h3 {
   background: linear-gradient(135deg, #c4b5ff, #9d8cff);
 }
 
+.account-chip-avatar.has-image,
+.account-panel-avatar.has-image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.session-hint {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Account panel (popover above the badge) */
+.account-panel {
+  position: fixed;
+  bottom: 64px;
+  left: 16px;
+  z-index: 70;
+  width: 290px;
+  max-width: calc(100vw - 32px);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid rgba(168, 202, 255, 0.18);
+  border-radius: 18px;
+  background: rgba(10, 14, 22, 0.96);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  animation: panelRise 160ms ease;
+}
+
+.account-panel[hidden] {
+  display: none;
+}
+
+@keyframes panelRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.account-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.account-panel-avatar {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: #031016;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  background: linear-gradient(135deg, #72e2ff, #9d8cff);
+}
+
+.account-panel-id {
+  min-width: 0;
+}
+
+.account-panel-name {
+  color: var(--text);
+  font-weight: 750;
+  font-size: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.account-panel-user {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.account-panel-plan {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.account-panel-plan strong {
+  font-size: 0.86rem;
+}
+
+.account-panel-plan strong[data-role="Site Admin"] {
+  color: #ffd479;
+}
+.account-panel-plan strong[data-role="Site Tester"] {
+  color: #8effc1;
+}
+.account-panel-plan strong[data-role="Site Creator"],
+.account-panel-plan strong[data-role="Creator"] {
+  color: #c4b5ff;
+}
+
+.account-panel-label {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-panel-products ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.account-panel-products li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  border: 1px solid rgba(168, 202, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.88rem;
+}
+
+.product-status {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.product-status.is-active {
+  color: #8effc1;
+}
+
+.account-panel-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(168, 202, 255, 0.12);
+}
+
+.account-panel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.76rem;
+  color: var(--muted);
+}
+
+.account-panel-field input[type="text"] {
+  padding: 9px 11px;
+  border-radius: 10px;
+  border: 1px solid rgba(168, 202, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.account-panel-field input[type="file"] {
+  font-size: 0.78rem;
+  color: var(--silver);
+}
+
+.account-panel-edit .button {
+  width: 100%;
+}
+
+.account-panel-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+  min-height: 1em;
+}
+
+.account-panel-note.is-success {
+  color: #8effc1;
+}
+
+.account-panel-note.is-error {
+  color: #ff9d9d;
+}
+
+.account-panel-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.account-panel-action {
+  flex: 1;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(168, 202, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.account-panel-action:hover {
+  border-color: rgba(80, 215, 255, 0.4);
+  background: rgba(80, 215, 255, 0.08);
+}
+
 .auth-note {
   max-width: 460px;
   margin: 14px auto 0;

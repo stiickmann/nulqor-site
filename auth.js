@@ -1,5 +1,5 @@
-// Account auth (Supabase): nav login/logout state on every page, plus
-// login / signup / logout and username management on account.html.
+// Account auth (Supabase): nav state + floating account badge & panel on every
+// page, plus login / signup / logout on account.html.
 (function () {
   const sb = window.nulqorSupabase;
   const navAccount = document.querySelector("[data-account-link]");
@@ -12,13 +12,15 @@
   const sessionCard = document.querySelector("#authSession");
   const sessionUsername = document.querySelector("#sessionUsername");
   const sessionEmail = document.querySelector("#sessionEmail");
-  const usernameInput = document.querySelector("#usernameInput");
-  const saveUsernameButton = document.querySelector("#saveUsernameButton");
   const logoutButton = document.querySelector("#logoutButton");
   const note = document.querySelector("#authNote");
 
   const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
+  // Roles that unlock Forge Studio access.
+  const FORGE_ROLES = ["Creator", "Studio", "Site Tester", "Site Creator", "Site Admin"];
+
   let currentUserId = null;
+  let currentProfile = { username: "", role: "Free", display_name: "", avatar_url: "" };
 
   function setNav(session) {
     if (navAccount) {
@@ -50,9 +52,11 @@
     return null;
   }
 
-  // Returns true only if we can confirm the username is already taken.
-  // If the lookup isn't available yet (DB not set up), we don't block.
+  // True only if we can confirm the name is taken by SOMEONE ELSE.
   async function usernameTaken(name) {
+    if (name && currentProfile.username && name.toLowerCase() === currentProfile.username.toLowerCase()) {
+      return false; // it's their own current username
+    }
     try {
       const { data, error } = await sb.rpc("username_available", { name });
       if (error) return false;
@@ -63,77 +67,287 @@
   }
 
   async function loadProfile(userId) {
+    const empty = { username: "", role: "Free", display_name: "", avatar_url: "" };
     try {
       let { data, error } = await sb
         .from("profiles")
-        .select("username, role")
+        .select("username, role, display_name, avatar_url")
         .eq("id", userId)
         .maybeSingle();
       if (error) {
-        // role column may not exist yet — fall back to username only.
-        const res = await sb.from("profiles").select("username").eq("id", userId).maybeSingle();
+        const res = await sb.from("profiles").select("username, role").eq("id", userId).maybeSingle();
         data = res.data;
       }
+      if (!data) return empty;
       return {
-        username: (data && data.username) || "",
-        role: (data && data.role) || "Free",
+        username: data.username || "",
+        role: data.role || "Free",
+        display_name: data.display_name || "",
+        avatar_url: data.avatar_url || "",
       };
     } catch (_e) {
-      return { username: "", role: "Free" };
+      return empty;
     }
   }
 
-  // Floating account badge (bottom-left, all pages when logged in).
+  function displayNameOf(profile) {
+    return profile.display_name || profile.username || "Member";
+  }
+
+  function applyAvatar(faceEl, profile) {
+    const name = displayNameOf(profile);
+    if (profile.avatar_url) {
+      faceEl.style.backgroundImage = `url("${profile.avatar_url}")`;
+      faceEl.textContent = "";
+      faceEl.classList.add("has-image");
+    } else {
+      faceEl.style.backgroundImage = "";
+      faceEl.textContent = (name[0] || "N").toUpperCase();
+      faceEl.classList.remove("has-image");
+    }
+  }
+
+  function productsForRole(role) {
+    const forge = FORGE_ROLES.includes(role);
+    return [{ name: "Forge Studio", status: forge ? "Early access" : "Coming soon", active: forge }];
+  }
+
+  /* ----------------------------- Badge + Panel ----------------------------- */
+
   let chipEl = null;
+  let panelEl = null;
+
   function buildChip() {
     if (chipEl) return;
-    chipEl = document.createElement("a");
+
+    chipEl = document.createElement("button");
+    chipEl.type = "button";
     chipEl.className = "account-chip";
-    chipEl.href = "account.html";
+    chipEl.setAttribute("aria-haspopup", "dialog");
+    chipEl.setAttribute("aria-expanded", "false");
     chipEl.hidden = true;
     chipEl.innerHTML =
-      '<span class="account-chip-avatar" data-chip-avatar>N</span>' +
+      '<span class="account-chip-avatar" data-chip-face>N</span>' +
       '<span class="account-chip-text">' +
       '<span class="account-chip-name" data-chip-name></span>' +
       '<span class="account-chip-role" data-chip-role></span>' +
       "</span>";
     document.body.appendChild(chipEl);
+
+    panelEl = document.createElement("div");
+    panelEl.className = "account-panel";
+    panelEl.setAttribute("role", "dialog");
+    panelEl.setAttribute("aria-label", "Account");
+    panelEl.hidden = true;
+    panelEl.innerHTML =
+      '<div class="account-panel-head">' +
+      '<span class="account-panel-avatar" data-panel-face>N</span>' +
+      '<div class="account-panel-id">' +
+      '<div class="account-panel-name" data-panel-name></div>' +
+      '<div class="account-panel-user" data-panel-user></div>' +
+      "</div></div>" +
+      '<div class="account-panel-plan"><span>Subscription</span>' +
+      '<strong class="account-chip-role" data-panel-plan></strong></div>' +
+      '<div class="account-panel-products"><p class="account-panel-label">Your products</p>' +
+      "<ul data-panel-products></ul></div>" +
+      '<div class="account-panel-edit" data-panel-edit hidden>' +
+      '<label class="account-panel-field"><span>Avatar</span>' +
+      '<input type="file" accept="image/*" data-panel-avatar-input /></label>' +
+      '<label class="account-panel-field"><span>Display name</span>' +
+      '<input type="text" maxlength="40" placeholder="Your name" data-panel-display /></label>' +
+      '<label class="account-panel-field"><span>Username</span>' +
+      '<input type="text" minlength="3" maxlength="20" placeholder="your_handle" data-panel-username /></label>' +
+      '<button class="button button-primary" type="button" data-panel-save>Save changes</button>' +
+      '<p class="account-panel-note" data-panel-note role="status" aria-live="polite"></p></div>' +
+      '<div class="account-panel-actions">' +
+      '<button class="account-panel-action" type="button" data-panel-toggle-edit>Edit profile</button>' +
+      '<button class="account-panel-action" type="button" data-panel-logout>Log out</button>' +
+      "</div>";
+    document.body.appendChild(panelEl);
+
+    chipEl.addEventListener("click", (e) => {
+      e.preventDefault();
+      togglePanel();
+    });
+
+    panelEl.querySelector("[data-panel-toggle-edit]").addEventListener("click", () => {
+      const edit = panelEl.querySelector("[data-panel-edit]");
+      edit.hidden = !edit.hidden;
+    });
+    panelEl.querySelector("[data-panel-save]").addEventListener("click", saveProfile);
+    panelEl.querySelector("[data-panel-avatar-input]").addEventListener("change", onAvatarPicked);
+    panelEl.querySelector("[data-panel-logout]").addEventListener("click", async () => {
+      await sb.auth.signOut();
+      closePanel();
+    });
+    panelEl.querySelector("[data-panel-username]").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        saveProfile();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (panelEl.hidden) return;
+      if (!panelEl.contains(e.target) && e.target !== chipEl && !chipEl.contains(e.target)) {
+        closePanel();
+      }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closePanel();
+    });
   }
+
+  function openPanel() {
+    if (!panelEl) return;
+    panelEl.hidden = false;
+    chipEl.setAttribute("aria-expanded", "true");
+  }
+  function closePanel() {
+    if (!panelEl) return;
+    panelEl.hidden = true;
+    panelEl.querySelector("[data-panel-edit]").hidden = true;
+    chipEl.setAttribute("aria-expanded", "false");
+  }
+  function togglePanel() {
+    if (panelEl.hidden) openPanel();
+    else closePanel();
+  }
+
+  function panelNote(message, ok) {
+    const el = panelEl && panelEl.querySelector("[data-panel-note]");
+    if (!el) return;
+    el.textContent = message;
+    el.classList.toggle("is-success", ok === true);
+    el.classList.toggle("is-error", ok === false);
+  }
+
+  function renderPanel(profile) {
+    if (!panelEl) return;
+    const name = displayNameOf(profile);
+    panelEl.querySelector("[data-panel-name]").textContent = name;
+    panelEl.querySelector("[data-panel-user]").textContent = profile.username ? "@" + profile.username : "set a username";
+    const plan = panelEl.querySelector("[data-panel-plan]");
+    plan.textContent = profile.role || "Free";
+    plan.setAttribute("data-role", profile.role || "Free");
+    applyAvatar(panelEl.querySelector("[data-panel-face]"), profile);
+
+    const list = panelEl.querySelector("[data-panel-products]");
+    list.innerHTML = "";
+    productsForRole(profile.role).forEach((p) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<span>${p.name}</span><span class="product-status${p.active ? " is-active" : ""}">${p.status}</span>`;
+      list.appendChild(li);
+    });
+
+    const dn = panelEl.querySelector("[data-panel-display]");
+    const un = panelEl.querySelector("[data-panel-username]");
+    if (document.activeElement !== dn) dn.value = profile.display_name || "";
+    if (document.activeElement !== un) un.value = profile.username || "";
+  }
+
   function updateChip(loggedIn, profile) {
     if (!chipEl) return;
     if (!loggedIn) {
       chipEl.hidden = true;
+      closePanel();
       return;
     }
-    const name = profile.username || "Member";
-    const role = profile.role || "Free";
-    chipEl.querySelector("[data-chip-name]").textContent = name;
-    chipEl.querySelector("[data-chip-role]").textContent = role;
-    chipEl.querySelector("[data-chip-avatar]").textContent = (name[0] || "N").toUpperCase();
-    chipEl.setAttribute("data-role", role);
+    chipEl.querySelector("[data-chip-name]").textContent = displayNameOf(profile);
+    chipEl.querySelector("[data-chip-role]").textContent = profile.role || "Free";
+    chipEl.setAttribute("data-role", profile.role || "Free");
+    applyAvatar(chipEl.querySelector("[data-chip-face]"), profile);
     chipEl.hidden = false;
   }
+
+  /* ------------------------------ Profile edits ----------------------------- */
+
+  async function onAvatarPicked(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file || !currentUserId) return;
+    if (file.size > 3 * 1024 * 1024) {
+      panelNote("Image must be under 3 MB.", false);
+      return;
+    }
+    panelNote("Uploading avatar…");
+    const ext = (file.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
+    const path = `${currentUserId}/avatar.${ext}`;
+    const up = await sb.storage.from("avatars").upload(path, file, { upsert: true, cacheControl: "3600" });
+    if (up.error) {
+      panelNote("Avatar upload failed: " + up.error.message, false);
+      return;
+    }
+    const pub = sb.storage.from("avatars").getPublicUrl(path);
+    const url = pub.data.publicUrl + "?t=" + Date.now();
+    const { error } = await sb
+      .from("profiles")
+      .update({ avatar_url: url, updated_at: new Date().toISOString() })
+      .eq("id", currentUserId);
+    if (error) {
+      panelNote(error.message, false);
+      return;
+    }
+    panelNote("Avatar updated.", true);
+    refresh();
+  }
+
+  async function saveProfile() {
+    if (!currentUserId) return;
+    const dn = panelEl.querySelector("[data-panel-display]");
+    const un = panelEl.querySelector("[data-panel-username]");
+    const username = String(un.value || "").trim();
+    const display = String(dn.value || "").trim();
+
+    const problem = usernameProblem(username);
+    if (problem) {
+      panelNote(problem, false);
+      return;
+    }
+
+    panelNote("Saving…");
+    if (await usernameTaken(username)) {
+      panelNote(`The username "${username}" is already taken.`, false);
+      return;
+    }
+
+    const { error } = await sb
+      .from("profiles")
+      .update({ username, display_name: display || null, updated_at: new Date().toISOString() })
+      .eq("id", currentUserId);
+
+    if (error) {
+      const taken = error.code === "23505" || /duplicate key/i.test(error.message || "");
+      panelNote(taken ? `The username "${username}" is already taken.` : error.message, false);
+      return;
+    }
+    panelNote("Profile saved.", true);
+    refresh();
+  }
+
+  async function refresh() {
+    const { data } = await sb.auth.getSession();
+    renderSession(data.session);
+  }
+
+  /* -------------------------------- Session -------------------------------- */
 
   async function renderSession(session) {
     setNav(session);
     const loggedIn = Boolean(session && session.user);
-    let profile = { username: "", role: "Free" };
+    let profile = { username: "", role: "Free", display_name: "", avatar_url: "" };
     if (loggedIn) profile = await loadProfile(session.user.id);
+    currentProfile = profile;
+    currentUserId = loggedIn ? session.user.id : null;
 
-    updateChip(loggedIn, profile); // every page
+    updateChip(loggedIn, profile);
+    if (loggedIn) renderPanel(profile);
 
     if (!page) return; // the rest is account-page only
     if (formsWrap) formsWrap.hidden = loggedIn;
     if (sessionCard) sessionCard.hidden = !loggedIn;
-    if (!loggedIn) {
-      currentUserId = null;
-      return;
-    }
-    currentUserId = session.user.id;
-    if (sessionEmail) sessionEmail.textContent = session.user.email;
-    if (sessionUsername) sessionUsername.textContent = profile.username || "—";
-    if (usernameInput && document.activeElement !== usernameInput) {
-      usernameInput.value = profile.username || "";
+    if (loggedIn) {
+      if (sessionEmail) sessionEmail.textContent = session.user.email;
+      if (sessionUsername) sessionUsername.textContent = displayNameOf(profile);
     }
   }
 
@@ -146,9 +360,7 @@
 
   if (!sb) {
     setNav(null);
-    if (page) {
-      showNote("Accounts aren't connected yet. Add your Supabase keys to config.js.", false);
-    }
+    if (page) showNote("Accounts aren't connected yet. Add your Supabase keys to config.js.", false);
     return;
   }
 
@@ -185,12 +397,7 @@
       const { data, error } = await sb.auth.signUp({
         email,
         password,
-        options: {
-          data: { username },
-          // After confirming their email, return them to this account page
-          // (where supabase-js auto-establishes the session from the link).
-          emailRedirectTo: window.location.origin + window.location.pathname,
-        },
+        options: { data: { username } },
       });
 
       if (error) {
@@ -202,7 +409,7 @@
       if (data.session) {
         showNote("Account created — you're logged in.", true);
       } else {
-        showNote("Account created. Check your email to confirm, then log in.", true);
+        showNote("Account created. You can log in now.", true);
         setMode("login");
       }
     });
@@ -217,57 +424,12 @@
 
       showNote("Logging in…", undefined);
       const { error } = await sb.auth.signInWithPassword({ email, password });
-
       if (error) {
         showNote(error.message, false);
         return;
       }
-
       loginForm.reset();
       showNote("Logged in.", true);
-    });
-  }
-
-  async function saveUsername() {
-    if (!currentUserId) return;
-    const username = String(usernameInput ? usernameInput.value : "").trim();
-
-    const problem = usernameProblem(username);
-    if (problem) {
-      showNote(problem, false);
-      return;
-    }
-
-    showNote("Saving username…", undefined);
-    if (await usernameTaken(username)) {
-      showNote(`The username "${username}" is already taken.`, false);
-      return;
-    }
-
-    const { error } = await sb
-      .from("profiles")
-      .upsert({ id: currentUserId, username, updated_at: new Date().toISOString() });
-
-    if (error) {
-      const taken = error.code === "23505" || /duplicate key/i.test(error.message || "");
-      showNote(taken ? `The username "${username}" is already taken.` : error.message, false);
-      return;
-    }
-
-    showNote("Username saved.", true);
-    const { data } = await sb.auth.getSession();
-    renderSession(data.session);
-  }
-
-  if (saveUsernameButton) {
-    saveUsernameButton.addEventListener("click", saveUsername);
-  }
-  if (usernameInput) {
-    usernameInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        saveUsername();
-      }
     });
   }
 
