@@ -383,20 +383,60 @@
     return left > 0;
   }
 
-  // Swap the pre-launch "Request Access" CTAs for member status once logged in.
+  // Plans a logged-in member has asked to be notified about at launch.
+  const notifiedPlans = new Set();
+
+  async function loadInterests(userId) {
+    notifiedPlans.clear();
+    try {
+      const { data } = await sb.from("launch_interest").select("plan").eq("user_id", userId);
+      (data || []).forEach((row) => notifiedPlans.add(row.plan));
+    } catch (_e) {
+      /* table not deployed yet */
+    }
+  }
+
+  // Logged-out: pre-launch CTAs. Logged-in: Free is included, paid plans become
+  // a "Notify me at launch" action that records interest, then shows confirmed.
   function relabelCTAs(loggedIn) {
     document.querySelectorAll("[data-plan-cta]").forEach((btn) => {
       if (!btn.dataset.ctaDefault) btn.dataset.ctaDefault = btn.textContent.trim();
-      if (loggedIn) {
-        btn.textContent = btn.dataset.planCta === "free" ? "Included free" : "Founder price locked in";
-        btn.classList.add("is-locked");
-        btn.setAttribute("href", "account.html");
-      } else {
+      const plan = btn.dataset.planCta;
+
+      if (!loggedIn) {
         btn.textContent = btn.dataset.ctaDefault;
         btn.classList.remove("is-locked");
         btn.setAttribute("href", "#access");
+      } else if (plan === "free") {
+        btn.textContent = "Included free";
+        btn.classList.add("is-locked");
+        btn.setAttribute("href", "account.html");
+      } else if (notifiedPlans.has(plan)) {
+        btn.textContent = "✓ You'll be notified at launch";
+        btn.classList.add("is-locked");
+        btn.removeAttribute("href");
+      } else {
+        btn.textContent = "Notify me at launch";
+        btn.classList.remove("is-locked");
+        btn.setAttribute("href", "#");
       }
     });
+  }
+
+  async function registerInterest(btn) {
+    const plan = btn.dataset.planCta;
+    if (!currentUserId || plan === "free" || notifiedPlans.has(plan)) return;
+    const previous = btn.textContent;
+    btn.textContent = "Saving…";
+    const { error } = await sb.from("launch_interest").insert({ user_id: currentUserId, plan });
+    if (error && error.code !== "23505") {
+      btn.textContent = previous;
+      return;
+    }
+    notifiedPlans.add(plan);
+    btn.textContent = "✓ You'll be notified at launch";
+    btn.classList.add("is-locked");
+    btn.removeAttribute("href");
   }
 
   async function revealPrices(loggedIn) {
@@ -448,6 +488,9 @@
     currentProfile = profile;
     currentUserId = loggedIn ? session.user.id : null;
 
+    if (loggedIn) await loadInterests(session.user.id);
+    else notifiedPlans.clear();
+
     updateChip(loggedIn, profile);
     revealPrices(loggedIn);
     if (loggedIn) renderPanel(profile);
@@ -476,6 +519,17 @@
 
   buildChip();
   setMode("login");
+
+  // "Notify me at launch" clicks on the pricing cards.
+  document.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-plan-cta]");
+    if (!btn) return;
+    const plan = btn.dataset.planCta;
+    if (!currentUserId || plan === "free" || notifiedPlans.has(plan)) return;
+    event.preventDefault();
+    registerInterest(btn);
+  });
+
   sb.auth.getSession().then(({ data }) => renderSession(data.session));
   sb.auth.onAuthStateChange((_event, session) => renderSession(session));
 
