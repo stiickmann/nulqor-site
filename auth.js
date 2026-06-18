@@ -462,7 +462,10 @@
       if (useFounder && plan.founder_price !== plan.price) {
         const was = document.createElement("span");
         was.className = "plan-was";
-        was.textContent = "Founders Edition · was " + plan.price;
+        was.textContent = "Founders Edition · was ";
+        const old = document.createElement("s");
+        old.textContent = plan.price;
+        was.appendChild(old);
         head.appendChild(was);
       }
     });

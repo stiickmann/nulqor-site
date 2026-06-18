@@ -1873,8 +1873,10 @@ h3 {
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--muted);
-  text-decoration: line-through;
-  text-decoration-color: rgba(168, 202, 255, 0.45);
+}
+
+.plan-was s {
+  text-decoration-color: rgba(168, 202, 255, 0.6);
 }
 
 /* Account panel (popover above the badge) */
