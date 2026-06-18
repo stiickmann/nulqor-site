@@ -1822,6 +1822,39 @@ h3 {
   line-height: 1.5;
 }
 
+.founder-banner {
+  margin: 0 auto 10px;
+  max-width: 640px;
+  text-align: center;
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 158, 199, 0.4);
+  background: linear-gradient(135deg, rgba(255, 158, 199, 0.14), rgba(255, 212, 121, 0.1));
+  color: #ffd0e6;
+  font-size: 0.84rem;
+  font-weight: 650;
+}
+
+.founder-banner[hidden] {
+  display: none;
+}
+
+.founder-banner.is-closed {
+  border-color: rgba(168, 202, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+}
+
+.plan-was {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(168, 202, 255, 0.45);
+}
+
 /* Account panel (popover above the badge) */
 .account-panel {
   position: fixed;

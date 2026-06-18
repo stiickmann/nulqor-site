@@ -340,6 +340,7 @@
   /* ------------------------------ Pricing reveal ---------------------------- */
   // Prices live in a private "plans" table only logged-in members can read,
   // so they never appear in the public page source.
+  const FOUNDER_CAP = 1000; // founders-edition pricing for the first N members
   const priceNote = document.querySelector("#pricingNote");
   const priceNoteDefault = priceNote ? priceNote.innerHTML : "";
   let plansCache = null;
@@ -347,10 +348,10 @@
   async function fetchPlans() {
     if (plansCache) return plansCache;
     try {
-      const { data, error } = await sb.from("plans").select("id, price");
+      const { data, error } = await sb.from("plans").select("id, price, founder_price");
       if (error || !data) return null;
       const map = {};
-      data.forEach((p) => (map[p.id] = p.price));
+      data.forEach((p) => (map[p.id] = { price: p.price, founder_price: p.founder_price }));
       plansCache = map;
       return map;
     } catch (_e) {
@@ -358,18 +359,65 @@
     }
   }
 
+  // Public scarcity banner. Returns true while founder spots remain.
+  async function updateFounderBanner() {
+    const banner = document.querySelector("#founderBanner");
+    let count = 0;
+    try {
+      const { data } = await sb.rpc("founder_count");
+      count = data || 0;
+    } catch (_e) {
+      /* function not deployed yet */
+    }
+    const left = Math.max(0, FOUNDER_CAP - count);
+    if (banner) {
+      if (left > 0) {
+        banner.textContent = `Founders Edition — ${left.toLocaleString()} of ${FOUNDER_CAP.toLocaleString()} founder spots left.`;
+        banner.classList.remove("is-closed");
+      } else {
+        banner.textContent = "Founders Edition is fully claimed — standard pricing now applies.";
+        banner.classList.add("is-closed");
+      }
+      banner.hidden = false;
+    }
+    return left > 0;
+  }
+
   async function revealPrices(loggedIn) {
     const priceEls = document.querySelectorAll(".plan-price[data-plan]");
     if (!priceEls.length) return;
+
+    const founderOpen = await updateFounderBanner();
     const map = loggedIn ? await fetchPlans() : null;
-    if (loggedIn && map) {
-      priceEls.forEach((el) => {
-        el.textContent = map[el.dataset.plan] || "Coming Soon";
-      });
-      if (priceNote) priceNote.textContent = "You're signed in — here's your Nulqor launch pricing.";
-    } else {
-      priceEls.forEach((el) => (el.textContent = "Coming Soon"));
-      if (priceNote) priceNote.innerHTML = priceNoteDefault;
+
+    priceEls.forEach((el) => {
+      const head = el.parentElement;
+      const oldWas = head.querySelector(".plan-was");
+      if (oldWas) oldWas.remove();
+
+      const plan = map && map[el.dataset.plan];
+      if (!loggedIn || !plan) {
+        el.textContent = "Coming Soon";
+        return;
+      }
+      const useFounder = founderOpen && plan.founder_price;
+      el.textContent = useFounder ? plan.founder_price : plan.price;
+      if (useFounder && plan.founder_price !== plan.price) {
+        const was = document.createElement("span");
+        was.className = "plan-was";
+        was.textContent = "Founders Edition · was " + plan.price;
+        head.appendChild(was);
+      }
+    });
+
+    if (priceNote) {
+      if (loggedIn && map) {
+        priceNote.textContent = founderOpen
+          ? "Founders Edition pricing — locked in for the first 1,000 members."
+          : "Your Nulqor launch pricing.";
+      } else {
+        priceNote.innerHTML = priceNoteDefault;
+      }
     }
   }
 
