@@ -17,7 +17,7 @@
 
   const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
   // Roles that unlock Forge Studio access.
-  const FORGE_ROLES = ["Creator", "Studio", "Site Tester", "Site Creator", "Site Admin"];
+  const FORGE_ROLES = ["Creator", "Studio", "Site Tester", "Site Creator", "Site Admin", "Founder"];
 
   let currentUserId = null;
   let currentProfile = { username: "", role: "Free", display_name: "", avatar_url: "" };
@@ -329,6 +329,42 @@
     renderSession(data.session);
   }
 
+  /* ------------------------------ Pricing reveal ---------------------------- */
+  // Prices live in a private "plans" table only logged-in members can read,
+  // so they never appear in the public page source.
+  const priceNote = document.querySelector("#pricingNote");
+  const priceNoteDefault = priceNote ? priceNote.innerHTML : "";
+  let plansCache = null;
+
+  async function fetchPlans() {
+    if (plansCache) return plansCache;
+    try {
+      const { data, error } = await sb.from("plans").select("id, price");
+      if (error || !data) return null;
+      const map = {};
+      data.forEach((p) => (map[p.id] = p.price));
+      plansCache = map;
+      return map;
+    } catch (_e) {
+      return null;
+    }
+  }
+
+  async function revealPrices(loggedIn) {
+    const priceEls = document.querySelectorAll(".plan-price[data-plan]");
+    if (!priceEls.length) return;
+    const map = loggedIn ? await fetchPlans() : null;
+    if (loggedIn && map) {
+      priceEls.forEach((el) => {
+        el.textContent = map[el.dataset.plan] || "Coming Soon";
+      });
+      if (priceNote) priceNote.textContent = "You're signed in — here's your Nulqor launch pricing.";
+    } else {
+      priceEls.forEach((el) => (el.textContent = "Coming Soon"));
+      if (priceNote) priceNote.innerHTML = priceNoteDefault;
+    }
+  }
+
   /* -------------------------------- Session -------------------------------- */
 
   async function renderSession(session) {
@@ -340,6 +376,7 @@
     currentUserId = loggedIn ? session.user.id : null;
 
     updateChip(loggedIn, profile);
+    revealPrices(loggedIn);
     if (loggedIn) renderPanel(profile);
 
     if (!page) return; // the rest is account-page only

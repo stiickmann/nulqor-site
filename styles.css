@@ -1788,6 +1788,12 @@ h3 {
 .account-chip[data-role="Site Admin"] .account-chip-avatar {
   background: linear-gradient(135deg, #ffd479, #ff9d6c);
 }
+.account-chip[data-role="Founder"] .account-chip-role {
+  color: #ff9ec7;
+}
+.account-chip[data-role="Founder"] .account-chip-avatar {
+  background: linear-gradient(135deg, #ff9ec7, #ffd479);
+}
 .account-chip[data-role="Site Tester"] .account-chip-role {
   color: #8effc1;
 }
@@ -1908,6 +1914,9 @@ h3 {
 .account-panel-plan strong[data-role="Site Admin"] {
   color: #ffd479;
 }
+.account-panel-plan strong[data-role="Founder"] {
+  color: #ff9ec7;
+}
 .account-panel-plan strong[data-role="Site Tester"] {
   color: #8effc1;
 }
@@ -1960,6 +1969,10 @@ h3 {
   gap: 10px;
   padding-top: 4px;
   border-top: 1px solid rgba(168, 202, 255, 0.12);
+}
+
+.account-panel-edit[hidden] {
+  display: none;
 }
 
 .account-panel-field {
