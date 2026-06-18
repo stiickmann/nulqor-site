@@ -1844,6 +1844,19 @@ h3 {
   line-height: 1.5;
 }
 
+.hero-note {
+  display: inline-block;
+  margin: 4px 0 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 158, 199, 0.36);
+  background: linear-gradient(135deg, rgba(255, 158, 199, 0.12), rgba(114, 226, 255, 0.1));
+  color: #ffd0e6;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
 .founder-banner {
   margin: 0 auto 10px;
   max-width: 640px;
