@@ -97,11 +97,19 @@
   function applyAvatar(faceEl, profile) {
     const name = displayNameOf(profile);
     if (profile.avatar_url) {
+      // Set sizing inline so it beats role-based `background` shorthand rules
+      // (those reset background-size/position and would crop to a corner).
       faceEl.style.backgroundImage = `url("${profile.avatar_url}")`;
+      faceEl.style.backgroundSize = "cover";
+      faceEl.style.backgroundPosition = "center";
+      faceEl.style.backgroundRepeat = "no-repeat";
       faceEl.textContent = "";
       faceEl.classList.add("has-image");
     } else {
       faceEl.style.backgroundImage = "";
+      faceEl.style.backgroundSize = "";
+      faceEl.style.backgroundPosition = "";
+      faceEl.style.backgroundRepeat = "";
       faceEl.textContent = (name[0] || "N").toUpperCase();
       faceEl.classList.remove("has-image");
     }
