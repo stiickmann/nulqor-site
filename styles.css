@@ -2138,6 +2138,22 @@ h3 {
   margin-right: 6px;
 }
 
+.admin-role-select {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(168, 202, 255, 0.2);
+  background: #0e1622;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-role-select option {
+  background: #0e1622;
+  color: #ffffff;
+}
+
 .account-panel-admin {
   display: block;
   text-align: center;

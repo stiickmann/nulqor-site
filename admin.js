@@ -213,6 +213,9 @@
       startAdmin();
       return;
     }
+    // Once we're in as admin, ignore transient null-session blips from later
+    // auth events (e.g. token refresh). A real logout is handled separately.
+    if (started) return;
     if (state === "denied") {
       settled = true;
       showGate("You don't have access to the admin dashboard.", "Back to site", "index.html");
@@ -231,7 +234,12 @@
   }
 
   refreshGate(false);
-  sb.auth.onAuthStateChange(() => {
+  sb.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_OUT") {
+      started = false;
+      showGate("You need to be logged in to view this page.", "Log in", "account.html");
+      return;
+    }
     settled = true;
     refreshGate(true);
   });
