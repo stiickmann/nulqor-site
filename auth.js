@@ -18,6 +18,8 @@
   const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
   // Roles that unlock Forge Studio access.
   const FORGE_ROLES = ["Creator", "Studio", "Site Tester", "Site Creator", "Site Admin", "Founder"];
+  // Roles that can open the admin dashboard (enforced again in the database).
+  const ADMIN_ROLES = ["Founder", "Site Admin"];
 
   let currentUserId = null;
   let currentProfile = { username: "", role: "Free", display_name: "", avatar_url: "" };
@@ -167,6 +169,7 @@
       '<input type="text" minlength="3" maxlength="20" placeholder="your_handle" data-panel-username /></label>' +
       '<button class="button button-primary" type="button" data-panel-save>Save changes</button>' +
       '<p class="account-panel-note" data-panel-note role="status" aria-live="polite"></p></div>' +
+      '<a class="account-panel-action account-panel-admin" data-panel-admin href="admin.html" hidden>⚙ Admin dashboard</a>' +
       '<div class="account-panel-actions">' +
       '<button class="account-panel-action" type="button" data-panel-toggle-edit>Edit profile</button>' +
       '<button class="account-panel-action" type="button" data-panel-logout>Log out</button>' +
@@ -247,6 +250,9 @@
       li.innerHTML = `<span>${p.name}</span><span class="product-status${p.active ? " is-active" : ""}">${p.status}</span>`;
       list.appendChild(li);
     });
+
+    const adminLink = panelEl.querySelector("[data-panel-admin]");
+    if (adminLink) adminLink.hidden = !ADMIN_ROLES.includes(profile.role);
 
     const dn = panelEl.querySelector("[data-panel-display]");
     const un = panelEl.querySelector("[data-panel-username]");

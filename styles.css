@@ -2109,6 +2109,132 @@ h3 {
   background: rgba(80, 215, 255, 0.08);
 }
 
+.account-panel-admin {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: #ffd479;
+  border-color: rgba(255, 212, 121, 0.32);
+}
+
+.account-panel-admin[hidden] {
+  display: none;
+}
+
+.account-panel-admin:hover {
+  border-color: rgba(255, 212, 121, 0.6);
+  background: rgba(255, 212, 121, 0.08);
+}
+
+/* ------------------------------- Admin page ------------------------------- */
+.admin-gate {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 28px;
+  text-align: center;
+  border: 1px solid rgba(168, 202, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(8, 12, 19, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.admin-block {
+  margin: 0 auto 28px;
+  max-width: 1000px;
+  padding: 20px;
+  border: 1px solid rgba(168, 202, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(8, 12, 19, 0.7);
+}
+
+.admin-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.admin-block-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.admin-count {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.admin-block-head .account-panel-action {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 7px 14px;
+}
+
+.admin-hint {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(168, 202, 255, 0.08);
+  white-space: nowrap;
+}
+
+.admin-table th {
+  color: var(--muted);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.admin-table td {
+  color: var(--text);
+}
+
+.admin-email {
+  color: var(--silver);
+}
+
+.admin-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 20px;
+}
+
+.admin-role-select {
+  padding: 7px 10px;
+  border-radius: 9px;
+  border: 1px solid rgba(168, 202, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: 0.86rem;
+  cursor: pointer;
+}
+
+.admin-role-select:disabled {
+  opacity: 0.5;
+}
+
 .auth-note {
   max-width: 460px;
   margin: 14px auto 0;
