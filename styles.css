@@ -2109,6 +2109,35 @@ h3 {
   background: rgba(80, 215, 255, 0.08);
 }
 
+.req-actions {
+  white-space: nowrap;
+}
+
+.req-actions .account-panel-action {
+  flex: none;
+  display: inline-block;
+  width: auto;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+}
+
+.req-accept:hover {
+  border-color: rgba(142, 255, 193, 0.5);
+  background: rgba(142, 255, 193, 0.08);
+}
+
+.req-dismiss:hover {
+  border-color: rgba(255, 157, 157, 0.5);
+  background: rgba(255, 157, 157, 0.08);
+}
+
+.req-accepted {
+  color: #8effc1;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-right: 6px;
+}
+
 .account-panel-admin {
   display: block;
   text-align: center;

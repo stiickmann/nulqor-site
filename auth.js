@@ -17,7 +17,7 @@
 
   const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
   // Roles that unlock Forge Studio access.
-  const FORGE_ROLES = ["Creator", "Studio", "Site Tester", "Site Creator", "Site Admin", "Founder"];
+  const FORGE_ROLES = ["Creator", "Studio", "Site Tester", "Site Admin", "Founder"];
   // Roles that can open the admin dashboard (enforced again in the database).
   const ADMIN_ROLES = ["Founder", "Site Admin"];
 

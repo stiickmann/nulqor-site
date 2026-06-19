@@ -1,9 +1,11 @@
-// Admin dashboard: list members + waitlist, change roles. Every privileged
-// action is gated again in the database (is_admin()), so the UI gate is just UX.
+// Admin dashboard: list members + access requests, change roles, accept/delete
+// requests. Every privileged action is gated again in the database (is_admin()),
+// so the UI gate is just UX.
 (function () {
   const sb = window.nulqorSupabase;
 
-  const ROLES = ["Free", "Creator", "Studio", "Site Tester", "Site Creator", "Site Admin", "Founder"];
+  // Site Creator removed — Founder is the top role.
+  const ROLES = ["Free", "Creator", "Studio", "Site Tester", "Site Admin", "Founder"];
   const ADMIN_ROLES = ["Founder", "Site Admin"];
 
   const gate = document.querySelector("#adminGate");
@@ -15,6 +17,9 @@
   const membersCount = document.querySelector("[data-members-count]");
   const waitlistCount = document.querySelector("[data-waitlist-count]");
   const note = document.querySelector("#adminNote");
+
+  let started = false; // admin content wired up once
+  let settled = false; // we have a definitive auth answer
 
   function showGate(message, actionLabel, actionHref) {
     if (content) content.hidden = true;
@@ -82,7 +87,7 @@
         `<td>${esc(name)}</td>` +
         `<td>${m.username ? "@" + esc(m.username) : "—"}</td>` +
         `<td class="admin-email">${esc(m.email)}</td>` +
-        `<td><select class="admin-role-select" data-id="${esc(m.id)}">${options}</select></td>` +
+        `<td><select class="admin-role-select" data-id="${esc(m.id)}" data-prev="${esc(m.role)}">${options}</select></td>` +
         `<td>${fmtDate(m.created_at)}</td>`;
       membersBody.appendChild(tr);
     });
@@ -111,66 +116,127 @@
 
   async function loadWaitlist() {
     if (!waitlistBody) return;
-    waitlistBody.innerHTML = '<tr><td colspan="4" class="admin-empty">Loading…</td></tr>';
+    waitlistBody.innerHTML = '<tr><td colspan="5" class="admin-empty">Loading…</td></tr>';
     const { data, error } = await sb.rpc("admin_list_waitlist");
     if (error) {
-      waitlistBody.innerHTML = `<tr><td colspan="4" class="admin-empty">${esc(error.message)}</td></tr>`;
+      waitlistBody.innerHTML = `<tr><td colspan="5" class="admin-empty">${esc(error.message)}</td></tr>`;
       return;
     }
     const rows = data || [];
     if (waitlistCount) waitlistCount.textContent = `(${rows.length})`;
     if (!rows.length) {
-      waitlistBody.innerHTML = '<tr><td colspan="4" class="admin-empty">No access requests yet.</td></tr>';
+      waitlistBody.innerHTML = '<tr><td colspan="5" class="admin-empty">No access requests yet.</td></tr>';
       return;
     }
     waitlistBody.innerHTML = "";
     rows.forEach((w) => {
       const tr = document.createElement("tr");
+      const accepted = (w.status || "pending") === "accepted";
+      const action = accepted
+        ? '<span class="req-accepted">✓ Accepted</span>'
+        : `<button class="account-panel-action req-accept" data-id="${esc(w.id)}">Accept</button>`;
       tr.innerHTML =
         `<td>${esc(w.name || "—")}</td>` +
         `<td class="admin-email">${esc(w.email)}</td>` +
         `<td>${esc(w.role || "—")}</td>` +
-        `<td>${fmtDate(w.created_at)}</td>`;
+        `<td>${fmtDate(w.created_at)}</td>` +
+        `<td class="req-actions">${action}` +
+        ` <button class="account-panel-action req-dismiss" data-id="${esc(w.id)}">Delete</button></td>`;
       waitlistBody.appendChild(tr);
+    });
+
+    waitlistBody.querySelectorAll(".req-accept").forEach((b) => {
+      b.addEventListener("click", () => acceptRequest(b.dataset.id, b));
+    });
+    waitlistBody.querySelectorAll(".req-dismiss").forEach((b) => {
+      b.addEventListener("click", () => deleteRequest(b.dataset.id, b));
     });
   }
 
-  async function init() {
-    if (!sb) {
-      showGate("Accounts aren't connected yet (missing Supabase keys).");
+  async function acceptRequest(id, btn) {
+    if (btn) btn.disabled = true;
+    showNote("Accepting…");
+    const { error } = await sb.rpc("admin_set_waitlist_status", { target_id: id, new_status: "accepted" });
+    if (error) {
+      showNote("Could not accept: " + error.message, false);
+      if (btn) btn.disabled = false;
       return;
     }
+    showNote("Access request accepted.", true);
+    loadWaitlist();
+  }
 
-    const { data } = await sb.auth.getSession();
-    const session = data.session;
-    if (!session || !session.user) {
-      showGate("You need to be logged in to view this page.", "Log in", "account.html");
+  async function deleteRequest(id, btn) {
+    if (btn) btn.disabled = true;
+    showNote("Deleting…");
+    const { error } = await sb.rpc("admin_delete_waitlist", { target_id: id });
+    if (error) {
+      showNote("Could not delete: " + error.message, false);
+      if (btn) btn.disabled = false;
       return;
     }
+    showNote("Request removed.", true);
+    loadWaitlist();
+  }
 
-    const { data: profile } = await sb
-      .from("profiles")
-      .select("role")
-      .eq("id", session.user.id)
-      .maybeSingle();
-
-    const role = (profile && profile.role) || "Free";
-    if (!ADMIN_ROLES.includes(role)) {
-      showGate("You don't have access to the admin dashboard.", "Back to site", "index.html");
-      return;
-    }
-
+  function startAdmin() {
+    if (started) return;
+    started = true;
     if (gate) gate.hidden = true;
     if (content) content.hidden = false;
     loadMembers();
     loadWaitlist();
-
     const rm = document.querySelector("[data-refresh-members]");
     const rw = document.querySelector("[data-refresh-waitlist]");
     if (rm) rm.addEventListener("click", loadMembers);
     if (rw) rw.addEventListener("click", loadWaitlist);
   }
 
-  init();
-  if (sb) sb.auth.onAuthStateChange(() => init());
+  async function evaluate() {
+    const { data } = await sb.auth.getSession();
+    const session = data.session;
+    if (!session || !session.user) return "anon";
+    const { data: profile } = await sb
+      .from("profiles")
+      .select("role")
+      .eq("id", session.user.id)
+      .maybeSingle();
+    const role = (profile && profile.role) || "Free";
+    return ADMIN_ROLES.includes(role) ? "admin" : "denied";
+  }
+
+  // fromEvent = triggered by an auth state change (we now trust a null session).
+  async function refreshGate(fromEvent) {
+    const state = await evaluate();
+    if (state === "admin") {
+      settled = true;
+      startAdmin();
+      return;
+    }
+    if (state === "denied") {
+      settled = true;
+      showGate("You don't have access to the admin dashboard.", "Back to site", "index.html");
+      return;
+    }
+    // anon: on a cold load the session may not be restored yet — keep
+    // "Checking access…" until an auth event (or the fallback) confirms it.
+    if (fromEvent || settled) {
+      showGate("You need to be logged in to view this page.", "Log in", "account.html");
+    }
+  }
+
+  if (!sb) {
+    showGate("Accounts aren't connected yet (missing Supabase keys).");
+    return;
+  }
+
+  refreshGate(false);
+  sb.auth.onAuthStateChange(() => {
+    settled = true;
+    refreshGate(true);
+  });
+  // Final fallback so we never get stuck on "Checking access…".
+  setTimeout(() => {
+    if (!settled) refreshGate(true);
+  }, 1800);
 })();
