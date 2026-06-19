@@ -6,7 +6,11 @@
 
   // Site Creator removed — Founder is the top role.
   const ROLES = ["Free", "Creator", "Studio", "Site Tester", "Site Admin", "Founder"];
-  const ADMIN_ROLES = ["Founder", "Site Admin"];
+  // Who can open the dashboard + accept/deny requests.
+  const STAFF_ROLES = ["Founder", "Site Admin", "Site Tester"];
+  // Only the Founder can change anyone's role (enforced again in the database).
+  let canRole = false;
+  let myRole = null;
 
   const gate = document.querySelector("#adminGate");
   const gateMsg = document.querySelector("#adminGateMsg");
@@ -80,14 +84,21 @@
     rows.forEach((m) => {
       const tr = document.createElement("tr");
       const name = m.display_name || m.username || "Member";
-      const options = ROLES.map(
-        (r) => `<option value="${esc(r)}"${r === m.role ? " selected" : ""}>${esc(r)}</option>`
-      ).join("");
+      let roleCell;
+      if (canRole) {
+        const options = ROLES.map(
+          (r) => `<option value="${esc(r)}"${r === m.role ? " selected" : ""}>${esc(r)}</option>`
+        ).join("");
+        roleCell = `<select class="admin-role-select" data-id="${esc(m.id)}" data-prev="${esc(m.role)}">${options}</select>`;
+      } else {
+        // Non-founders see the role but can't change it.
+        roleCell = `<span class="admin-role-static">${esc(m.role || "Free")}</span>`;
+      }
       tr.innerHTML =
         `<td>${esc(name)}</td>` +
         `<td>${m.username ? "@" + esc(m.username) : "—"}</td>` +
         `<td class="admin-email">${esc(m.email)}</td>` +
-        `<td><select class="admin-role-select" data-id="${esc(m.id)}" data-prev="${esc(m.role)}">${options}</select></td>` +
+        `<td>${roleCell}</td>` +
         `<td>${fmtDate(m.created_at)}</td>`;
       membersBody.appendChild(tr);
     });
@@ -184,6 +195,10 @@
     started = true;
     if (gate) gate.hidden = true;
     if (content) content.hidden = false;
+    const hint = document.querySelector("#membersHint");
+    if (hint && !canRole) {
+      hint.textContent = "Only the Founder can change roles. You can view members and manage access requests.";
+    }
     loadMembers();
     loadWaitlist();
     const rm = document.querySelector("[data-refresh-members]");
@@ -201,8 +216,9 @@
       .select("role")
       .eq("id", session.user.id)
       .maybeSingle();
-    const role = (profile && profile.role) || "Free";
-    return ADMIN_ROLES.includes(role) ? "admin" : "denied";
+    myRole = (profile && profile.role) || "Free";
+    canRole = myRole === "Founder";
+    return STAFF_ROLES.includes(myRole) ? "admin" : "denied";
   }
 
   // fromEvent = triggered by an auth state change (we now trust a null session).

@@ -19,7 +19,7 @@
   // Roles that unlock Forge Studio access.
   const FORGE_ROLES = ["Creator", "Studio", "Site Tester", "Site Admin", "Founder"];
   // Roles that can open the admin dashboard (enforced again in the database).
-  const ADMIN_ROLES = ["Founder", "Site Admin"];
+  const ADMIN_ROLES = ["Founder", "Site Admin", "Site Tester"];
 
   let currentUserId = null;
   let currentProfile = { username: "", role: "Free", display_name: "", avatar_url: "" };
@@ -487,6 +487,49 @@
     }
   }
 
+  /* --------------------------- Logged-in access CTAs ------------------------ */
+  // Logged-in members shouldn't be prompted to "Request Access". Hide the
+  // top-right nav CTA and turn the hero CTA into an account link.
+  function updateAccessCTAs(loggedIn) {
+    document.querySelectorAll(".nav-action").forEach((el) => {
+      el.hidden = loggedIn;
+    });
+    document.querySelectorAll("[data-hero-cta]").forEach((el) => {
+      if (!el.dataset.guestText) {
+        el.dataset.guestText = el.textContent.trim();
+        el.dataset.guestHref = el.getAttribute("href") || "#access";
+      }
+      if (loggedIn) {
+        el.textContent = "Your account";
+        el.setAttribute("href", "account.html");
+      } else {
+        el.textContent = el.dataset.guestText;
+        el.setAttribute("href", el.dataset.guestHref);
+      }
+    });
+  }
+
+  // Replace the "Request Access" waitlist form with a confirmation for members.
+  function updateAccessSection(loggedIn, profile) {
+    const form = document.querySelector("#accessForm");
+    if (!form) return;
+    let msg = document.querySelector("[data-access-member]");
+    if (loggedIn) {
+      if (!msg) {
+        msg = document.createElement("p");
+        msg.setAttribute("data-access-member", "");
+        msg.className = "form-note is-success";
+        form.parentNode.insertBefore(msg, form);
+      }
+      msg.textContent = `You're signed in as ${displayNameOf(profile)} — you already have a Nulqor account. We'll email you the moment Forge Studio opens.`;
+      msg.hidden = false;
+      form.hidden = true;
+    } else {
+      if (msg) msg.hidden = true;
+      form.hidden = false;
+    }
+  }
+
   /* -------------------------------- Session -------------------------------- */
 
   async function renderSession(session) {
@@ -502,6 +545,8 @@
 
     updateChip(loggedIn, profile);
     revealPrices(loggedIn);
+    updateAccessCTAs(loggedIn);
+    updateAccessSection(loggedIn, profile);
     if (loggedIn) renderPanel(profile);
 
     if (!page) return; // the rest is account-page only
