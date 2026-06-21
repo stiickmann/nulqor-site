@@ -4,8 +4,7 @@
 (function () {
   const sb = window.nulqorSupabase;
 
-  // Site Creator removed — Founder is the top role.
-  const ROLES = ["Free", "Creator", "Studio", "Site Tester", "Site Admin", "Founder"];
+  const ROLES = ["Free", "Creator", "Studio", "Site Tester", "Site Creator", "Site Admin", "Founder"];
   // Who can open the dashboard + accept/deny requests.
   const STAFF_ROLES = ["Founder", "Site Admin", "Site Tester"];
   // Only the Founder can change anyone's role (enforced again in the database).
