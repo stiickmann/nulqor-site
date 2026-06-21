@@ -954,6 +954,7 @@
     .toggle-row {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       gap: 12px;
       padding: 12px;
       border: 1px solid rgba(var(--accent-rgb), .15);
@@ -963,11 +964,73 @@
       font-size: 12px;
     }
 
-    .toggle-row strong {
+    .toggle-row strong,
+    .toggle-status {
       color: var(--accent-2);
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: .7px;
+    }
+
+    .toggle-row.is-disabled {
+      opacity: .58;
+    }
+
+    .switch-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .switch-control input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .switch-track {
+      width: 45px;
+      height: 24px;
+      padding: 3px;
+      border: 1px solid rgba(var(--accent-rgb), .28);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .35);
+      transition: background .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .switch-track::before {
+      content: "";
+      display: block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    .switch-control input:checked + .switch-track {
+      border-color: rgba(var(--accent-rgb), .72);
+      background: rgba(var(--accent-rgb), .28);
+      box-shadow: 0 0 24px rgba(var(--glow-rgb), .14);
+    }
+
+    .switch-control input:checked + .switch-track::before {
+      transform: translateX(20px);
+      background: var(--accent-2);
+    }
+
+    .switch-control input:disabled + .switch-track {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .inline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
     }
 
     .page-swipe {
@@ -1151,9 +1214,9 @@
           <span class="avatar-label">Upload</span>
         </button>
         <input class="avatar-input" id="avatar-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
-        <h1 id="profile-title">Stick</h1>
-        <div class="handle"><span>@lrpcyy</span><span class="pill">Nulqor Creator</span></div>
-        <p class="member-line">Forge Studio user since Jun 2026</p>
+        <h1 id="profile-title">Account</h1>
+        <div class="handle"><span id="profile-handle">@username</span><span class="pill" id="profile-role-pill">Nulqor Free</span></div>
+        <p class="member-line" id="profile-member-line">Sign in to connect your Nulqor profile.</p>
         <div class="badge-row" aria-label="Creator badges">
           <span class="badge">Founder</span>
           <span class="badge">Early Access</span>
@@ -1176,12 +1239,12 @@
           <p class="eyebrow">Top profile card</p>
           <h2>Account identity</h2>
           <div class="identity-grid">
-            <div class="identity-row"><span>Creator</span><strong>Stick</strong></div>
-            <div class="identity-row"><span>Handle</span><strong>@lrpcyy</strong></div>
+            <div class="identity-row"><span>Creator</span><strong id="id-creator">Account</strong></div>
+            <div class="identity-row"><span>Handle</span><strong id="id-handle">@username</strong></div>
             <div class="identity-row"><span>Product</span><strong>Forge Studio</strong></div>
             <div class="identity-row"><span>Active Plan</span><strong id="id-plan">Creator</strong></div>
             <div class="identity-row"><span>Account Status</span><strong id="id-status">Verified</strong></div>
-            <div class="identity-row"><span>Member Since</span><strong>June 2026</strong></div>
+            <div class="identity-row"><span>Member Since</span><strong id="id-member-since">Not signed in</strong></div>
           </div>
         </article>
         <article class="panel">
@@ -1244,7 +1307,10 @@
         <div class="session-card" id="authSession" hidden>
           <p class="eyebrow">Signed in</p>
           <p class="session-line">You are <strong id="sessionUsername">--</strong> <span class="session-email">(<span id="sessionEmail"></span>)</span></p>
-          <p class="session-hint">Use the account badge in the bottom-left corner to edit your profile, upload an avatar, and reach the admin dashboard if your role allows it.</p>
+          <p class="session-hint">Your Supabase account is connected. Staff tools appear here when your role allows them.</p>
+          <div class="inline-actions">
+            <a class="button button-primary" id="account-admin-link" href="admin.html" hidden>Open admin dashboard</a>
+          </div>
           <button class="button button-secondary" type="button" id="logoutButton">Log out</button>
         </div>
 
@@ -1383,8 +1449,8 @@
           <p class="eyebrow">Account Core</p>
           <h2>Plan and security</h2>
           <div class="identity-grid">
-            <div class="identity-row"><span>Plan</span><strong id="sec-plan">Nulqor Creator (prototype)</strong></div>
-            <div class="identity-row"><span>Status</span><strong id="sec-status">Local demo</strong></div>
+            <div class="identity-row"><span>Plan</span><strong id="sec-plan">Sign in to connect</strong></div>
+            <div class="identity-row"><span>Status</span><strong id="sec-status">Signed out</strong></div>
             <div class="identity-row"><span>Included Products</span><strong>Forge Studio</strong></div>
             <div class="identity-row"><span>Cloud Storage</span><strong id="sec-cloud">Not connected</strong></div>
             <div class="identity-row"><span>AI Usage</span><strong>Not connected</strong></div>
@@ -1399,10 +1465,38 @@
         <p class="eyebrow">Security Layer</p>
         <h2 id="visibility-title">Profile visibility</h2>
         <div class="toggle-grid">
-          <div class="toggle-row"><span>Profile Visibility</span><strong id="vis-profile">Local mock</strong></div>
-          <div class="toggle-row"><span>Show on Marketplace</span><strong id="vis-marketplace">Not connected</strong></div>
-          <div class="toggle-row"><span>Show Forge stats</span><strong id="vis-forgestats">Waiting for telemetry</strong></div>
-          <div class="toggle-row"><span>Show uploaded assets</span><strong id="vis-assets">Waiting for library API</strong></div>
+          <div class="toggle-row">
+            <span>Profile Visibility</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="profile_visibility" data-on="public" data-off="private" disabled>
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-profile">Private</strong>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Show on Marketplace</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="show_on_marketplace" disabled>
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-marketplace">Off</strong>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Show Forge stats</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="show_forge_stats" disabled>
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-forgestats">Off</strong>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Show uploaded assets</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="show_uploaded_assets" disabled>
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-assets">Off</strong>
+            </label>
+          </div>
         </div>
       </section>
     </main>
@@ -1860,21 +1954,10 @@
 
     function renderTelemetry(snapshot, meta) {
       if (!snapshot || typeof snapshot !== 'object') return;
-      const account = snapshot.account || {};
       const totals = snapshot.totals || {};
       const insights = snapshot.insights || {};
       const library = snapshot.library || {};
-      const visibility = snapshot.visibility || {};
 
-      setTextIf('id-plan', prettyLabel(account.plan));
-      setTextIf('id-status', prettyLabel(account.status));
-      setTextIf('sec-plan', prettyLabel(account.plan));
-      setTextIf('sec-status', prettyLabel(account.status));
-      setTextIf('sec-email', fmtBoolState(account.emailVerified, 'Verified', 'Unverified', 'Not connected'));
-      setTextIf('sec-2fa', fmtBoolState(account.twoFactorEnabled, 'Enabled', 'Disabled', 'Not connected'));
-      if (account.activeSessions !== null && account.activeSessions !== undefined) {
-        setTextIf('sec-sessions', `${account.activeSessions} active`);
-      }
       if (Number.isFinite(Number(totals.cloudSavesUsed))) setTextIf('sec-cloud', `${totals.cloudSavesUsed} cloud saves`);
 
       setTextIf('forge-telemetry-row', meta && meta.stale ? 'Live (stale)' : 'Connected (live)');
@@ -1913,41 +1996,44 @@
       setTextIf('lib-rigs-label', 'Rigs');
       setTextIf('lib-animations-label', 'Animations');
 
-      setTextIf('vis-profile', prettyLabel(visibility.profileVisibility));
-      setTextIf('vis-marketplace', fmtBoolState(visibility.showOnMarketplace, 'On', 'Off', 'Off'));
-      setTextIf('vis-forgestats', fmtBoolState(visibility.showForgeStats, 'On', 'Off', 'Off'));
-      setTextIf('vis-assets', fmtBoolState(visibility.showUploadedAssets, 'On', 'Off', 'Off'));
-
       renderPluginList(snapshot.plugins);
       renderTelemetryProjects(snapshot.projects);
     }
 
     async function fetchForgeStatus() {
+      const canUseLocalForgeApi = ['127.0.0.1', 'localhost'].includes(window.location.hostname) && window.location.port === '8120';
+      if (canUseLocalForgeApi) {
+        try {
+          const response = await fetch('/api/forge-studio/status', { cache: 'no-store' });
+          if (response.ok) return await response.json();
+        } catch (error) {
+          console.warn('Local Forge Studio status could not be loaded.', error);
+        }
+      }
       return {
         connected: false,
-        publicSite: true,
         telemetry: {
           liveUserTracking: false,
-          reason: 'Public GitHub Pages cannot read local Forge Studio files. Forge telemetry should upload to Supabase later.'
+          reason: 'Forge Studio sync is not connected yet. Once Forge uploads account-safe telemetry to Supabase, this dashboard can show live activity.'
         }
       };
     }
 
     function renderForgeStatus(status) {
       if (!status || !status.connected) {
-        setText('forge-connection-stat', 'Public');
+        setText('forge-connection-stat', 'Sync pending');
         setText('forge-version-stat', '--');
         setText('forge-source-stat', '--');
         setText('forge-release-stat', '--');
         setText('forge-project-stat', '--');
-        setText('forge-root-row', 'Private local install');
-        setText('forge-source-row', 'Not available on the public website');
-        setText('forge-release-row', 'Not available on the public website');
-        setText('forge-dist-row', 'Not available on the public website');
-        setText('forge-project-row', 'Waiting for Supabase telemetry');
-        setText('forge-telemetry-row', 'Supabase upload needed');
+        setText('forge-root-row', 'Waiting for Forge sync');
+        setText('forge-source-row', 'No Forge sync connected yet');
+        setText('forge-release-row', 'No release sync connected yet');
+        setText('forge-dist-row', 'No app sync connected yet');
+        setText('forge-project-row', 'Waiting for project telemetry');
+        setText('forge-telemetry-row', 'Waiting for Forge telemetry');
         setText('library-project-files', '--');
-        setText('forge-week-total', 'Not public');
+        setText('forge-week-total', 'Not connected');
         const activityCopy = document.getElementById('forge-activity-copy');
         if (activityCopy) {
           activityCopy.textContent = status && status.telemetry
@@ -1957,10 +2043,10 @@
         const activityList = document.getElementById('forge-activity-list');
         if (activityList) {
           activityList.replaceChildren(
-            makeIdentityRow('Public website', 'Static GitHub Pages'),
-            makeIdentityRow('Local Forge files', 'Private to your PC'),
-            makeIdentityRow('Live dashboard', 'Needs Supabase telemetry table'),
-            makeIdentityRow('Account data', 'Supabase auth connected')
+            makeIdentityRow('Forge sync', 'Not connected yet'),
+            makeIdentityRow('Session time', 'Waiting for Forge telemetry'),
+            makeIdentityRow('Projects and exports', 'Waiting for Forge telemetry'),
+            makeIdentityRow('Account data', 'Supabase connected when signed in')
           );
         }
         return;
@@ -2123,9 +2209,9 @@
     initAccountPage();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=20260621-roles"></script>
-  <script src="supabase-client.js?v=20260621-roles"></script>
-  <script src="script.js?v=20260621-roles"></script>
-  <script src="auth.js?v=20260621-roles"></script>
+  <script src="config.js?v=20260621-account"></script>
+  <script src="supabase-client.js?v=20260621-account"></script>
+  <script src="script.js?v=20260621-account"></script>
+  <script src="auth.js?v=20260621-account"></script>
 </body>
 </html>

@@ -22,7 +22,17 @@
   const ADMIN_ROLES = ["Founder", "Site Admin", "Site Tester"];
 
   let currentUserId = null;
-  let currentProfile = { username: "", role: "Free", display_name: "", avatar_url: "" };
+  let currentProfile = {
+    username: "",
+    role: "Free",
+    display_name: "",
+    avatar_url: "",
+    profile_visibility: "private",
+    show_on_marketplace: false,
+    show_forge_stats: false,
+    show_uploaded_assets: false,
+  };
+  const visibilityInputs = Array.from(document.querySelectorAll("[data-visibility-input]"));
 
   function setNav(session) {
     if (navAccount) {
@@ -69,11 +79,20 @@
   }
 
   async function loadProfile(userId) {
-    const empty = { username: "", role: "Free", display_name: "", avatar_url: "" };
+    const empty = {
+      username: "",
+      role: "Free",
+      display_name: "",
+      avatar_url: "",
+      profile_visibility: "private",
+      show_on_marketplace: false,
+      show_forge_stats: false,
+      show_uploaded_assets: false,
+    };
     try {
       let { data, error } = await sb
         .from("profiles")
-        .select("username, role, display_name, avatar_url")
+        .select("username, role, display_name, avatar_url, profile_visibility, show_on_marketplace, show_forge_stats, show_uploaded_assets")
         .eq("id", userId)
         .maybeSingle();
       if (error) {
@@ -86,6 +105,10 @@
         role: data.role || "Free",
         display_name: data.display_name || "",
         avatar_url: data.avatar_url || "",
+        profile_visibility: data.profile_visibility || "private",
+        show_on_marketplace: Boolean(data.show_on_marketplace),
+        show_forge_stats: Boolean(data.show_forge_stats),
+        show_uploaded_assets: Boolean(data.show_uploaded_assets),
       };
     } catch (_e) {
       return empty;
@@ -97,6 +120,7 @@
   }
 
   function applyAvatar(faceEl, profile) {
+    if (!faceEl) return;
     const name = displayNameOf(profile);
     if (profile.avatar_url) {
       // Set sizing inline so it beats role-based `background` shorthand rules
@@ -115,6 +139,111 @@
       faceEl.textContent = (name[0] || "N").toUpperCase();
       faceEl.classList.remove("has-image");
     }
+  }
+
+  function setText(id, value) {
+    const el = document.querySelector(`#${id}`);
+    if (el) el.textContent = value;
+  }
+
+  function monthYear(value) {
+    if (!value) return "Unknown";
+    try {
+      return new Date(value).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+    } catch (_e) {
+      return "Unknown";
+    }
+  }
+
+  function planLabel(role) {
+    return `Nulqor ${role || "Free"}`;
+  }
+
+  function visibilityStatus(input, profile) {
+    const field = input.dataset.visibilityField;
+    if (field === "profile_visibility") {
+      return (profile.profile_visibility || "private") === "public" ? "Public" : "Private";
+    }
+    return profile[field] ? "On" : "Off";
+  }
+
+  function syncVisibilityControl(input, loggedIn, profile) {
+    const field = input.dataset.visibilityField;
+    if (field === "profile_visibility") {
+      input.checked = (profile.profile_visibility || "private") === "public";
+    } else {
+      input.checked = Boolean(profile[field]);
+    }
+    input.disabled = !loggedIn;
+    const row = input.closest(".toggle-row");
+    if (row) row.classList.toggle("is-disabled", !loggedIn);
+    const status = input.closest(".switch-control")?.querySelector(".toggle-status");
+    if (status) status.textContent = loggedIn ? visibilityStatus(input, profile) : "Sign in";
+  }
+
+  function updateVisibilityControls(loggedIn, profile) {
+    visibilityInputs.forEach((input) => syncVisibilityControl(input, loggedIn, profile));
+  }
+
+  async function saveVisibility(input) {
+    if (!currentUserId) {
+      updateVisibilityControls(false, currentProfile);
+      return;
+    }
+    const field = input.dataset.visibilityField;
+    const update = { updated_at: new Date().toISOString() };
+    update[field] = field === "profile_visibility"
+      ? (input.checked ? (input.dataset.on || "public") : (input.dataset.off || "private"))
+      : input.checked;
+
+    const previous = currentProfile[field];
+    currentProfile[field] = update[field];
+    updateVisibilityControls(true, currentProfile);
+
+    const { error } = await sb.from("profiles").update(update).eq("id", currentUserId);
+    if (error) {
+      currentProfile[field] = previous;
+      updateVisibilityControls(true, currentProfile);
+      showNote("Could not save visibility setting: " + error.message, false);
+      return;
+    }
+    showNote("Visibility setting saved.", true);
+  }
+
+  function renderAccountPage(loggedIn, profile, session) {
+    if (!page) return;
+    const name = loggedIn ? displayNameOf(profile) : "Account";
+    const handle = loggedIn && profile.username ? `@${profile.username}` : "@username";
+    const role = profile.role || "Free";
+    const isAdmin = loggedIn && ADMIN_ROLES.includes(role);
+    const verified = Boolean(session && session.user && session.user.email_confirmed_at);
+
+    setText("profile-title", name);
+    setText("profile-handle", handle);
+    setText("profile-role-pill", planLabel(role));
+    setText("profile-member-line", loggedIn ? `Nulqor user since ${monthYear(session.user.created_at)}` : "Sign in to connect your Nulqor profile.");
+    setText("id-creator", name);
+    setText("id-handle", handle);
+    setText("id-plan", loggedIn ? role : "Free");
+    setText("id-status", loggedIn ? (verified ? "Verified" : "Active") : "Signed out");
+    setText("id-member-since", loggedIn ? monthYear(session.user.created_at) : "Not signed in");
+    setText("sec-plan", loggedIn ? planLabel(role) : "Sign in to connect");
+    setText("sec-status", loggedIn ? "Active" : "Signed out");
+    setText("sec-email", loggedIn ? (verified ? "Verified" : "Unverified") : "Not connected");
+    setText("sec-2fa", loggedIn ? "Not enabled" : "Not connected");
+    setText("sec-sessions", loggedIn ? "This device" : "Not connected");
+
+    const preview = document.querySelector("#avatar-preview");
+    if (preview && profile.avatar_url) {
+      preview.src = profile.avatar_url;
+      preview.hidden = false;
+      document.querySelector("#avatar-upload-button")?.classList.add("has-image");
+    }
+
+    const adminLink = document.querySelector("#account-admin-link");
+    if (adminLink) adminLink.hidden = !isAdmin;
+
+    updateVisibilityControls(loggedIn, profile);
   }
 
   function productsForRole(role) {
@@ -535,7 +664,16 @@
   async function renderSession(session) {
     setNav(session);
     const loggedIn = Boolean(session && session.user);
-    let profile = { username: "", role: "Free", display_name: "", avatar_url: "" };
+    let profile = {
+      username: "",
+      role: "Free",
+      display_name: "",
+      avatar_url: "",
+      profile_visibility: "private",
+      show_on_marketplace: false,
+      show_forge_stats: false,
+      show_uploaded_assets: false,
+    };
     if (loggedIn) profile = await loadProfile(session.user.id);
     currentProfile = profile;
     currentUserId = loggedIn ? session.user.id : null;
@@ -547,6 +685,7 @@
     revealPrices(loggedIn);
     updateAccessCTAs(loggedIn);
     updateAccessSection(loggedIn, profile);
+    renderAccountPage(loggedIn, profile, session);
     if (loggedIn) renderPanel(profile);
 
     if (!page) return; // the rest is account-page only
@@ -564,6 +703,12 @@
     tab.addEventListener("click", () => {
       setMode(tab.dataset.authMode);
       showNote("", undefined);
+    });
+  });
+
+  visibilityInputs.forEach((input) => {
+    input.addEventListener("change", () => {
+      saveVisibility(input);
     });
   });
 
