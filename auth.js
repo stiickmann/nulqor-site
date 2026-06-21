@@ -59,7 +59,7 @@
 
   function usernameProblem(name) {
     if (!USERNAME_RE.test(name)) {
-      return "Username must be 3–20 characters: letters, numbers, or underscores.";
+      return "Username must be 3-20 characters: letters, numbers, or underscores.";
     }
     return null;
   }
@@ -298,7 +298,7 @@
       '<input type="text" minlength="3" maxlength="20" placeholder="your_handle" data-panel-username /></label>' +
       '<button class="button button-primary" type="button" data-panel-save>Save changes</button>' +
       '<p class="account-panel-note" data-panel-note role="status" aria-live="polite"></p></div>' +
-      '<a class="account-panel-action account-panel-admin" data-panel-admin href="admin.html" hidden>⚙ Admin dashboard</a>' +
+      '<a class="account-panel-action account-panel-admin" data-panel-admin href="admin.html" hidden>Admin dashboard</a>' +
       '<div class="account-panel-actions">' +
       '<button class="account-panel-action" type="button" data-panel-toggle-edit>Edit profile</button>' +
       '<button class="account-panel-action" type="button" data-panel-logout>Log out</button>' +
@@ -412,7 +412,7 @@
       panelNote("Image must be under 3 MB.", false);
       return;
     }
-    panelNote("Uploading avatar…");
+    panelNote("Uploading avatar...");
     const ext = (file.name.split(".").pop() || "png").toLowerCase().replace(/[^a-z0-9]/g, "") || "png";
     const path = `${currentUserId}/avatar.${ext}`;
     const up = await sb.storage.from("avatars").upload(path, file, { upsert: true, cacheControl: "3600" });
@@ -447,7 +447,7 @@
       return;
     }
 
-    panelNote("Saving…");
+    panelNote("Saving...");
     if (await usernameTaken(username)) {
       panelNote(`The username "${username}" is already taken.`, false);
       return;
@@ -507,10 +507,10 @@
     const left = Math.max(0, FOUNDER_CAP - count);
     if (banner) {
       if (left > 0) {
-        banner.textContent = `Founders Edition — ${left.toLocaleString()} of ${FOUNDER_CAP.toLocaleString()} founder spots left.`;
+        banner.textContent = `Founders Edition - ${left.toLocaleString()} of ${FOUNDER_CAP.toLocaleString()} founder spots left.`;
         banner.classList.remove("is-closed");
       } else {
-        banner.textContent = "Founders Edition is fully claimed — standard pricing now applies.";
+        banner.textContent = "Founders Edition is fully claimed - standard pricing now applies.";
         banner.classList.add("is-closed");
       }
       banner.hidden = false;
@@ -547,7 +547,7 @@
         btn.classList.add("is-locked");
         btn.setAttribute("href", "account.html");
       } else if (notifiedPlans.has(plan)) {
-        btn.textContent = "✓ You'll be notified at launch";
+        btn.textContent = "You'll be notified at launch";
         btn.classList.add("is-locked");
         btn.removeAttribute("href");
       } else {
@@ -562,14 +562,14 @@
     const plan = btn.dataset.planCta;
     if (!currentUserId || plan === "free" || notifiedPlans.has(plan)) return;
     const previous = btn.textContent;
-    btn.textContent = "Saving…";
+    btn.textContent = "Saving...";
     const { error } = await sb.from("launch_interest").insert({ user_id: currentUserId, plan });
     if (error && error.code !== "23505") {
       btn.textContent = previous;
       return;
     }
     notifiedPlans.add(plan);
-    btn.textContent = "✓ You'll be notified at launch";
+    btn.textContent = "You'll be notified at launch";
     btn.classList.add("is-locked");
     btn.removeAttribute("href");
   }
@@ -597,7 +597,7 @@
       if (useFounder && plan.founder_price !== plan.price) {
         const was = document.createElement("span");
         was.className = "plan-was";
-        was.textContent = "Founders Edition · was ";
+        was.textContent = "Founders Edition - was ";
         const old = document.createElement("s");
         old.textContent = plan.price;
         was.appendChild(old);
@@ -608,7 +608,7 @@
     if (priceNote) {
       if (loggedIn && map) {
         priceNote.textContent = founderOpen
-          ? "Founders Edition pricing — locked in for the first 1,000 members."
+          ? "Founders Edition pricing - locked in for the first 1,000 members."
           : "Your Nulqor launch pricing.";
       } else {
         priceNote.innerHTML = priceNoteDefault;
@@ -650,7 +650,7 @@
         msg.className = "form-note is-success";
         form.parentNode.insertBefore(msg, form);
       }
-      msg.textContent = `You're signed in as ${displayNameOf(profile)} — you already have a Nulqor account. We'll email you the moment Forge Studio opens.`;
+      msg.textContent = `You're signed in as ${displayNameOf(profile)} - you already have a Nulqor account. We'll email you the moment Forge Studio opens.`;
       msg.hidden = false;
       form.hidden = true;
     } else {
@@ -752,13 +752,13 @@
         return;
       }
 
-      showNote("Checking username…", undefined);
+      showNote("Checking username...", undefined);
       if (await usernameTaken(username)) {
         showNote(`The username "${username}" is already taken.`, false);
         return;
       }
 
-      showNote("Creating your account…", undefined);
+      showNote("Creating your account...", undefined);
       const { data, error } = await sb.auth.signUp({
         email,
         password,
@@ -772,7 +772,7 @@
 
       signupForm.reset();
       if (data.session) {
-        showNote("Account created — you're logged in.", true);
+        showNote("Account created - you're logged in.", true);
       } else {
         showNote("Account created. You can log in now.", true);
         setMode("login");
@@ -787,7 +787,7 @@
       const email = String(formData.get("email") || "").trim();
       const password = String(formData.get("password") || "");
 
-      showNote("Logging in…", undefined);
+      showNote("Logging in...", undefined);
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) {
         showNote(error.message, false);

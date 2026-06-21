@@ -1,126 +1,731 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex, nofollow" />
-    <meta name="description" content="Nulqor admin dashboard." />
-    <title>Nulqor | Admin</title>
-    <link rel="icon" href="assets/nulqor-icon.png" />
-    <link rel="apple-touch-icon" href="assets/nulqor-icon.png" />
-    <link rel="stylesheet" href="styles.css?v=20260617-auth18" />
-  </head>
-  <body>
-    <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
-    <div class="site-shell">
-      <header class="site-header" id="top">
-        <a class="brand-mark" href="index.html#top" aria-label="Nulqor home">
-          <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
-          <span class="brand-name">Nulqor</span>
-        </a>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Nulqor admin dashboard.">
+  <title>NULQOR - Admin Command</title>
+  <link rel="icon" href="assets/nulqor-icon.png">
+  <link rel="apple-touch-icon" href="assets/nulqor-icon.png">
+  <link rel="stylesheet" href="styles.css?v=20260621-account">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 
-        <nav class="nav-links" aria-label="Primary navigation">
-          <a href="index.html#product">Product</a>
-          <a href="index.html#learn">Learn</a>
-          <a href="index.html#plans">Pricing</a>
-          <a href="policies.html">Policy</a>
-          <a href="account.html" data-account-link>Log in</a>
-        </nav>
+    :root {
+      color-scheme: dark;
+      --bg: #020100;
+      --bg-2: #080302;
+      --panel: rgba(12, 7, 5, .84);
+      --panel-strong: rgba(18, 9, 6, .96);
+      --line: rgba(219, 129, 73, .26);
+      --line-strong: rgba(255, 170, 105, .56);
+      --text: #f7eadf;
+      --text-2: #d8c5b6;
+      --muted: #9e8878;
+      --dim: #665347;
+      --accent: #d47845;
+      --accent-2: #ffb27a;
+      --accent-3: #7b341d;
+      --accent-rgb: 212, 120, 69;
+      --glow-rgb: 255, 139, 75;
+      --button-text: #20100a;
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-ui: "Inter", "Segoe UI", Arial, sans-serif;
+      --radius: 8px;
+      --shadow: 0 26px 90px rgba(0, 0, 0, .62);
+    }
 
-        <a class="nav-action" href="account.html">Account</a>
-      </header>
+    body[data-theme="emerald"],
+    body[data-look="emerald-enterprise"] {
+      --bg: #000604;
+      --bg-2: #01120c;
+      --panel: rgba(2, 18, 12, .84);
+      --panel-strong: rgba(3, 25, 16, .96);
+      --line: rgba(68, 231, 153, .24);
+      --line-strong: rgba(103, 255, 181, .55);
+      --text: #f3fbf6;
+      --text-2: #c2ddcf;
+      --muted: #86aa98;
+      --dim: #4f6b5d;
+      --accent: #39d985;
+      --accent-2: #8dffc2;
+      --accent-3: #0d5f38;
+      --accent-rgb: 57, 217, 133;
+      --glow-rgb: 65, 255, 166;
+      --button-text: #061b11;
+    }
 
-      <main class="legal-main">
-        <section class="legal-hero" aria-labelledby="admin-title">
-          <p class="eyebrow">Admin</p>
-          <h1 id="admin-title">Nulqor <span class="text-cyan">Dashboard</span></h1>
-          <p>Manage members, roles, subscriptions, and access requests.</p>
-        </section>
+    body[data-theme="rose"],
+    body[data-look="red-flagship-car"],
+    body[data-look="violet-rose"] {
+      --bg: #050003;
+      --bg-2: #130008;
+      --panel: rgba(18, 4, 10, .84);
+      --panel-strong: rgba(27, 5, 14, .96);
+      --line: rgba(255, 68, 142, .25);
+      --line-strong: rgba(255, 94, 165, .60);
+      --text: #fff2f7;
+      --text-2: #e7c5d3;
+      --muted: #b6859a;
+      --dim: #704155;
+      --accent: #ff3c8e;
+      --accent-2: #ff9bc8;
+      --accent-3: #7a0f3d;
+      --accent-rgb: 255, 60, 142;
+      --glow-rgb: 255, 60, 142;
+      --button-text: #230612;
+    }
 
-        <!-- Gate: shown until access is confirmed -->
-        <section class="admin-gate" id="adminGate">
-          <p id="adminGateMsg">Checking access…</p>
-          <a class="button button-primary" id="adminGateAction" href="account.html" hidden>Log in</a>
-        </section>
+    body[data-theme="blue"],
+    body[data-look="royal-blue-crystal"],
+    body[data-look="ice-blue-chrome"] {
+      --bg: #020408;
+      --bg-2: #061121;
+      --panel: rgba(4, 12, 24, .86);
+      --panel-strong: rgba(5, 16, 32, .96);
+      --line: rgba(91, 169, 255, .26);
+      --line-strong: rgba(145, 204, 255, .58);
+      --text: #eef7ff;
+      --text-2: #c5d9ee;
+      --muted: #86a4c0;
+      --dim: #4a6179;
+      --accent: #4da3ff;
+      --accent-2: #b8e4ff;
+      --accent-3: #0b4f91;
+      --accent-rgb: 77, 163, 255;
+      --glow-rgb: 77, 183, 255;
+      --button-text: #06111e;
+    }
 
-        <!-- Admin content -->
-        <div id="adminContent" hidden>
-          <section class="admin-block" aria-labelledby="members-title">
-            <div class="admin-block-head">
-              <h2 id="members-title">Members <span class="admin-count" data-members-count></span></h2>
-              <button class="account-panel-action" type="button" data-refresh-members>Refresh</button>
-            </div>
-            <p class="admin-hint" id="membersHint">Change a member's role to grant their subscription/tier. Changes save instantly.</p>
-            <div class="admin-table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Member</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Role / Subscription</th>
-                    <th>Joined</th>
-                  </tr>
-                </thead>
-                <tbody data-members-body>
-                  <tr><td colspan="5" class="admin-empty">Loading…</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+    body[data-theme="gold"],
+    body[data-look="molten-gold-ambition"],
+    body[data-look="molten-gold-ambition-alt"] {
+      --bg: #050400;
+      --bg-2: #160e00;
+      --panel: rgba(20, 13, 2, .86);
+      --panel-strong: rgba(29, 18, 2, .96);
+      --line: rgba(231, 165, 26, .28);
+      --line-strong: rgba(255, 224, 138, .58);
+      --text: #fff7df;
+      --text-2: #e5d2a4;
+      --muted: #a99561;
+      --dim: #675933;
+      --accent: #e7a51a;
+      --accent-2: #ffe08a;
+      --accent-3: #7a5410;
+      --accent-rgb: 231, 165, 26;
+      --glow-rgb: 255, 202, 75;
+      --button-text: #211600;
+    }
 
-          <section class="admin-block" aria-labelledby="waitlist-title">
-            <div class="admin-block-head">
-              <h2 id="waitlist-title">Access requests <span class="admin-count" data-waitlist-count></span></h2>
-              <button class="account-panel-action" type="button" data-refresh-waitlist>Refresh</button>
-            </div>
-            <p class="admin-hint">Emails submitted through the "Request Access" form on the home page.</p>
-            <div class="admin-table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Requested</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody data-waitlist-body>
-                  <tr><td colspan="5" class="admin-empty">Loading…</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+    * {
+      box-sizing: border-box;
+    }
 
-          <p class="form-note" id="adminNote" role="status" aria-live="polite"></p>
-        </div>
-      </main>
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
 
-      <footer class="site-footer">
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-ui);
+      background:
+        radial-gradient(circle at 78% 0%, rgba(var(--glow-rgb), .14), transparent 30rem),
+        radial-gradient(circle at 18% 22%, rgba(var(--accent-rgb), .10), transparent 24rem),
+        linear-gradient(180deg, var(--bg), #000 60%, var(--bg));
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .18;
+      background:
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .018) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(to bottom, transparent, #000 16%, transparent 88%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    select {
+      font: inherit;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .admin-site {
+      width: min(100%, 1280px);
+      margin: 0 auto;
+      padding: 0 18px 34px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 22px;
+      align-items: center;
+      min-height: 58px;
+      padding: 0 4px;
+      color: var(--text-2);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--text);
+    }
+
+    .mark {
+      position: relative;
+      width: 23px;
+      height: 23px;
+      display: grid;
+      place-items: center;
+      color: var(--accent-2);
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      box-shadow: 0 0 22px rgba(var(--glow-rgb), .35);
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .mark::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(var(--accent-rgb), .42);
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: clamp(18px, 3vw, 42px);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav a {
+      opacity: .88;
+      transition: color .2s ease, opacity .2s ease;
+    }
+
+    .nav a:hover,
+    .nav a[aria-current="page"] {
+      color: var(--accent-2);
+      opacity: 1;
+    }
+
+    .admin-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 44px 0 34px;
+    }
+
+    .admin-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 26px;
+      padding: 26px;
+      border: 1px solid rgba(var(--accent-rgb), .22);
+      border-radius: 18px;
+      background:
+        linear-gradient(145deg, rgba(var(--accent-rgb), .10), transparent 48%),
+        rgba(0, 0, 0, .24);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent-2);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .admin-hero h1 {
+      margin: 0;
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: clamp(44px, 7vw, 82px);
+      font-weight: 600;
+      line-height: .86;
+      letter-spacing: 0;
+    }
+
+    .admin-hero p {
+      max-width: 620px;
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .admin-hero-card {
+      min-width: 210px;
+      padding: 16px;
+      border: 1px solid rgba(var(--accent-rgb), .18);
+      border-radius: 14px;
+      background: rgba(0, 0, 0, .22);
+    }
+
+    .admin-hero-card strong {
+      display: block;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .admin-hero-card span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .admin-gate,
+    .admin-block,
+    .admin-note-panel {
+      border: 1px solid rgba(var(--accent-rgb), .22);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, rgba(var(--accent-rgb), .08), transparent 45%),
+        rgba(0, 0, 0, .22);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+    }
+
+    .admin-gate {
+      display: grid;
+      gap: 16px;
+      place-items: center;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .admin-content-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .admin-block {
+      padding: 22px;
+      overflow: hidden;
+    }
+
+    .admin-block-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .admin-block-head h2 {
+      margin: 0;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .admin-count {
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .admin-hint {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .button,
+    .account-panel-action {
+      min-height: 38px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(var(--accent-rgb), .28);
+      border-radius: 9px;
+      padding: 0 14px;
+      color: var(--text);
+      background: rgba(0, 0, 0, .28);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease;
+    }
+
+    .button:hover,
+    .account-panel-action:hover {
+      border-color: rgba(var(--accent-rgb), .64);
+      background: rgba(var(--accent-rgb), .08);
+      transform: translateY(-1px);
+    }
+
+    .button-primary {
+      color: var(--button-text);
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    }
+
+    .admin-block-head .account-panel-action {
+      flex: 0 0 auto;
+      min-height: 32px;
+      padding: 0 12px;
+    }
+
+    .admin-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid rgba(var(--accent-rgb), .10);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, .14);
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+      font-size: 12px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(var(--accent-rgb), .10);
+      white-space: nowrap;
+    }
+
+    .admin-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .admin-table th {
+      color: var(--accent-2);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .admin-table td {
+      color: var(--text-2);
+    }
+
+    .admin-email,
+    .admin-empty {
+      color: var(--muted);
+    }
+
+    .admin-empty {
+      text-align: center;
+      padding: 24px;
+    }
+
+    .admin-role-select {
+      min-height: 34px;
+      border: 1px solid rgba(var(--accent-rgb), .26);
+      border-radius: 9px;
+      padding: 0 10px;
+      color: var(--text);
+      background: color-mix(in srgb, var(--bg-2) 84%, black);
+      font-size: 12px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .admin-role-select option {
+      background: #100704;
+      color: #fff;
+    }
+
+    .admin-role-select:focus {
+      border-color: rgba(var(--accent-rgb), .72);
+      box-shadow: 0 0 0 3px rgba(var(--glow-rgb), .12);
+    }
+
+    .admin-role-static,
+    .req-accepted {
+      color: var(--accent-2);
+      font-weight: 800;
+    }
+
+    .req-actions {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .req-actions .account-panel-action {
+      min-height: 30px;
+      padding: 0 10px;
+      font-size: 11px;
+    }
+
+    .form-note {
+      margin: 16px 0 0;
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .form-note.is-success {
+      color: var(--accent-2);
+    }
+
+    .form-note.is-error {
+      color: #ff9d9d;
+    }
+
+    .fineprint {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      margin-top: 34px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(var(--accent-rgb), .16);
+      color: var(--dim);
+      font-size: 11px;
+    }
+
+    .fineprint nav {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .fineprint a:hover {
+      color: var(--accent-2);
+    }
+
+    .account-chip,
+    .account-panel {
+      border-color: rgba(var(--accent-rgb), .22);
+      background: rgba(5, 2, 0, .88);
+    }
+
+    .account-chip:hover,
+    .account-chip:focus-visible,
+    .account-panel-action:hover {
+      border-color: rgba(var(--accent-rgb), .50);
+    }
+
+    @media (max-width: 900px) {
+      .topbar,
+      .admin-hero {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        gap: 12px;
+        padding: 12px 0;
+        position: relative;
+      }
+
+      .nav {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .admin-shell {
+        padding-top: 22px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .admin-site {
+        padding-inline: 12px;
+      }
+
+      .admin-block-head,
+      .fineprint {
+        flex-direction: column;
+      }
+
+      .admin-hero,
+      .admin-block {
+        padding: 18px;
+      }
+
+      .admin-hero h1 {
+        font-size: 44px;
+      }
+    }
+  </style>
+</head>
+<body data-theme="copper">
+  <div class="admin-site">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Nulqor home">
+        <span class="mark">N</span>
+        <span>NULQOR</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html#forge">Product</a>
+        <a href="index.html#learn">Learn</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="policies.html">Policy</a>
+        <a href="account.html" data-account-link>Account</a>
+      </nav>
+    </header>
+
+    <main class="admin-shell">
+      <section class="admin-hero" aria-labelledby="admin-title">
         <div>
-          <a class="brand-mark" href="index.html#top" aria-label="Nulqor home">
-            <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
-            <span class="brand-name">Nulqor</span>
-          </a>
-          <p>Private intelligence for serious creation tools.</p>
+          <p class="eyebrow">Site Admin</p>
+          <h1 id="admin-title">Command<br>center.</h1>
+          <p>Manage Nulqor members, account roles, founder access, and homepage requests without leaving the new site design.</p>
         </div>
-        <nav aria-label="Footer navigation">
-          <a href="policies.html#terms">Terms</a>
-          <a href="policies.html#privacy">Privacy</a>
-          <a href="policies.html#support">Support</a>
-          <a href="https://discord.gg/A5N3N67SUR" target="_blank" rel="noopener">Discord</a>
-          <a href="mailto:teamnulqor@gmail.com">Contact</a>
-        </nav>
-        <p class="copyright">&copy; 2026 Nulqor. All rights reserved.</p>
-      </footer>
-    </div>
+        <aside class="admin-hero-card" aria-label="Admin status">
+          <strong>Supabase</strong>
+          <span>Protected backend</span>
+        </aside>
+      </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=20260621-account"></script>
-    <script src="supabase-client.js?v=20260621-account"></script>
-    <script src="script.js?v=20260621-account"></script>
-    <script src="auth.js?v=20260621-account"></script>
-    <script src="admin.js?v=20260621-account"></script>
-  </body>
+      <section class="admin-gate" id="adminGate">
+        <p id="adminGateMsg">Checking access...</p>
+        <a class="button button-primary" id="adminGateAction" href="account.html" hidden>Log in</a>
+      </section>
+
+      <div class="admin-content-grid" id="adminContent" hidden>
+        <section class="admin-block" aria-labelledby="members-title">
+          <div class="admin-block-head">
+            <div>
+              <p class="eyebrow">Members</p>
+              <h2 id="members-title">Account roles <span class="admin-count" data-members-count></span></h2>
+            </div>
+            <button class="account-panel-action" type="button" data-refresh-members>Refresh</button>
+          </div>
+          <p class="admin-hint" id="membersHint">Change a member's role to grant their subscription/tier. Changes save instantly.</p>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role / Subscription</th>
+                  <th>Joined</th>
+                </tr>
+              </thead>
+              <tbody data-members-body>
+                <tr><td colspan="5" class="admin-empty">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="admin-block" aria-labelledby="waitlist-title">
+          <div class="admin-block-head">
+            <div>
+              <p class="eyebrow">Access</p>
+              <h2 id="waitlist-title">Request queue <span class="admin-count" data-waitlist-count></span></h2>
+            </div>
+            <button class="account-panel-action" type="button" data-refresh-waitlist>Refresh</button>
+          </div>
+          <p class="admin-hint">Emails submitted through the Request Access form on the home page.</p>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Requested</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody data-waitlist-body>
+                <tr><td colspan="5" class="admin-empty">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <p class="form-note" id="adminNote" role="status" aria-live="polite"></p>
+      </div>
+    </main>
+
+    <footer class="fineprint">
+      <span>(c) 2026 Nulqor Systems Inc. All rights reserved.</span>
+      <nav aria-label="Footer navigation">
+        <a href="policies.html#terms">Terms</a>
+        <a href="policies.html#privacy">Privacy</a>
+        <a href="policies.html#support">Support</a>
+        <a href="https://discord.gg/A5N3N67SUR" target="_blank" rel="noopener">Discord</a>
+        <a href="mailto:teamnulqor@gmail.com">Contact</a>
+      </nav>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      const aliases = {
+        "copper-flow": "copper",
+        copper: "copper",
+        "champagne-black": "copper",
+        "emerald-enterprise": "emerald",
+        emerald: "emerald",
+        "red-flagship-car": "rose",
+        "violet-rose": "rose",
+        rose: "rose",
+        "royal-blue-crystal": "blue",
+        "ice-blue-chrome": "blue",
+        blue: "blue",
+        "molten-gold-ambition": "gold",
+        "molten-gold-ambition-alt": "gold",
+        gold: "gold"
+      };
+      const params = new URLSearchParams(window.location.search);
+      const requested = params.get("theme") || localStorage.getItem("nulqor-theme") || "copper-flow";
+      const theme = aliases[requested] || "copper";
+      document.body.dataset.theme = theme;
+      document.body.dataset.look = requested;
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=20260621-account"></script>
+  <script src="supabase-client.js?v=20260621-account"></script>
+  <script src="auth.js?v=20260621-admin"></script>
+  <script src="admin.js?v=20260621-admin"></script>
+</body>
 </html>

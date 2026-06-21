@@ -57,17 +57,17 @@
   }
 
   function fmtDate(value) {
-    if (!value) return "—";
+    if (!value) return "--";
     try {
       return new Date(value).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
     } catch (_e) {
-      return "—";
+      return "--";
     }
   }
 
   async function loadMembers() {
     if (!membersBody) return;
-    membersBody.innerHTML = '<tr><td colspan="5" class="admin-empty">Loading…</td></tr>';
+    membersBody.innerHTML = '<tr><td colspan="5" class="admin-empty">Loading...</td></tr>';
     const { data, error } = await sb.rpc("admin_list_members");
     if (error) {
       membersBody.innerHTML = `<tr><td colspan="5" class="admin-empty">${esc(error.message)}</td></tr>`;
@@ -95,7 +95,7 @@
       }
       tr.innerHTML =
         `<td>${esc(name)}</td>` +
-        `<td>${m.username ? "@" + esc(m.username) : "—"}</td>` +
+        `<td>${m.username ? "@" + esc(m.username) : "--"}</td>` +
         `<td class="admin-email">${esc(m.email)}</td>` +
         `<td>${roleCell}</td>` +
         `<td>${fmtDate(m.created_at)}</td>`;
@@ -112,7 +112,7 @@
     const role = sel.value;
     const previous = sel.dataset.prev || "";
     sel.disabled = true;
-    showNote("Saving…");
+    showNote("Saving...");
     const { error } = await sb.rpc("admin_set_role", { target: id, new_role: role });
     sel.disabled = false;
     if (error) {
@@ -126,7 +126,7 @@
 
   async function loadWaitlist() {
     if (!waitlistBody) return;
-    waitlistBody.innerHTML = '<tr><td colspan="5" class="admin-empty">Loading…</td></tr>';
+    waitlistBody.innerHTML = '<tr><td colspan="5" class="admin-empty">Loading...</td></tr>';
     const { data, error } = await sb.rpc("admin_list_waitlist");
     if (error) {
       waitlistBody.innerHTML = `<tr><td colspan="5" class="admin-empty">${esc(error.message)}</td></tr>`;
@@ -143,12 +143,12 @@
       const tr = document.createElement("tr");
       const accepted = (w.status || "pending") === "accepted";
       const action = accepted
-        ? '<span class="req-accepted">✓ Accepted</span>'
+        ? '<span class="req-accepted">Accepted</span>'
         : `<button class="account-panel-action req-accept" data-id="${esc(w.id)}">Accept</button>`;
       tr.innerHTML =
-        `<td>${esc(w.name || "—")}</td>` +
+        `<td>${esc(w.name || "--")}</td>` +
         `<td class="admin-email">${esc(w.email)}</td>` +
-        `<td>${esc(w.role || "—")}</td>` +
+        `<td>${esc(w.role || "--")}</td>` +
         `<td>${fmtDate(w.created_at)}</td>` +
         `<td class="req-actions">${action}` +
         ` <button class="account-panel-action req-dismiss" data-id="${esc(w.id)}">Delete</button></td>`;
@@ -165,7 +165,7 @@
 
   async function acceptRequest(id, btn) {
     if (btn) btn.disabled = true;
-    showNote("Accepting…");
+    showNote("Accepting...");
     const { error } = await sb.rpc("admin_set_waitlist_status", { target_id: id, new_status: "accepted" });
     if (error) {
       showNote("Could not accept: " + error.message, false);
@@ -178,7 +178,7 @@
 
   async function deleteRequest(id, btn) {
     if (btn) btn.disabled = true;
-    showNote("Deleting…");
+    showNote("Deleting...");
     const { error } = await sb.rpc("admin_delete_waitlist", { target_id: id });
     if (error) {
       showNote("Could not delete: " + error.message, false);
@@ -236,8 +236,8 @@
       showGate("You don't have access to the admin dashboard.", "Back to site", "index.html");
       return;
     }
-    // anon: on a cold load the session may not be restored yet — keep
-    // "Checking access…" until an auth event (or the fallback) confirms it.
+    // anon: on a cold load the session may not be restored yet, so keep
+    // "Checking access..." until an auth event (or the fallback) confirms it.
     if (fromEvent || settled) {
       showGate("You need to be logged in to view this page.", "Log in", "account.html");
     }
@@ -258,7 +258,7 @@
     settled = true;
     refreshGate(true);
   });
-  // Final fallback so we never get stuck on "Checking access…".
+  // Final fallback so we never get stuck on "Checking access...".
   setTimeout(() => {
     if (!settled) refreshGate(true);
   }, 1800);
