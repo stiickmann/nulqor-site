@@ -5,7 +5,7 @@
   const navAccount = document.querySelector("[data-account-link]");
 
   const page = document.querySelector("[data-auth-page]");
-  const formsWrap = document.querySelector("[data-auth-forms]");
+  const formsWraps = Array.from(document.querySelectorAll("[data-auth-forms]"));
   const tabs = page ? Array.from(page.querySelectorAll("[data-auth-mode]")) : [];
   const loginForm = document.querySelector("#loginForm");
   const signupForm = document.querySelector("#signupForm");
@@ -550,7 +550,9 @@
     if (loggedIn) renderPanel(profile);
 
     if (!page) return; // the rest is account-page only
-    if (formsWrap) formsWrap.hidden = loggedIn;
+    formsWraps.forEach((wrap) => {
+      wrap.hidden = loggedIn;
+    });
     if (sessionCard) sessionCard.hidden = !loggedIn;
     if (loggedIn) {
       if (sessionEmail) sessionEmail.textContent = session.user.email;

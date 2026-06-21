@@ -1,142 +1,2131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Log in or create your Nulqor account to track early access, downloads, and your Forge Studio license."
-    />
-    <title>Nulqor | Account</title>
-    <link rel="icon" type="image/png" href="assets/nulqor-icon.png" />
-    <link rel="apple-touch-icon" href="assets/nulqor-icon.png" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Nulqor" />
-    <meta property="og:title" content="Nulqor — Account" />
-    <meta property="og:description" content="Log in or create your Nulqor account to track early access, downloads, and your Forge Studio license." />
-    <meta property="og:url" content="https://stiickmann.github.io/nulqor-site/account.html" />
-    <meta property="og:image" content="https://stiickmann.github.io/nulqor-site/assets/nulqor-core.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Nulqor — Account" />
-    <meta name="twitter:description" content="Log in or create your Nulqor account." />
-    <meta name="twitter:image" content="https://stiickmann.github.io/nulqor-site/assets/nulqor-core.png" />
-    <link rel="stylesheet" href="styles.css?v=20260617-auth18" />
-  </head>
-  <body>
-    <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
-    <div class="site-shell">
-      <header class="site-header" id="top">
-        <a class="brand-mark" href="index.html#top" aria-label="Nulqor home">
-          <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
-          <span class="brand-name">Nulqor</span>
-        </a>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NULQOR - Account Core</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 
-        <nav class="nav-links" aria-label="Primary navigation">
-          <a href="index.html#product">Product</a>
-          <a href="index.html#learn">Learn</a>
-          <a href="index.html#plans">Pricing</a>
-          <a href="policies.html">Policy</a>
-          <a href="account.html" data-account-link>Log in</a>
-        </nav>
+    :root {
+      color-scheme: dark;
+      --bg: #020100;
+      --bg-2: #080302;
+      --panel: rgba(12, 7, 5, .84);
+      --panel-strong: rgba(18, 9, 6, .96);
+      --line: rgba(219, 129, 73, .26);
+      --line-strong: rgba(255, 170, 105, .56);
+      --text: #f7eadf;
+      --text-2: #d8c5b6;
+      --muted: #9e8878;
+      --dim: #665347;
+      --accent: #d47845;
+      --accent-2: #ffb27a;
+      --accent-3: #7b341d;
+      --accent-rgb: 212, 120, 69;
+      --glow-rgb: 255, 139, 75;
+      --button-text: #20100a;
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-ui: "Inter", "Segoe UI", Arial, sans-serif;
+      --radius: 8px;
+      --shadow: 0 26px 90px rgba(0, 0, 0, .62);
+    }
 
-        <a class="nav-action" href="index.html#access">Request Access</a>
-      </header>
+    * {
+      box-sizing: border-box;
+    }
 
-      <main>
-        <section class="content-band auth-band" data-auth-page aria-labelledby="auth-title">
-          <div class="section-heading centered">
-            <p class="eyebrow">Nulqor account</p>
-            <h2 id="auth-title">
-              Log in or <span class="text-cyan">create your account.</span>
-            </h2>
-            <p>
-              Your Nulqor account will hold your early access status, protected
-              downloads, and Forge Studio license as launch opens.
-            </p>
-          </div>
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
 
-          <div data-auth-forms>
-            <div class="pricing-control auth-tabs" role="tablist" aria-label="Account mode">
-              <button class="is-active" type="button" data-auth-mode="login" aria-pressed="true">
-                Log in
-              </button>
-              <button type="button" data-auth-mode="signup" aria-pressed="false">
-                Create account
-              </button>
-            </div>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-ui);
+      background:
+        radial-gradient(circle at 78% 0%, rgba(var(--glow-rgb), .14), transparent 30rem),
+        radial-gradient(circle at 18% 22%, rgba(var(--accent-rgb), .10), transparent 24rem),
+        linear-gradient(180deg, var(--bg), #000 60%, var(--bg));
+      color: var(--text);
+      overflow-x: hidden;
+    }
 
-            <!-- Future backend: connect license/session protection and protected downloads to the logged-in account. -->
-            <form class="access-form auth-form" id="loginForm">
-              <label>
-                <span>Email</span>
-                <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
-              </label>
-              <label>
-                <span>Password</span>
-                <input type="password" name="password" autocomplete="current-password" placeholder="Your password" required />
-              </label>
-              <button class="button button-primary" type="submit">Log in</button>
-            </form>
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .18;
+      background:
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .018) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(to bottom, transparent, #000 16%, transparent 88%);
+    }
 
-            <form class="access-form auth-form" id="signupForm" hidden>
-              <label>
-                <span>Email</span>
-                <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
-              </label>
-              <label>
-                <span>Username</span>
-                <input type="text" name="username" autocomplete="username" placeholder="your_handle" minlength="3" maxlength="20" required />
-              </label>
-              <label>
-                <span>Password</span>
-                <input type="password" name="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required />
-              </label>
-              <button class="button button-primary" type="submit">Create account</button>
-            </form>
-          </div>
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-          <div class="access-form auth-form" id="authSession" hidden>
-            <p class="eyebrow">Signed in</p>
-            <p class="session-line">
-              You are <strong id="sessionUsername">—</strong>
-              <span class="session-email">(<span id="sessionEmail"></span>)</span>
-            </p>
-            <p class="session-hint">
-              Manage your profile, avatar, username, and products from your
-              account badge in the bottom-left corner.
-            </p>
-            <button class="button button-secondary" type="button" id="logoutButton">Log out</button>
-          </div>
+    button,
+    select,
+    input {
+      font: inherit;
+    }
 
-          <p class="form-note auth-note" id="authNote" role="status" aria-live="polite"></p>
-        </section>
-      </main>
+    .site {
+      width: min(100%, 1280px);
+      margin: 0 auto;
+      padding: 0 18px 34px;
+    }
 
-      <footer class="site-footer" id="contact">
-        <div>
-          <a class="brand-mark" href="index.html#top" aria-label="Nulqor home">
-            <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
-            <span class="brand-name">Nulqor</span>
-          </a>
-          <p>Private intelligence for serious creation tools.</p>
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 22px;
+      align-items: center;
+      min-height: 58px;
+      padding: 0 4px;
+      color: var(--text-2);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--text);
+    }
+
+    .mark {
+      position: relative;
+      width: 23px;
+      height: 23px;
+      display: grid;
+      place-items: center;
+      color: var(--accent-2);
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      box-shadow: 0 0 22px rgba(var(--glow-rgb), .35);
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .mark::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(var(--accent-rgb), .42);
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: clamp(18px, 3vw, 42px);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav a {
+      opacity: .88;
+      transition: color .2s ease, opacity .2s ease;
+    }
+
+    .nav a:hover,
+    .nav a[aria-current="page"] {
+      color: var(--accent-2);
+      opacity: 1;
+    }
+
+    .account-shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 50px 0 34px;
+    }
+
+    .profile-hero {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 22px 0 26px;
+    }
+
+    .avatar {
+      position: relative;
+      width: 86px;
+      height: 86px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #fff, #d8d8d8);
+      border: 1px solid rgba(255, 255, 255, .7);
+      box-shadow: 0 0 60px rgba(var(--glow-rgb), .16);
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .avatar:hover,
+    .avatar:focus-visible {
+      transform: translateY(-1px);
+      border-color: var(--accent-2);
+      box-shadow: 0 0 70px rgba(var(--glow-rgb), .24);
+      outline: none;
+    }
+
+    .avatar svg {
+      width: 56px;
+      height: 56px;
+    }
+
+    .avatar.has-image svg {
+      display: none;
+    }
+
+    .avatar-preview {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-preview[hidden] {
+      display: none;
+    }
+
+    .avatar-label {
+      position: absolute;
+      inset: auto 7px 7px;
+      min-height: 21px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: var(--button-text);
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .4px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+
+    .avatar:hover .avatar-label,
+    .avatar:focus-visible .avatar-label {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .avatar-input {
+      display: none;
+    }
+
+    .profile-hero h1 {
+      margin: 18px 0 5px;
+      font-size: 26px;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .handle {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+      flex-wrap: wrap;
+    }
+
+    .pill,
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border: 1px solid rgba(var(--accent-rgb), .24);
+      border-radius: 999px;
+      color: var(--accent-2);
+      background: rgba(var(--accent-rgb), .07);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .member-line {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .badge-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .stat-bar,
+    .panel {
+      border: 1px solid rgba(var(--accent-rgb), .22);
+      border-radius: 16px;
+      background:
+        linear-gradient(145deg, rgba(var(--accent-rgb), .08), transparent 45%),
+        rgba(0, 0, 0, .22);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+    }
+
+    .stat-bar {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      max-width: 820px;
+      margin: 18px auto 38px;
+      overflow: hidden;
+    }
+
+    .stat {
+      min-height: 72px;
+      display: grid;
+      place-items: center;
+      padding: 12px;
+      border-right: 1px solid rgba(var(--accent-rgb), .15);
+      text-align: center;
+    }
+
+    .stat:last-child {
+      border-right: 0;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .profile-card {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      padding: 22px;
+    }
+
+    .panel h2 {
+      margin: 0 0 16px;
+      color: var(--text);
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent-2);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .identity-grid,
+    .insight-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .identity-row,
+    .insight-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(var(--accent-rgb), .11);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .identity-row:last-child,
+    .insight-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .identity-row strong,
+    .insight-row strong {
+      color: var(--text);
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .auth-live-panel {
+      margin: 0 0 18px;
+    }
+
+    .auth-live-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .auth-copy {
+      max-width: 640px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      min-width: 230px;
+      padding: 4px;
+      border: 1px solid rgba(var(--accent-rgb), .18);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .22);
+    }
+
+    .auth-tabs button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .auth-tabs button.is-active {
+      color: var(--button-text);
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      box-shadow: 0 0 24px rgba(var(--glow-rgb), .18);
+    }
+
+    .auth-form,
+    .session-card {
+      display: grid;
+      gap: 12px;
+      max-width: 560px;
+    }
+
+    .auth-form label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .auth-form input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid rgba(var(--accent-rgb), .28);
+      border-radius: 9px;
+      padding: 0 13px;
+      color: var(--text);
+      background: rgba(0, 0, 0, .26);
+      outline: none;
+    }
+
+    .auth-form input:focus {
+      border-color: rgba(var(--accent-rgb), .72);
+      box-shadow: 0 0 0 3px rgba(var(--glow-rgb), .12);
+    }
+
+    .button {
+      min-height: 42px;
+      display: inline-grid;
+      place-items: center;
+      border: 1px solid rgba(var(--accent-rgb), .32);
+      border-radius: 9px;
+      padding: 0 16px;
+      color: var(--text);
+      background: rgba(0, 0, 0, .28);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      color: var(--button-text);
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    }
+
+    .button-secondary {
+      color: var(--accent-2);
+    }
+
+    .session-line,
+    .session-hint,
+    .form-note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .session-line strong,
+    .form-note.is-success {
+      color: var(--accent-2);
+    }
+
+    .form-note.is-error {
+      color: #ff8c8c;
+    }
+
+    .theme-settings {
+      margin-bottom: 18px;
+    }
+
+    .settings-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .settings-copy {
+      max-width: 560px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+      min-width: 210px;
+      padding: 4px;
+      border: 1px solid rgba(var(--accent-rgb), .18);
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .22);
+    }
+
+    .mode-switch button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: color .18s ease, background .18s ease, box-shadow .18s ease;
+    }
+
+    .mode-switch button.active {
+      color: var(--button-text);
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      box-shadow: 0 0 24px rgba(var(--glow-rgb), .18);
+    }
+
+    .theme-control-grid {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) 220px;
+      gap: 12px;
+    }
+
+    .setting-field,
+    .setting-status,
+    .schedule-panel {
+      border: 1px solid rgba(var(--accent-rgb), .15);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .setting-field,
+    .setting-status {
+      padding: 14px;
+    }
+
+    .setting-field > span,
+    .setting-status span,
+    .schedule-head span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    .look-picker {
+      position: relative;
+      margin-top: 10px;
+    }
+
+    .look-trigger {
+      width: 100%;
+      height: 40px;
+      border: 1px solid rgba(var(--accent-rgb), .20);
+      border-radius: 10px;
+      padding: 0 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text);
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), .16), rgba(0, 0, 0, .45));
+      font-weight: 800;
+      outline: none;
+      cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+    }
+
+    .look-trigger::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg) translateY(-2px);
+      opacity: .9;
+    }
+
+    .look-menu {
+      position: absolute;
+      top: calc(100% + 7px);
+      left: 0;
+      z-index: 60;
+      width: 100%;
+      max-height: 310px;
+      overflow: auto;
+      padding: 6px;
+      border: 1px solid rgba(var(--accent-rgb), .26);
+      border-radius: 12px;
+      background:
+        linear-gradient(145deg, rgba(var(--accent-rgb), .11), transparent 48%),
+        color-mix(in srgb, var(--panel-strong) 82%, black);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .58), 0 0 28px rgba(var(--glow-rgb), .10);
+    }
+
+    .look-menu[hidden] {
+      display: none;
+    }
+
+    .look-option {
+      width: 100%;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 0;
+      border-radius: 9px;
+      padding: 0 10px;
+      color: var(--text-2);
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .look-option:hover,
+    .look-option:focus-visible {
+      color: var(--text);
+      background: rgba(var(--accent-rgb), .13);
+      outline: none;
+    }
+
+    .look-option.active {
+      color: var(--button-text);
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    }
+
+    .look-option i {
+      width: 10px;
+      height: 10px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--swatch);
+      box-shadow: 0 0 14px var(--swatch);
+    }
+
+    .setting-status strong {
+      display: block;
+      margin-top: 8px;
+      color: var(--accent-2);
+      font-size: 18px;
+    }
+
+    .setting-status small {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .schedule-panel {
+      margin-top: 12px;
+      padding: 14px;
+    }
+
+    .schedule-panel[hidden] {
+      display: none;
+    }
+
+    .schedule-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .schedule-head strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .schedule-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 104px;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(var(--accent-rgb), .13);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .schedule-row span {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .schedule-row i {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: var(--swatch);
+      box-shadow: 0 0 14px var(--swatch);
+    }
+
+    .schedule-row input {
+      width: 100%;
+      height: 34px;
+      border: 1px solid rgba(var(--accent-rgb), .18);
+      border-radius: 8px;
+      padding: 0 8px;
+      color: var(--text);
+      background: rgba(0, 0, 0, .30);
+      color-scheme: dark;
+      outline: none;
+    }
+
+    .activity-summary {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    .activity-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .week-total {
+      min-width: 150px;
+      padding: 14px 16px;
+      border: 1px solid rgba(var(--accent-rgb), .18);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, .18);
+      text-align: right;
+    }
+
+    .week-total strong {
+      display: block;
+      color: var(--text);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .week-total span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .week-activity {
+      display: grid;
+      gap: 10px;
+    }
+
+    .day-row {
+      display: grid;
+      grid-template-columns: 42px 1fr 64px;
+      gap: 12px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .day-row strong {
+      color: var(--text);
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .day-track {
+      height: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(var(--accent-rgb), .10);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .055);
+    }
+
+    .day-track i {
+      display: block;
+      width: var(--fill);
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      box-shadow: 0 0 14px rgba(var(--glow-rgb), .24);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .plugin-list {
+      display: grid;
+      gap: 10px;
+      counter-reset: plugins;
+    }
+
+    .plugin {
+      counter-increment: plugins;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px;
+      border: 1px solid rgba(var(--accent-rgb), .15);
+      border-radius: 9px;
+      background: rgba(0, 0, 0, .18);
+      color: var(--text-2);
+      font-size: 12px;
+    }
+
+    .plugin::before {
+      content: counter(plugins) ".";
+      color: var(--accent-2);
+      font-weight: 800;
+    }
+
+    .plugin span {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .project {
+      border: 1px solid rgba(var(--accent-rgb), .17);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, .19);
+    }
+
+    .thumb {
+      height: 92px;
+      background:
+        linear-gradient(135deg, rgba(var(--accent-rgb), .20), transparent 52%),
+        radial-gradient(circle at 70% 30%, rgba(var(--glow-rgb), .28), transparent 44%),
+        rgba(255, 255, 255, .035);
+    }
+
+    .project-body {
+      padding: 14px;
+    }
+
+    .project h3 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .project-meta {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .library-item {
+      padding: 14px;
+      border: 1px solid rgba(var(--accent-rgb), .15);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, .18);
+    }
+
+    .library-item strong {
+      display: block;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .library-item span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(var(--accent-rgb), .15);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, .18);
+      color: var(--text-2);
+      font-size: 12px;
+    }
+
+    .toggle-row strong {
+      color: var(--accent-2);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    .page-swipe {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(0);
+      background:
+        linear-gradient(100deg, transparent 0%, rgba(var(--accent-rgb), .12) 16%, rgba(var(--accent-rgb), .58) 42%, rgba(var(--glow-rgb), .36) 58%, rgba(0, 0, 0, .94) 78%, #000 100%);
+      box-shadow: 0 0 80px rgba(var(--glow-rgb), .32);
+      backdrop-filter: blur(2px) saturate(1.08);
+    }
+
+    .page-swipe::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent, rgba(255, 255, 255, .18), transparent),
+        radial-gradient(circle at 58% 50%, rgba(var(--glow-rgb), .32), transparent 22rem);
+      opacity: .72;
+    }
+
+    body.is-page-entering .site {
+      animation: pageReveal .52s cubic-bezier(.2, .85, .25, 1) both;
+    }
+
+    body.is-page-entering .page-swipe {
+      animation: swipeEnter .58s cubic-bezier(.65, 0, .2, 1) both;
+    }
+
+    body.is-page-exiting .site {
+      animation: pageExit .34s ease both;
+    }
+
+    body.is-page-exiting .page-swipe {
+      animation: swipeExit .46s cubic-bezier(.72, 0, .2, 1) both;
+    }
+
+    @keyframes swipeEnter {
+      0% { opacity: 1; transform: translateX(0); }
+      100% { opacity: 1; transform: translateX(112%); }
+    }
+
+    @keyframes swipeExit {
+      0% { opacity: 1; transform: translateX(-112%); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes pageReveal {
+      0% { opacity: 0; transform: translateY(8px); filter: blur(1.6px) saturate(1.06); }
+      100% { opacity: 1; transform: translateY(0); filter: blur(0) saturate(1); }
+    }
+
+    @keyframes pageExit {
+      0% { opacity: 1; transform: translateY(0); filter: blur(0) saturate(1); }
+      100% { opacity: .62; transform: translateY(-6px); filter: blur(1.2px) saturate(1.08); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .page-swipe,
+      body.is-page-entering .site,
+      body.is-page-exiting .site {
+        animation: none;
+      }
+    }
+
+    @media (max-width: 1040px) {
+      .topbar,
+      .profile-card,
+      .auth-live-head,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        gap: 12px;
+        padding: 12px 0;
+        position: relative;
+      }
+
+      .nav {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .stat-bar {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .project-grid,
+      .library-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .site {
+        padding-inline: 12px;
+      }
+
+      .account-shell {
+        padding-top: 26px;
+      }
+
+      .stat-bar,
+      .project-grid,
+      .library-grid,
+      .theme-control-grid,
+      .schedule-grid,
+      .toggle-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat {
+        border-right: 0;
+        border-bottom: 1px solid rgba(var(--accent-rgb), .15);
+      }
+
+      .stat:last-child {
+        border-bottom: 0;
+      }
+
+      .activity-summary {
+        flex-direction: column;
+      }
+
+      .week-total {
+        width: 100%;
+        text-align: left;
+      }
+
+      .day-row {
+        grid-template-columns: 38px 1fr 58px;
+      }
+
+      .settings-heading,
+      .auth-live-head {
+        flex-direction: column;
+      }
+
+      .mode-switch,
+      .auth-tabs {
+        width: 100%;
+      }
+
+      .schedule-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header class="topbar">
+      <a class="brand" href="index.html" data-home-anchor="top" aria-label="Nulqor home">
+        <span class="mark">N</span>
+        <span>NULQOR</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html#forge" data-home-anchor="forge">Product</a>
+        <a href="index.html#learn" data-home-anchor="learn">Learn</a>
+        <a href="index.html#pricing" data-home-anchor="pricing">Pricing</a>
+        <a href="policies.html" data-policy-link>Policy</a>
+        <a href="account.html" data-account-link aria-current="page">Account</a>
+      </nav>
+    </header>
+
+    <main class="account-shell">
+      <section class="profile-hero" aria-labelledby="profile-title">
+        <button class="avatar" id="avatar-upload-button" type="button" aria-label="Upload profile picture" title="Upload profile picture">
+          <img class="avatar-preview" id="avatar-preview" alt="" hidden>
+          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <circle cx="32" cy="14" r="5" stroke="#111" stroke-width="2"/>
+            <path d="M24 21h16l-2 10H26l-2-10Z" fill="#f4c54b" stroke="#111" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M32 31v14M23 55l9-10 9 10M24 37h16" stroke="#111" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M27 12h10" stroke="#111" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="avatar-label">Upload</span>
+        </button>
+        <input class="avatar-input" id="avatar-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+        <h1 id="profile-title">Stick</h1>
+        <div class="handle"><span>@lrpcyy</span><span class="pill">Nulqor Creator</span></div>
+        <p class="member-line">Forge Studio user since Jun 2026</p>
+        <div class="badge-row" aria-label="Creator badges">
+          <span class="badge">Founder</span>
+          <span class="badge">Early Access</span>
+          <span class="badge">Verified Creator</span>
+          <span class="badge">Plugin Developer</span>
+          <span class="badge">Studio Member</span>
         </div>
-        <nav aria-label="Footer navigation">
-          <a href="policies.html#terms">Terms</a>
-          <a href="policies.html#privacy">Privacy</a>
-          <a href="policies.html#refunds">Refunds</a>
-          <a href="policies.html#acceptable-use">Acceptable Use</a>
-          <a href="policies.html#support">Support</a>
-          <a href="https://discord.gg/A5N3N67SUR" target="_blank" rel="noopener">Discord</a>
-          <a href="mailto:teamnulqor@gmail.com">Contact</a>
-        </nav>
-        <p class="copyright">&copy; 2026 Nulqor. All rights reserved.</p>
-      </footer>
-    </div>
+      </section>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=20260617-auth"></script>
-    <script src="supabase-client.js?v=20260617-auth3"></script>
-    <script src="script.js?v=20260617-auth3"></script>
-    <script src="auth.js?v=20260617-auth18"></script>
-  </body>
+      <section class="stat-bar" aria-label="Main account stats">
+        <div class="stat"><div><strong id="forge-connection-stat">Checking</strong><span>Forge Studio</span></div></div>
+        <div class="stat"><div><strong id="forge-version-stat">--</strong><span>Installed version</span></div></div>
+        <div class="stat"><div><strong id="forge-source-stat">--</strong><span>Source modules</span></div></div>
+        <div class="stat"><div><strong id="forge-release-stat">--</strong><span>Release builds</span></div></div>
+        <div class="stat"><div><strong id="forge-project-stat">--</strong><span>Project files found</span></div></div>
+      </section>
+
+      <section class="profile-card" aria-label="Profile identity and account state">
+        <article class="panel">
+          <p class="eyebrow">Top profile card</p>
+          <h2>Account identity</h2>
+          <div class="identity-grid">
+            <div class="identity-row"><span>Creator</span><strong>Stick</strong></div>
+            <div class="identity-row"><span>Handle</span><strong>@lrpcyy</strong></div>
+            <div class="identity-row"><span>Product</span><strong>Forge Studio</strong></div>
+            <div class="identity-row"><span>Active Plan</span><strong id="id-plan">Creator</strong></div>
+            <div class="identity-row"><span>Account Status</span><strong id="id-status">Verified</strong></div>
+            <div class="identity-row"><span>Member Since</span><strong>June 2026</strong></div>
+          </div>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">Studio footprint</p>
+          <h2>Forge install status</h2>
+          <div class="identity-grid">
+            <div class="identity-row"><span>Forge root</span><strong id="forge-root-row">D:\forge-studio</strong></div>
+            <div class="identity-row"><span>Latest source change</span><strong id="forge-source-row">Checking</strong></div>
+            <div class="identity-row"><span>Latest release</span><strong id="forge-release-row">Checking</strong></div>
+            <div class="identity-row"><span>Dist bundle</span><strong id="forge-dist-row">Checking</strong></div>
+            <div class="identity-row"><span>Saved project files</span><strong id="forge-project-row">Checking</strong></div>
+            <div class="identity-row"><span>User session tracking</span><strong id="forge-telemetry-row">Needs Forge hook</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel auth-live-panel" data-auth-page aria-labelledby="auth-title">
+        <div class="auth-live-head">
+          <div>
+            <p class="eyebrow">Nulqor account</p>
+            <h2 id="auth-title">Account access</h2>
+            <p class="auth-copy">Log in or create an account to keep your profile, avatar, early access status, member pricing, and admin permissions connected to Supabase.</p>
+          </div>
+          <div class="auth-tabs" role="tablist" aria-label="Account mode" data-auth-forms>
+            <button class="is-active" type="button" data-auth-mode="login" aria-pressed="true">Log in</button>
+            <button type="button" data-auth-mode="signup" aria-pressed="false">Create account</button>
+          </div>
+        </div>
+
+        <div data-auth-forms>
+          <form class="auth-form" id="loginForm">
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" autocomplete="current-password" placeholder="Your password" required>
+            </label>
+            <button class="button button-primary" type="submit">Log in</button>
+          </form>
+
+          <form class="auth-form" id="signupForm" hidden>
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+              Username
+              <input type="text" name="username" autocomplete="username" placeholder="your_handle" minlength="3" maxlength="20" required>
+            </label>
+            <label>
+              Password
+              <input type="password" name="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required>
+            </label>
+            <button class="button button-primary" type="submit">Create account</button>
+          </form>
+        </div>
+
+        <div class="session-card" id="authSession" hidden>
+          <p class="eyebrow">Signed in</p>
+          <p class="session-line">You are <strong id="sessionUsername">--</strong> <span class="session-email">(<span id="sessionEmail"></span>)</span></p>
+          <p class="session-hint">Use the account badge in the bottom-left corner to edit your profile, upload an avatar, and reach the admin dashboard if your role allows it.</p>
+          <button class="button button-secondary" type="button" id="logoutButton">Log out</button>
+        </div>
+
+        <p class="form-note" id="authNote" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel theme-settings" aria-labelledby="theme-settings-title">
+        <div class="settings-heading">
+          <div>
+            <p class="eyebrow">Account settings</p>
+            <h2 id="theme-settings-title">Visual theme</h2>
+            <p class="settings-copy">Pick a look now, or switch into schedule mode and set when each theme should come on during the day.</p>
+          </div>
+          <div class="mode-switch" role="group" aria-label="Theme mode">
+            <button class="active" type="button" data-theme-mode="manual" aria-pressed="true">Manual</button>
+            <button type="button" data-theme-mode="schedule" aria-pressed="false">Schedule</button>
+          </div>
+        </div>
+
+        <div class="theme-control-grid">
+          <div class="setting-field">
+            <span>Current look</span>
+            <div class="look-picker" data-look-picker>
+              <button class="look-trigger" id="look-trigger" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="look-menu">
+                <span data-current-look>Copper Flow</span>
+              </button>
+              <div class="look-menu" id="look-menu" role="listbox" aria-label="Nulqor visual look" hidden>
+                <button class="look-option active" type="button" role="option" data-look-option="copper-flow" aria-selected="true"><i style="--swatch:#C46A3A"></i>Copper Flow</button>
+                <button class="look-option" type="button" role="option" data-look-option="emerald-enterprise" aria-selected="false"><i style="--swatch:#39D985"></i>Emerald Enterprise</button>
+                <button class="look-option" type="button" role="option" data-look-option="red-flagship-car" aria-selected="false"><i style="--swatch:#FF2D6A"></i>Red Flagship Car</button>
+                <button class="look-option" type="button" role="option" data-look-option="royal-blue-crystal" aria-selected="false"><i style="--swatch:#1F7BFF"></i>Royal Blue Crystal</button>
+                <button class="look-option" type="button" role="option" data-look-option="champagne-black" aria-selected="false"><i style="--swatch:#D9B06A"></i>Champagne Black</button>
+                <button class="look-option" type="button" role="option" data-look-option="molten-gold-ambition" aria-selected="false"><i style="--swatch:#E7A51A"></i>Molten Gold</button>
+                <button class="look-option" type="button" role="option" data-look-option="violet-rose-editorial" aria-selected="false"><i style="--swatch:#A855F7"></i>Violet Rose</button>
+                <button class="look-option" type="button" role="option" data-look-option="ice-blue-chrome" aria-selected="false"><i style="--swatch:#BFDFFF"></i>Ice Blue Chrome</button>
+                <button class="look-option" type="button" role="option" data-look-option="molten-gold-ambition-alt" aria-selected="false"><i style="--swatch:#FFE08A"></i>Gold Alt</button>
+              </div>
+            </div>
+          </div>
+          <div class="setting-status" aria-live="polite">
+            <span>Theme mode</span>
+            <strong id="theme-mode-status">Manual</strong>
+            <small id="theme-mode-note">Theme changes immediately when you pick a look.</small>
+          </div>
+        </div>
+
+        <div class="schedule-panel" id="theme-schedule" hidden>
+          <div class="schedule-head">
+            <strong>Switch times</strong>
+            <span>Simple daily rotation</span>
+          </div>
+          <div class="schedule-grid">
+            <label class="schedule-row" data-schedule-theme="copper-flow"><span><i style="--swatch:#C46A3A"></i>Copper Flow</span><input type="time" value="08:00"></label>
+            <label class="schedule-row" data-schedule-theme="emerald-enterprise"><span><i style="--swatch:#39D985"></i>Emerald Enterprise</span><input type="time" value="10:00"></label>
+            <label class="schedule-row" data-schedule-theme="red-flagship-car"><span><i style="--swatch:#FF2D6A"></i>Red Flagship Car</span><input type="time" value="12:00"></label>
+            <label class="schedule-row" data-schedule-theme="royal-blue-crystal"><span><i style="--swatch:#1F7BFF"></i>Royal Blue Crystal</span><input type="time" value="14:00"></label>
+            <label class="schedule-row" data-schedule-theme="champagne-black"><span><i style="--swatch:#D9B06A"></i>Champagne Black</span><input type="time" value="16:00"></label>
+            <label class="schedule-row" data-schedule-theme="molten-gold-ambition"><span><i style="--swatch:#E7A51A"></i>Molten Gold</span><input type="time" value="18:00"></label>
+            <label class="schedule-row" data-schedule-theme="violet-rose-editorial"><span><i style="--swatch:#A855F7"></i>Violet Rose</span><input type="time" value="20:00"></label>
+            <label class="schedule-row" data-schedule-theme="ice-blue-chrome"><span><i style="--swatch:#BFDFFF"></i>Ice Blue Chrome</span><input type="time" value="22:00"></label>
+            <label class="schedule-row" data-schedule-theme="molten-gold-ambition-alt"><span><i style="--swatch:#FFE08A"></i>Gold Alt</span><input type="time" value="23:30"></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="activity-title">
+        <div class="activity-summary">
+          <div>
+            <p class="eyebrow">Activity</p>
+            <h2 id="activity-title">Live Forge activity</h2>
+            <p class="activity-copy" id="forge-activity-copy">Weekly Forge time is not available yet because Forge Studio does not emit session events outside the app.</p>
+          </div>
+          <div class="week-total">
+            <strong id="forge-week-total">Not tracked</strong>
+            <span>This week</span>
+          </div>
+        </div>
+        <div class="week-activity" id="forge-week-bars" hidden></div>
+        <div class="identity-grid" id="forge-activity-list" aria-label="Forge activity tracking state">
+          <div class="identity-row"><span>Session time</span><strong>Needs Forge hook</strong></div>
+          <div class="identity-row"><span>Autosave</span><strong>Renderer localStorage only</strong></div>
+          <div class="identity-row"><span>Asset library</span><strong>Renderer localStorage only</strong></div>
+          <div class="identity-row"><span>Exports</span><strong>Needs Forge hook</strong></div>
+        </div>
+      </section>
+
+      <section class="two-col">
+        <article class="panel">
+          <p class="eyebrow">Creation Insights</p>
+          <h2>Workflow signal</h2>
+          <div class="insight-list">
+            <div class="insight-row"><span>Most used editor</span><strong id="ins-editor">Not tracked yet</strong></div>
+            <div class="insight-row"><span>Most active project</span><strong id="ins-project">Not tracked yet</strong></div>
+            <div class="insight-row"><span>Favorite export type</span><strong id="ins-export">Not tracked yet</strong></div>
+            <div class="insight-row"><span>Most used tool</span><strong id="ins-tool">Not tracked yet</strong></div>
+            <div class="insight-row"><span>Creation Style</span><strong id="ins-style">Needs event data</strong></div>
+            <div class="insight-row"><span>Workflow Type</span><strong id="ins-workflow">Needs event data</strong></div>
+            <div class="insight-row"><span>Studio Rank</span><strong id="ins-rank">Needs account API</strong></div>
+            <div class="insight-row"><span>Forge Level</span><strong id="ins-level">Needs account API</strong></div>
+          </div>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">Plugin Stack</p>
+          <h2>Most used plugins</h2>
+          <div class="plugin-list" id="forge-plugin-list">
+            <div class="plugin">Plugin usage telemetry <span>Needs Forge hook</span></div>
+            <div class="plugin">Installed plugins <span>Not tracked yet</span></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel" style="margin-top:18px" aria-labelledby="projects-title">
+        <p class="eyebrow">Project Vault</p>
+        <h2 id="projects-title">Recent Projects</h2>
+        <div class="project-grid" id="forge-project-list">
+          <article class="project">
+            <div class="thumb"></div>
+            <div class="project-body"><h3>No exported projects found yet</h3><div class="project-meta"><span>Forge active autosave lives in Electron localStorage.</span><span>Save/export a .forge.json into the Forge folder, or have Forge mirror project metadata for live display.</span></div></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="two-col">
+        <article class="panel">
+          <p class="eyebrow">Creator Library</p>
+          <h2>Asset Index</h2>
+          <div class="library-grid">
+            <div class="library-item"><strong id="library-project-files">--</strong><span>Project/library exports found</span></div>
+            <div class="library-item"><strong id="lib-models">--</strong><span id="lib-models-label">Models need Forge hook</span></div>
+            <div class="library-item"><strong id="lib-materials">--</strong><span id="lib-materials-label">Materials need Forge hook</span></div>
+            <div class="library-item"><strong id="lib-rigs">--</strong><span id="lib-rigs-label">Rigs need Forge hook</span></div>
+            <div class="library-item"><strong id="lib-animations">--</strong><span id="lib-animations-label">Animations need Forge hook</span></div>
+          </div>
+        </article>
+        <article class="panel">
+          <p class="eyebrow">Account Core</p>
+          <h2>Plan and security</h2>
+          <div class="identity-grid">
+            <div class="identity-row"><span>Plan</span><strong id="sec-plan">Nulqor Creator (prototype)</strong></div>
+            <div class="identity-row"><span>Status</span><strong id="sec-status">Local demo</strong></div>
+            <div class="identity-row"><span>Included Products</span><strong>Forge Studio</strong></div>
+            <div class="identity-row"><span>Cloud Storage</span><strong id="sec-cloud">Not connected</strong></div>
+            <div class="identity-row"><span>AI Usage</span><strong>Not connected</strong></div>
+            <div class="identity-row"><span>Email Verified</span><strong id="sec-email">Not connected</strong></div>
+            <div class="identity-row"><span>2FA</span><strong id="sec-2fa">Not connected</strong></div>
+            <div class="identity-row"><span>Active Sessions</span><strong id="sec-sessions">Local only</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel" style="margin-top:18px" aria-labelledby="visibility-title">
+        <p class="eyebrow">Security Layer</p>
+        <h2 id="visibility-title">Profile visibility</h2>
+        <div class="toggle-grid">
+          <div class="toggle-row"><span>Profile Visibility</span><strong id="vis-profile">Local mock</strong></div>
+          <div class="toggle-row"><span>Show on Marketplace</span><strong id="vis-marketplace">Not connected</strong></div>
+          <div class="toggle-row"><span>Show Forge stats</span><strong id="vis-forgestats">Waiting for telemetry</strong></div>
+          <div class="toggle-row"><span>Show uploaded assets</span><strong id="vis-assets">Waiting for library API</strong></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const looks = {
+      'copper-flow': { colors: ['#060403', '#24110A', '#C46A3A', '#FFC49A'], buttonText: '#20100a' },
+      'emerald-enterprise': { colors: ['#000604', '#01120C', '#39D985', '#8DFFC2'], buttonText: '#061b11' },
+      'red-flagship-car': { colors: ['#070003', '#25000D', '#FF2D6A', '#FF9AB8'], buttonText: '#260611' },
+      'royal-blue-crystal': { colors: ['#020714', '#061D5A', '#1F7BFF', '#A8D4FF'], buttonText: '#06132c' },
+      'champagne-black': { colors: ['#050403', '#1B140C', '#D9B06A', '#FFE7B0'], buttonText: '#21170a' },
+      'molten-gold-ambition': { colors: ['#050400', '#241400', '#E7A51A', '#FFE08A'], buttonText: '#211600' },
+      'violet-rose-editorial': { colors: ['#08030E', '#281044', '#A855F7', '#FFC0D9'], buttonText: '#1f0b2c' },
+      'ice-blue-chrome': { colors: ['#03070B', '#111C28', '#BFDFFF', '#6AB8FF'], buttonText: '#071320' },
+      'molten-gold-ambition-alt': { colors: ['#050400', '#241400', '#E7A51A', '#FFE08A'], buttonText: '#211600' }
+    };
+
+    const themeAliases = {
+      copper: 'copper-flow',
+      green: 'emerald-enterprise',
+      emerald: 'emerald-enterprise',
+      rose: 'violet-rose-editorial',
+      pink: 'violet-rose-editorial',
+      red: 'red-flagship-car',
+      blue: 'royal-blue-crystal',
+      gold: 'molten-gold-ambition',
+      champagne: 'champagne-black',
+      ice: 'ice-blue-chrome'
+    };
+
+    const lookPicker = document.querySelector('[data-look-picker]');
+    const lookTrigger = document.querySelector('#look-trigger');
+    const lookMenu = document.querySelector('#look-menu');
+    const currentLookLabel = document.querySelector('[data-current-look]');
+    const lookOptions = document.querySelectorAll('[data-look-option]');
+    const themeModeButtons = document.querySelectorAll('[data-theme-mode]');
+    const themeSchedule = document.querySelector('#theme-schedule');
+    const themeModeStatus = document.querySelector('#theme-mode-status');
+    const themeModeNote = document.querySelector('#theme-mode-note');
+    const avatarButton = document.querySelector('#avatar-upload-button');
+    const avatarInput = document.querySelector('#avatar-input');
+    const avatarPreview = document.querySelector('#avatar-preview');
+    const avatarStorageKey = 'nulqor-profile-avatar';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let currentThemeMode = 'manual';
+
+    function hexToRgb(hex) {
+      const clean = hex.replace('#', '');
+      const value = parseInt(clean, 16);
+      return `${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}`;
+    }
+
+    function applyTheme(theme) {
+      const look = looks[theme] || looks['copper-flow'];
+      const selectedTheme = looks[theme] ? theme : 'copper-flow';
+      const [shadow, core, accent, glow] = look.colors;
+      document.body.dataset.theme = selectedTheme;
+      document.body.style.setProperty('--bg', shadow);
+      document.body.style.setProperty('--bg-2', core);
+      document.body.style.setProperty('--panel', `color-mix(in srgb, ${core} 58%, black)`);
+      document.body.style.setProperty('--panel-strong', `color-mix(in srgb, ${core} 76%, black)`);
+      document.body.style.setProperty('--accent', accent);
+      document.body.style.setProperty('--accent-2', glow);
+      document.body.style.setProperty('--accent-3', core);
+      document.body.style.setProperty('--button-text', look.buttonText);
+      document.body.style.setProperty('--accent-rgb', hexToRgb(accent));
+      document.body.style.setProperty('--glow-rgb', hexToRgb(glow));
+      updateLookPicker(selectedTheme);
+      updateHomeLinks(selectedTheme);
+      updatePolicyLinks(selectedTheme);
+      updateAccountSelfLink(selectedTheme);
+    }
+
+    function updateLookPicker(theme) {
+      lookOptions.forEach((option) => {
+        const isActive = option.dataset.lookOption === theme;
+        option.classList.toggle('active', isActive);
+        option.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        if (isActive) currentLookLabel.textContent = option.textContent.trim();
+      });
+    }
+
+    function setLookMenu(open) {
+      lookMenu.hidden = !open;
+      lookTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    function updateThemeUrl(theme) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('theme', theme);
+      history.replaceState(null, '', url);
+    }
+
+    async function fetchAppState() {
+      try {
+        return JSON.parse(localStorage.getItem('nulqor-account-state') || '{}');
+      } catch (error) {
+        console.warn('Saved account state could not be loaded from this browser.', error);
+        return {};
+      }
+    }
+
+    function collectThemeSchedule() {
+      const schedule = {};
+      themeSchedule.querySelectorAll('[data-schedule-theme]').forEach((row) => {
+        schedule[row.dataset.scheduleTheme] = row.querySelector('input').value;
+      });
+      return schedule;
+    }
+
+    function applyThemeSchedule(schedule = {}) {
+      themeSchedule.querySelectorAll('[data-schedule-theme]').forEach((row) => {
+        const theme = row.dataset.scheduleTheme;
+        const input = row.querySelector('input');
+        if (schedule[theme]) input.value = schedule[theme];
+      });
+    }
+
+    async function saveThemeSettings() {
+      const state = {
+        theme: {
+          current: document.body.dataset.theme || 'copper-flow',
+          mode: currentThemeMode,
+          schedule: collectThemeSchedule()
+        },
+        profile: {
+          avatarUrl: avatarPreview && !avatarPreview.hidden ? avatarPreview.src : ''
+        }
+      };
+      try {
+        localStorage.setItem('nulqor-account-state', JSON.stringify(state));
+        localStorage.setItem('nulqor-theme', state.theme.current);
+      } catch (error) {
+        console.warn('Theme settings could not be saved in this browser.', error);
+      }
+    }
+
+    function setAvatarImage(src) {
+      avatarPreview.src = src;
+      avatarPreview.hidden = false;
+      avatarButton.classList.add('has-image');
+      avatarButton.setAttribute('aria-label', 'Change profile picture');
+      avatarButton.title = 'Change profile picture';
+    }
+
+    function restoreAvatarImage(state) {
+      if (state && state.profile && state.profile.avatarUrl) {
+        setAvatarImage(state.profile.avatarUrl);
+        return;
+      }
+      try {
+        const savedAvatar = localStorage.getItem(avatarStorageKey);
+        if (savedAvatar) setAvatarImage(savedAvatar);
+      } catch (error) {
+        console.warn('Avatar image could not be restored.', error);
+      }
+    }
+
+    async function uploadAvatarData(avatarData) {
+      try {
+        localStorage.setItem(avatarStorageKey, avatarData);
+        await saveThemeSettings();
+      } catch (error) {
+        console.warn('Avatar image could not be saved locally.', error);
+      }
+    }
+
+    function storeAvatarFile(file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        window.alert('Choose an image file for your profile picture.');
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        window.alert('Choose an image under 10 MB so it can save in this demo.');
+        avatarInput.value = '';
+        return;
+      }
+
+      const image = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      image.onload = () => {
+        const size = 512;
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const cropSize = Math.min(image.width, image.height);
+        const cropX = (image.width - cropSize) / 2;
+        const cropY = (image.height - cropSize) / 2;
+        canvas.width = size;
+        canvas.height = size;
+        context.fillStyle = '#0b0503';
+        context.fillRect(0, 0, size, size);
+        context.drawImage(image, cropX, cropY, cropSize, cropSize, 0, 0, size, size);
+        const avatarData = canvas.toDataURL('image/jpeg', .88);
+        URL.revokeObjectURL(objectUrl);
+        setAvatarImage(avatarData);
+        uploadAvatarData(avatarData);
+        try {
+          localStorage.setItem(avatarStorageKey, avatarData);
+        } catch (error) {
+          console.warn('Avatar image could not be saved locally.', error);
+        }
+      };
+      image.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        window.alert('That image could not be loaded. Try a PNG, JPG, GIF, or WebP.');
+      };
+      image.src = objectUrl;
+    }
+
+    function setThemeMode(mode) {
+      const isSchedule = mode === 'schedule';
+      currentThemeMode = isSchedule ? 'schedule' : 'manual';
+      themeModeButtons.forEach((button) => {
+        const isActive = button.dataset.themeMode === currentThemeMode;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+      themeSchedule.hidden = !isSchedule;
+      themeModeStatus.textContent = isSchedule ? 'Schedule' : 'Manual';
+      themeModeNote.textContent = isSchedule
+        ? 'Themes will rotate using the switch times below.'
+        : 'Theme changes immediately when you pick a look.';
+    }
+
+    function updateHomeLinks(theme) {
+      document.querySelectorAll('[data-home-anchor]').forEach((link) => {
+        const anchor = link.getAttribute('data-home-anchor') || 'top';
+        const url = new URL('index.html', window.location.href);
+        url.searchParams.set('theme', theme);
+        if (anchor && anchor !== 'top') url.hash = anchor;
+        link.href = `${url.pathname.split('/').pop()}${url.search}${url.hash}`;
+      });
+    }
+
+    function updatePolicyLinks(theme) {
+      document.querySelectorAll('[data-policy-link]').forEach((link) => {
+        const url = new URL('policies.html', window.location.href);
+        url.searchParams.set('theme', theme);
+        link.href = `${url.pathname.split('/').pop()}${url.search}`;
+      });
+    }
+
+    function updateAccountSelfLink(theme) {
+      const link = document.querySelector('.nav a[aria-current="page"]');
+      const url = new URL('account.html', window.location.href);
+      url.searchParams.set('theme', theme);
+      link.href = `${url.pathname.split('/').pop()}${url.search}`;
+    }
+
+    function setText(id, value) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = value;
+    }
+
+    function formatDate(value) {
+      if (!value) return 'Not found';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return 'Not found';
+      return date.toLocaleString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      });
+    }
+
+    function fileLabel(file) {
+      if (!file) return 'Not found';
+      const date = formatDate(file.modifiedAt);
+      return `${file.name} · ${date}`;
+    }
+
+    function makeIdentityRow(label, value) {
+      const row = document.createElement('div');
+      row.className = 'identity-row';
+      const span = document.createElement('span');
+      span.textContent = label;
+      const strong = document.createElement('strong');
+      strong.textContent = value;
+      row.append(span, strong);
+      return row;
+    }
+
+    function renderProjectFiles(files = []) {
+      const list = document.getElementById('forge-project-list');
+      if (!list) return;
+
+      if (!files.length) {
+        list.replaceChildren();
+        const card = document.createElement('article');
+        card.className = 'project';
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb';
+        const body = document.createElement('div');
+        body.className = 'project-body';
+        const title = document.createElement('h3');
+        title.textContent = 'No exported projects found yet';
+        const meta = document.createElement('div');
+        meta.className = 'project-meta';
+        ['Forge active autosave lives in Electron localStorage.', 'Claude needs to mirror project metadata for this to become live.'].forEach((line) => {
+          const item = document.createElement('span');
+          item.textContent = line;
+          meta.appendChild(item);
+        });
+        body.append(title, meta);
+        card.append(thumb, body);
+        list.appendChild(card);
+        return;
+      }
+
+      list.replaceChildren(...files.slice(0, 3).map((file) => {
+        const card = document.createElement('article');
+        card.className = 'project';
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb';
+        const body = document.createElement('div');
+        body.className = 'project-body';
+        const title = document.createElement('h3');
+        title.textContent = file.name;
+        const meta = document.createElement('div');
+        meta.className = 'project-meta';
+        [
+          `Modified: ${formatDate(file.modifiedAt)}`,
+          `Size: ${file.sizeMb} MB`,
+          `Path: ${file.relativePath}`
+        ].forEach((line) => {
+          const item = document.createElement('span');
+          item.textContent = line;
+          meta.appendChild(item);
+        });
+        body.append(title, meta);
+        card.append(thumb, body);
+        return card;
+      }));
+    }
+
+    function fmtDuration(ms) {
+      const value = Number(ms);
+      if (!Number.isFinite(value) || value <= 0) return '0m';
+      const totalMin = Math.round(value / 60000);
+      const hours = Math.floor(totalMin / 60);
+      const minutes = totalMin % 60;
+      if (hours && minutes) return `${hours}h ${minutes}m`;
+      if (hours) return `${hours}h`;
+      return `${minutes}m`;
+    }
+
+    function fmtBoolState(value, onText, offText, unknownText) {
+      if (value === true) return onText;
+      if (value === false) return offText;
+      return unknownText;
+    }
+
+    function prettyLabel(value) {
+      if (value === null || value === undefined || value === '') return null;
+      return String(value).replace(/[_-]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    function numOrNull(value) {
+      const n = Number(value);
+      return Number.isFinite(n) ? String(n) : null;
+    }
+
+    function setTextIf(id, value) {
+      if (value === null || value === undefined || value === '') return;
+      const element = document.getElementById(id);
+      if (element) element.textContent = value;
+    }
+
+    function renderWeekBars(weekly) {
+      const host = document.getElementById('forge-week-bars');
+      if (!host) return 0;
+      const days = weekly && Array.isArray(weekly.days) ? weekly.days : [];
+      if (!days.length) { host.hidden = true; return 0; }
+      const max = Math.max(1, ...days.map((day) => Number(day.durationMs) || 0));
+      let total = 0;
+      host.replaceChildren(...days.map((day) => {
+        const ms = Number(day.durationMs) || 0;
+        total += ms;
+        const row = document.createElement('div');
+        row.className = 'day-row';
+        const label = document.createElement('span');
+        label.textContent = day.day || '--';
+        const track = document.createElement('div');
+        track.className = 'day-track';
+        const fill = document.createElement('i');
+        fill.style.setProperty('--fill', `${Math.round((ms / max) * 100)}%`);
+        track.appendChild(fill);
+        const value = document.createElement('strong');
+        value.textContent = fmtDuration(ms);
+        row.append(label, track, value);
+        return row;
+      }));
+      host.hidden = false;
+      return total;
+    }
+
+    function renderPluginList(plugins) {
+      const list = document.getElementById('forge-plugin-list');
+      if (!list) return;
+      const items = Array.isArray(plugins) ? plugins : [];
+      if (!items.length) {
+        const empty = document.createElement('div');
+        empty.className = 'plugin';
+        empty.textContent = 'No plugins installed yet';
+        const span = document.createElement('span');
+        span.textContent = 'Live';
+        empty.appendChild(span);
+        list.replaceChildren(empty);
+        return;
+      }
+      list.replaceChildren(...items.slice(0, 8).map((plugin) => {
+        const row = document.createElement('div');
+        row.className = 'plugin';
+        row.textContent = plugin.name || plugin.id || 'Plugin';
+        const span = document.createElement('span');
+        const uses = Number(plugin.uses ?? plugin.useCount);
+        span.textContent = Number.isFinite(uses) ? `${uses} uses` : (plugin.status || 'Installed');
+        row.appendChild(span);
+        return row;
+      }));
+    }
+
+    function renderTelemetryProjects(projects) {
+      const items = Array.isArray(projects) ? projects : [];
+      if (!items.length) return false;
+      const list = document.getElementById('forge-project-list');
+      if (!list) return false;
+      list.replaceChildren(...items.slice(0, 6).map((project) => {
+        const card = document.createElement('article');
+        card.className = 'project';
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb';
+        const body = document.createElement('div');
+        body.className = 'project-body';
+        const title = document.createElement('h3');
+        title.textContent = project.name || 'Untitled project';
+        const meta = document.createElement('div');
+        meta.className = 'project-meta';
+        const lines = [];
+        if (project.lastOpenedAt || project.updatedAt) lines.push(`Last opened: ${formatDate(project.lastOpenedAt || project.updatedAt)}`);
+        if (Number.isFinite(Number(project.editTimeMs))) lines.push(`Edit time: ${fmtDuration(project.editTimeMs)}`);
+        if (project.mostUsedEditor) lines.push(`Editor: ${prettyLabel(project.mostUsedEditor)}`);
+        if (!lines.length) lines.push('Tracked live in Forge Studio');
+        lines.forEach((line) => { const span = document.createElement('span'); span.textContent = line; meta.appendChild(span); });
+        body.append(title, meta);
+        card.append(thumb, body);
+        return card;
+      }));
+      return true;
+    }
+
+    function renderTelemetry(snapshot, meta) {
+      if (!snapshot || typeof snapshot !== 'object') return;
+      const account = snapshot.account || {};
+      const totals = snapshot.totals || {};
+      const insights = snapshot.insights || {};
+      const library = snapshot.library || {};
+      const visibility = snapshot.visibility || {};
+
+      setTextIf('id-plan', prettyLabel(account.plan));
+      setTextIf('id-status', prettyLabel(account.status));
+      setTextIf('sec-plan', prettyLabel(account.plan));
+      setTextIf('sec-status', prettyLabel(account.status));
+      setTextIf('sec-email', fmtBoolState(account.emailVerified, 'Verified', 'Unverified', 'Not connected'));
+      setTextIf('sec-2fa', fmtBoolState(account.twoFactorEnabled, 'Enabled', 'Disabled', 'Not connected'));
+      if (account.activeSessions !== null && account.activeSessions !== undefined) {
+        setTextIf('sec-sessions', `${account.activeSessions} active`);
+      }
+      if (Number.isFinite(Number(totals.cloudSavesUsed))) setTextIf('sec-cloud', `${totals.cloudSavesUsed} cloud saves`);
+
+      setTextIf('forge-telemetry-row', meta && meta.stale ? 'Live (stale)' : 'Connected (live)');
+
+      const weekTotal = renderWeekBars(snapshot.weeklyActivity);
+      setTextIf('forge-week-total', fmtDuration(weekTotal || totals.forgeTimeMs));
+
+      const activityList = document.getElementById('forge-activity-list');
+      if (activityList) {
+        activityList.replaceChildren(
+          makeIdentityRow('Total Forge time', fmtDuration(totals.forgeTimeMs)),
+          makeIdentityRow('Longest session', fmtDuration(totals.longestSessionMs)),
+          makeIdentityRow('Projects created', String(totals.projectsCreated ?? 0)),
+          makeIdentityRow('Models exported', String(totals.modelsExported ?? 0)),
+          makeIdentityRow('Assets uploaded', String(totals.assetsUploaded ?? 0))
+        );
+      }
+      const activityCopy = document.getElementById('forge-activity-copy');
+      if (activityCopy) activityCopy.textContent = (meta && meta.reason) || 'Live Forge activity is connected.';
+
+      setTextIf('ins-editor', prettyLabel(insights.mostUsedEditor));
+      setTextIf('ins-project', insights.mostActiveProject || null);
+      setTextIf('ins-export', insights.favoriteExportType ? String(insights.favoriteExportType).toUpperCase() : null);
+      setTextIf('ins-tool', prettyLabel(insights.mostUsedTool));
+      setTextIf('ins-style', prettyLabel(insights.creationStyle));
+      setTextIf('ins-workflow', prettyLabel(insights.workflowType));
+      setTextIf('ins-rank', prettyLabel(insights.studioRank));
+      setTextIf('ins-level', insights.forgeLevel !== null && insights.forgeLevel !== undefined ? String(insights.forgeLevel) : null);
+
+      setTextIf('lib-models', numOrNull(library.models));
+      setTextIf('lib-materials', numOrNull(library.materials));
+      setTextIf('lib-rigs', numOrNull(library.rigs));
+      setTextIf('lib-animations', numOrNull(library.animations));
+      setTextIf('lib-models-label', 'Models');
+      setTextIf('lib-materials-label', 'Materials');
+      setTextIf('lib-rigs-label', 'Rigs');
+      setTextIf('lib-animations-label', 'Animations');
+
+      setTextIf('vis-profile', prettyLabel(visibility.profileVisibility));
+      setTextIf('vis-marketplace', fmtBoolState(visibility.showOnMarketplace, 'On', 'Off', 'Off'));
+      setTextIf('vis-forgestats', fmtBoolState(visibility.showForgeStats, 'On', 'Off', 'Off'));
+      setTextIf('vis-assets', fmtBoolState(visibility.showUploadedAssets, 'On', 'Off', 'Off'));
+
+      renderPluginList(snapshot.plugins);
+      renderTelemetryProjects(snapshot.projects);
+    }
+
+    async function fetchForgeStatus() {
+      return {
+        connected: false,
+        publicSite: true,
+        telemetry: {
+          liveUserTracking: false,
+          reason: 'Public GitHub Pages cannot read local Forge Studio files. Forge telemetry should upload to Supabase later.'
+        }
+      };
+    }
+
+    function renderForgeStatus(status) {
+      if (!status || !status.connected) {
+        setText('forge-connection-stat', 'Public');
+        setText('forge-version-stat', '--');
+        setText('forge-source-stat', '--');
+        setText('forge-release-stat', '--');
+        setText('forge-project-stat', '--');
+        setText('forge-root-row', 'Private local install');
+        setText('forge-source-row', 'Not available on the public website');
+        setText('forge-release-row', 'Not available on the public website');
+        setText('forge-dist-row', 'Not available on the public website');
+        setText('forge-project-row', 'Waiting for Supabase telemetry');
+        setText('forge-telemetry-row', 'Supabase upload needed');
+        setText('library-project-files', '--');
+        setText('forge-week-total', 'Not public');
+        const activityCopy = document.getElementById('forge-activity-copy');
+        if (activityCopy) {
+          activityCopy.textContent = status && status.telemetry
+            ? status.telemetry.reason
+            : 'Forge telemetry will appear here after Forge Studio uploads account-safe stats to Supabase.';
+        }
+        const activityList = document.getElementById('forge-activity-list');
+        if (activityList) {
+          activityList.replaceChildren(
+            makeIdentityRow('Public website', 'Static GitHub Pages'),
+            makeIdentityRow('Local Forge files', 'Private to your PC'),
+            makeIdentityRow('Live dashboard', 'Needs Supabase telemetry table'),
+            makeIdentityRow('Account data', 'Supabase auth connected')
+          );
+        }
+        return;
+      }
+
+      const latestSource = status.source && status.source.latestModified;
+      const latestRelease = status.build && status.build.latestRelease;
+      const latestDist = status.build && status.build.latestDistFile;
+      const projectFiles = (status.projectFiles && status.projectFiles.recent) || [];
+
+      setText('forge-connection-stat', 'Connected');
+      setText('forge-version-stat', status.package ? status.package.version : 'Unknown');
+      setText('forge-source-stat', status.source ? String(status.source.jsModules) : '--');
+      setText('forge-release-stat', status.build ? String(status.build.releaseCount) : '--');
+      setText('forge-project-stat', status.projectFiles ? String(status.projectFiles.observed) : '--');
+
+      setText('forge-root-row', status.root);
+      setText('forge-source-row', latestSource ? `${latestSource.name} · ${formatDate(latestSource.modifiedAt)}` : 'No source files found');
+      setText('forge-release-row', latestRelease ? fileLabel(latestRelease) : 'No release build found');
+      setText('forge-dist-row', latestDist ? `${formatDate(latestDist.modifiedAt)} · ${status.build.distFiles} files` : 'No dist bundle found');
+      setText('forge-project-row', status.projectFiles ? `${status.projectFiles.observed} found` : 'Not scanned');
+      setText('forge-telemetry-row', status.telemetry && status.telemetry.liveUserTracking ? 'Connected' : 'Needs Forge hook');
+      setText('library-project-files', status.projectFiles ? String(status.projectFiles.observed) : '--');
+      setText('forge-week-total', 'Needs hook');
+
+      const activityCopy = document.getElementById('forge-activity-copy');
+      if (activityCopy) {
+        activityCopy.textContent = status.telemetry
+          ? status.telemetry.reason
+          : 'Weekly Forge time needs Forge Studio to emit session events.';
+      }
+
+      const activityList = document.getElementById('forge-activity-list');
+      if (activityList) {
+        activityList.replaceChildren(
+          makeIdentityRow('Forge folder', 'Connected'),
+          makeIdentityRow('Session time', 'Needs session events'),
+          makeIdentityRow('Autosave', 'forge.autosave is localStorage only'),
+          makeIdentityRow('Asset library', 'forge.assets is localStorage only'),
+          makeIdentityRow('Exports/plugins', 'Needs Forge event hooks')
+        );
+      }
+
+      renderProjectFiles(projectFiles);
+
+      // When Forge Studio is writing live telemetry, fill the real values.
+      if (status.telemetry && status.telemetry.snapshot) {
+        renderTelemetry(status.telemetry.snapshot, status.telemetry);
+      }
+    }
+
+    function ensurePageSwipe() {
+      let swipe = document.querySelector('.page-swipe');
+      if (!swipe) {
+        swipe = document.createElement('div');
+        swipe.className = 'page-swipe';
+        swipe.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(swipe);
+      }
+      return swipe;
+    }
+
+    function isTransitionPage(url) {
+      if (url.origin !== window.location.origin) return false;
+      const page = url.pathname.split('/').pop() || 'index.html';
+      return page === 'index.html' || page === 'policies.html' || page === 'account.html';
+    }
+
+    function wirePageTransitions() {
+      ensurePageSwipe();
+      const shouldEnter = sessionStorage.getItem('nulqor-page-transition') === '1';
+      sessionStorage.removeItem('nulqor-page-transition');
+      if (shouldEnter && !reduceMotion.matches) {
+        requestAnimationFrame(() => document.body.classList.add('is-page-entering'));
+        window.setTimeout(() => document.body.classList.remove('is-page-entering'), 650);
+      }
+
+      let isNavigating = false;
+      document.addEventListener('click', (event) => {
+        const link = event.target.closest('a[href]');
+        if (!link || isNavigating || event.defaultPrevented) return;
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (link.target && link.target !== '_self') return;
+
+        const url = new URL(link.getAttribute('href'), window.location.href);
+        const sameDocument = url.origin === window.location.origin && url.pathname === window.location.pathname;
+        if (!isTransitionPage(url) || sameDocument || reduceMotion.matches) return;
+
+        event.preventDefault();
+        isNavigating = true;
+        ensurePageSwipe();
+        document.body.classList.remove('is-page-entering');
+        document.body.classList.add('is-page-exiting');
+        window.setTimeout(() => {
+          sessionStorage.setItem('nulqor-page-transition', '1');
+          window.location.href = url.href;
+        }, 460);
+      });
+    }
+
+    lookTrigger.addEventListener('click', () => {
+      setLookMenu(lookMenu.hidden);
+    });
+
+    lookOptions.forEach((option) => {
+      option.addEventListener('click', () => {
+        const theme = option.dataset.lookOption;
+        applyTheme(theme);
+        updateThemeUrl(theme);
+        saveThemeSettings();
+        setLookMenu(false);
+        lookTrigger.focus();
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!lookPicker.contains(event.target)) setLookMenu(false);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') setLookMenu(false);
+    });
+
+    avatarButton.addEventListener('click', () => {
+      avatarInput.click();
+    });
+
+    avatarInput.addEventListener('change', () => {
+      storeAvatarFile(avatarInput.files && avatarInput.files[0]);
+    });
+
+    themeModeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        setThemeMode(button.dataset.themeMode);
+        saveThemeSettings();
+      });
+    });
+
+    themeSchedule.querySelectorAll('input[type="time"]').forEach((input) => {
+      input.addEventListener('change', () => {
+        const themeName = input.closest('.schedule-row').querySelector('span').textContent.trim();
+        themeModeNote.textContent = `${themeName} is set for ${input.value || 'no time selected'}.`;
+        saveThemeSettings();
+      });
+    });
+
+    async function initAccountPage() {
+      const state = await fetchAppState();
+      const forgeStatus = await fetchForgeStatus();
+      const requestedTheme = new URLSearchParams(window.location.search).get('theme');
+      applyThemeSchedule(state && state.theme ? state.theme.schedule : {});
+      applyTheme(themeAliases[requestedTheme] || requestedTheme || (state && state.theme && state.theme.current) || 'copper-flow');
+      restoreAvatarImage(state);
+      renderForgeStatus(forgeStatus);
+      setThemeMode((state && state.theme && state.theme.mode) || 'manual');
+      if (requestedTheme) saveThemeSettings();
+      wirePageTransitions();
+    }
+
+    initAccountPage();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=20260621-redesign"></script>
+  <script src="supabase-client.js?v=20260621-redesign"></script>
+  <script src="script.js?v=20260621-redesign"></script>
+  <script src="auth.js?v=20260621-redesign"></script>
+</body>
 </html>

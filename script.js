@@ -1,11 +1,15 @@
 const canvas = document.querySelector("#particleField");
-const ctx = canvas.getContext("2d");
+const ctx = canvas ? canvas.getContext("2d") : null;
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let particles = [];
 let animationFrame = null;
 
 function sizeCanvas() {
+  if (!canvas || !ctx) {
+    return;
+  }
+
   const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = Math.floor(window.innerWidth * pixelRatio);
   canvas.height = Math.floor(window.innerHeight * pixelRatio);
@@ -26,6 +30,10 @@ function createParticles() {
 }
 
 function drawParticles() {
+  if (!canvas || !ctx) {
+    return;
+  }
+
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
   particles.forEach((particle) => {
@@ -46,6 +54,10 @@ function drawParticles() {
 }
 
 function initializeParticles() {
+  if (!canvas || !ctx) {
+    return;
+  }
+
   sizeCanvas();
   createParticles();
   ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -55,12 +67,14 @@ function initializeParticles() {
   }
 }
 
-window.addEventListener("resize", () => {
-  window.cancelAnimationFrame(animationFrame);
-  initializeParticles();
-});
+if (canvas && ctx) {
+  window.addEventListener("resize", () => {
+    window.cancelAnimationFrame(animationFrame);
+    initializeParticles();
+  });
 
-initializeParticles();
+  initializeParticles();
+}
 
 function updateActiveNavigation() {
   const currentPath = window.location.pathname.split("/").pop() || "index.html";

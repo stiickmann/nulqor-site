@@ -1,434 +1,1085 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Nulqor legal policies for Forge Studio, accounts, subscriptions, downloads, early access, privacy, refunds, acceptable use, and support."
-    />
-    <title>Nulqor | Policies</title>
-    <link rel="icon" type="image/png" href="assets/nulqor-icon.png" />
-    <link rel="apple-touch-icon" href="assets/nulqor-icon.png" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Nulqor" />
-    <meta property="og:title" content="Nulqor — Policies" />
-    <meta property="og:description" content="Nulqor legal policies: terms, privacy, refunds, acceptable use, early access, downloads, support, and contact." />
-    <meta property="og:url" content="https://stiickmann.github.io/nulqor-site/policies.html" />
-    <meta property="og:image" content="https://stiickmann.github.io/nulqor-site/assets/nulqor-core.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Nulqor — Policies" />
-    <meta name="twitter:description" content="Nulqor legal policies and contact information." />
-    <meta name="twitter:image" content="https://stiickmann.github.io/nulqor-site/assets/nulqor-core.png" />
-    <link rel="stylesheet" href="styles.css?v=20260617-auth18" />
-  </head>
-  <body>
-    <canvas class="particle-field" id="particleField" aria-hidden="true"></canvas>
-    <div class="site-shell">
-      <header class="site-header" id="top">
-        <a class="brand-mark" href="index.html#top" aria-label="Nulqor home">
-          <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
-          <span class="brand-name">Nulqor</span>
-        </a>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NULQOR - Legal Policies</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 
-        <nav class="nav-links" aria-label="Primary navigation">
-          <a href="index.html#product">Product</a>
-          <a href="index.html#learn">Learn</a>
-          <a href="index.html#plans">Pricing</a>
-          <a href="policies.html" aria-current="page">Policy</a>
-          <a href="index.html#access">Access</a>
-          <a href="account.html" data-account-link>Log in</a>
-        </nav>
+    :root {
+      color-scheme: dark;
+      --bg: #020100;
+      --bg-2: #080302;
+      --panel: rgba(12, 7, 5, .84);
+      --panel-strong: rgba(18, 9, 6, .96);
+      --line: rgba(219, 129, 73, .26);
+      --line-strong: rgba(255, 170, 105, .56);
+      --text: #f7eadf;
+      --text-2: #d8c5b6;
+      --muted: #9e8878;
+      --accent: #d47845;
+      --accent-2: #ffb27a;
+      --accent-3: #7b341d;
+      --accent-rgb: 212, 120, 69;
+      --glow-rgb: 255, 139, 75;
+      --button-text: #20100a;
+      --font-display: "Cormorant Garamond", Georgia, serif;
+      --font-ui: "Inter", "Segoe UI", Arial, sans-serif;
+      --radius: 8px;
+      --shadow: 0 26px 90px rgba(0, 0, 0, .62);
+    }
 
-        <!-- Future backend: connect login/account system, license/session protection, and protected app downloads here. -->
-        <a class="nav-action" href="index.html#access">Request Access</a>
-      </header>
+    * {
+      box-sizing: border-box;
+    }
 
-      <main class="legal-main">
-        <section class="legal-hero" aria-labelledby="legal-title">
-          <p class="eyebrow">Policy hub</p>
-          <h1 id="legal-title">
-            Nulqor <span class="text-cyan">Legal</span> Policies
-          </h1>
-          <p>
-            These policies apply to Nulqor, Forge Studio, Nulqor Free, Nulqor
-            Creator, Nulqor Studio, our website, software, downloads, accounts,
-            subscriptions, early access programs, marketplace features, and
-            related services.
-          </p>
-          <span class="policy-date">Last updated: June 18, 2026</span>
-        </section>
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+    }
 
-        <section class="policy-overview" aria-label="Policy overview">
-          <article>
-            <span>01</span>
-            <strong>Clear access</strong>
-            <p>Plans, downloads, accounts, licenses, and cancellation should be easy to understand.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <strong>Creator ownership</strong>
-            <p>Creators keep ownership of the projects they make, subject to third-party asset licenses.</p>
-          </article>
-          <article>
-            <span>03</span>
-            <strong>Production caution</strong>
-            <p>Early access tools can change, break, or lose data, so important work should be backed up.</p>
-          </article>
-        </section>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-ui);
+      background:
+        radial-gradient(circle at 80% 0%, rgba(var(--glow-rgb), .16), transparent 30rem),
+        radial-gradient(circle at 15% 22%, rgba(var(--accent-rgb), .12), transparent 24rem),
+        linear-gradient(180deg, var(--bg), #000 62%, var(--bg));
+      color: var(--text);
+      overflow-x: hidden;
+    }
 
-        <div class="legal-layout">
-          <aside class="policy-sidebar" aria-label="Policy sections">
-            <a href="#terms">Terms</a>
-            <a href="#refunds">Refunds</a>
-            <a href="#privacy">Privacy</a>
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .18;
+      background:
+        linear-gradient(rgba(255, 255, 255, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .018) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(to bottom, transparent, #000 16%, transparent 88%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site {
+      width: min(100%, 1280px);
+      margin: 0 auto;
+      padding: 0 18px 34px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 22px;
+      align-items: center;
+      min-height: 58px;
+      padding: 0 4px;
+      color: var(--text-2);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: var(--text);
+    }
+
+    .mark {
+      position: relative;
+      width: 23px;
+      height: 23px;
+      display: grid;
+      place-items: center;
+      color: var(--accent-2);
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      box-shadow: 0 0 22px rgba(var(--glow-rgb), .35);
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .mark::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border: 1px solid rgba(var(--accent-rgb), .42);
+      transform: rotate(45deg);
+      border-radius: 2px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: clamp(18px, 3vw, 42px);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav a {
+      opacity: .88;
+      transition: color .2s ease, opacity .2s ease;
+    }
+
+    .nav a:hover,
+    .nav a[aria-current="page"] {
+      color: var(--accent-2);
+      opacity: 1;
+    }
+
+    .hero {
+      padding: 64px 0 30px;
+      border-bottom: 1px solid rgba(var(--accent-rgb), .18);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent-2);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 800px;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(58px, 8vw, 112px);
+      line-height: .86;
+      letter-spacing: -.04em;
+    }
+
+    .hero-copy {
+      max-width: 780px;
+      margin: 24px 0 0;
+      color: var(--text-2);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .updated {
+      display: inline-flex;
+      margin-top: 24px;
+      padding: 9px 12px;
+      border: 1px solid rgba(var(--accent-rgb), .22);
+      border-radius: 999px;
+      color: var(--accent-2);
+      background: rgba(var(--accent-rgb), .07);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 28px 0 34px;
+    }
+
+    .principle,
+    .toc,
+    .legal-card {
+      border: 1px solid rgba(var(--accent-rgb), .24);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(145deg, rgba(var(--accent-rgb), .08), transparent 44%),
+        var(--panel);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .035);
+    }
+
+    .principle {
+      min-height: 168px;
+      padding: 20px;
+    }
+
+    .principle span {
+      display: block;
+      color: var(--accent-2);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      margin-bottom: 18px;
+    }
+
+    .principle h2 {
+      margin: 0 0 9px;
+      color: var(--text);
+      font-size: 17px;
+    }
+
+    .principle p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .legal-layout {
+      display: grid;
+      grid-template-columns: 255px minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 76px;
+      padding: 16px;
+    }
+
+    .toc h2 {
+      margin: 0 0 12px;
+      color: var(--accent-2);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+    }
+
+    .toc nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .toc a {
+      padding: 9px 10px;
+      border-radius: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .toc a:hover {
+      color: var(--text);
+      background: rgba(var(--accent-rgb), .08);
+    }
+
+    .legal-doc {
+      display: grid;
+      gap: 14px;
+    }
+
+    .legal-card {
+      scroll-margin-top: 84px;
+      padding: 28px;
+    }
+
+    .legal-card h2 {
+      margin: 0 0 18px;
+      font-family: var(--font-display);
+      color: var(--text);
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: .95;
+    }
+
+    .legal-card h3 {
+      scroll-margin-top: 84px;
+      margin: 24px 0 10px;
+      color: var(--accent-2);
+      font-size: 13px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+    }
+
+    .legal-card p,
+    .legal-card li {
+      color: var(--text-2);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .legal-card p {
+      margin: 0 0 14px;
+    }
+
+    .legal-card ul {
+      margin: 10px 0 18px;
+      padding-left: 22px;
+    }
+
+    .legal-card li + li {
+      margin-top: 5px;
+    }
+
+    .legal-card strong,
+    .legal-card a {
+      color: var(--accent-2);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(var(--accent-rgb), .16);
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .page-swipe {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(0);
+      background:
+        linear-gradient(100deg, transparent 0%, rgba(var(--accent-rgb), .12) 16%, rgba(var(--accent-rgb), .58) 42%, rgba(var(--glow-rgb), .36) 58%, rgba(0, 0, 0, .94) 78%, #000 100%);
+      box-shadow: 0 0 80px rgba(var(--glow-rgb), .32);
+      backdrop-filter: blur(2px) saturate(1.08);
+    }
+
+    .page-swipe::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, transparent, rgba(255, 255, 255, .18), transparent),
+        radial-gradient(circle at 58% 50%, rgba(var(--glow-rgb), .32), transparent 22rem);
+      opacity: .72;
+    }
+
+    body.is-page-entering .site {
+      animation: pageReveal .52s cubic-bezier(.2, .85, .25, 1) both;
+    }
+
+    body.is-page-entering .page-swipe {
+      animation: swipeEnter .58s cubic-bezier(.65, 0, .2, 1) both;
+    }
+
+    body.is-page-exiting .site {
+      animation: pageExit .34s ease both;
+    }
+
+    body.is-page-exiting .page-swipe {
+      animation: swipeExit .46s cubic-bezier(.72, 0, .2, 1) both;
+    }
+
+    @keyframes swipeEnter {
+      0% { opacity: 1; transform: translateX(0); }
+      100% { opacity: 1; transform: translateX(112%); }
+    }
+
+    @keyframes swipeExit {
+      0% { opacity: 1; transform: translateX(-112%); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes pageReveal {
+      0% { opacity: 0; transform: translateY(8px); filter: blur(1.6px) saturate(1.06); }
+      100% { opacity: 1; transform: translateY(0); filter: blur(0) saturate(1); }
+    }
+
+    @keyframes pageExit {
+      0% { opacity: 1; transform: translateY(0); filter: blur(0) saturate(1); }
+      100% { opacity: .62; transform: translateY(-6px); filter: blur(1.2px) saturate(1.08); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .page-swipe,
+      body.is-page-entering .site,
+      body.is-page-exiting .site {
+        animation: none;
+      }
+    }
+
+    @media (max-width: 1040px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 12px 0;
+        position: relative;
+      }
+
+      .nav {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .legal-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: relative;
+        top: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .site {
+        padding-inline: 12px;
+      }
+
+      .principles {
+        grid-template-columns: 1fr;
+      }
+
+      .legal-card {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 58px;
+      }
+
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header class="topbar">
+      <a class="brand" href="index.html" data-home-anchor="top" aria-label="Nulqor home">
+        <span class="mark">N</span>
+        <span>NULQOR</span>
+      </a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html#forge" data-home-anchor="forge">Product</a>
+        <a href="index.html#learn" data-home-anchor="learn">Learn</a>
+        <a href="index.html#pricing" data-home-anchor="pricing">Pricing</a>
+        <a href="policies.html" aria-current="page">Policy</a>
+        <a href="account.html" data-account-link>Account</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">Nulqor Legal Policies</p>
+        <h1 id="page-title">Clear rules for creators.</h1>
+        <p class="hero-copy">These policies apply to Nulqor, Forge Studio, our website, software, downloads, accounts, subscriptions, early access programs, marketplace features, AI-assisted tools, and related services.</p>
+        <span class="updated">Last updated: June 20, 2026</span>
+      </section>
+
+      <section class="principles" aria-label="Policy principles">
+        <article class="principle" id="clear-access">
+          <span>01</span>
+          <h2>Clear Access</h2>
+          <p>Plans, downloads, accounts, licenses, subscriptions, and cancellation should be easy to understand.</p>
+        </article>
+        <article class="principle" id="creator-ownership">
+          <span>02</span>
+          <h2>Creator Ownership</h2>
+          <p>Creators keep ownership of the projects they make, subject to third-party asset licenses, marketplace licenses, and any separate agreements that apply.</p>
+        </article>
+        <article class="principle" id="production-caution">
+          <span>03</span>
+          <h2>Production Caution</h2>
+          <p>Early access tools can change, break, or lose data, so important work should always be backed up.</p>
+        </article>
+      </section>
+
+      <div class="legal-layout">
+        <aside class="toc" aria-label="Policy table of contents">
+          <h2>Policy Index</h2>
+          <nav>
+            <a href="#terms">Terms of Service</a>
+            <a href="#refund">Refund &amp; Cancellation</a>
+            <a href="#privacy">Privacy Policy</a>
             <a href="#acceptable-use">Acceptable Use</a>
-            <a href="#early-access">Early Access</a>
-            <a href="#downloads">Downloads</a>
-            <a href="#support">Support</a>
-            <a href="#ai-output">AI Output</a>
-            <a href="#liability">Liability</a>
-            <a href="#changes">Changes</a>
-            <a href="#contact-policy">Contact</a>
-          </aside>
+            <a href="#early-access">Early Access / Beta</a>
+            <a href="#download-license-access">Downloads &amp; Licenses</a>
+            <a href="#support">Support Policy</a>
+            <a href="#ai-output">AI Output Disclaimer</a>
+            <a href="#liability">Limitation of Liability</a>
+            <a href="#changes">Changes to Policies</a>
+            <a href="#governing-law">Governing Law</a>
+            <a href="#contact">Contact Information</a>
+          </nav>
+        </aside>
 
-          <div class="policy-document">
-            <section class="policy-section" id="terms">
-              <p class="eyebrow">01</p>
-              <h2>Terms of <span class="text-cyan">Service</span></h2>
-              <p>
-                Nulqor provides software, tools, AI-assisted workflows, digital
-                services, downloadable applications, cloud features, account
-                features, marketplace features, and related products.
-              </p>
-              <h3>Use of Nulqor services</h3>
-              <p>
-                You may use Nulqor services only for lawful purposes and only in
-                a way that does not harm Nulqor, other users, our systems, or
-                third-party services.
-              </p>
-              <h3>Accounts</h3>
-              <ul>
-                <li>Provide accurate account information.</li>
-                <li>Keep login details secure.</li>
-                <li>You are responsible for activity under your account.</li>
-                <li>Do not share paid access in a way that bypasses subscriptions or license limits.</li>
-              </ul>
-              <h3>Software license</h3>
-              <p>
-                When you download or use Forge Studio or another Nulqor app,
-                Nulqor gives you a limited, non-exclusive, non-transferable
-                license to use the software according to your plan.
-              </p>
-              <ul>
-                <li>Do not resell Nulqor software without permission.</li>
-                <li>Do not reverse engineer, decompile, crack, or bypass license systems.</li>
-                <li>Do not remove branding, security systems, telemetry notices, or copyright information.</li>
-                <li>Do not share paid builds, private tester builds, or license-protected files publicly.</li>
-              </ul>
-              <h3>Plan access</h3>
-              <p>
-                Nulqor may offer Nulqor Free, Nulqor Creator, and Nulqor Studio.
-                Features, limits, prices, AI limits, storage, export access, and
-                availability may change over time.
-              </p>
-              <h3>User content and projects</h3>
-              <p>
-                You keep ownership of the models, rigs, animations, scenes,
-                materials, files, and creative work you make using Nulqor tools,
-                unless third-party assets or separate licenses apply.
-              </p>
-              <p>
-                By using cloud saves, collaboration, marketplace, or upload
-                features, you give Nulqor permission to store, process, display,
-                transmit, and back up your content as needed to provide the
-                service.
-              </p>
-              <h3>Eligibility</h3>
-              <p>
-                You must be at least 13 years old to use Nulqor. If you are under
-                the age of majority where you live, you may only use Nulqor with
-                the permission and supervision of a parent or legal guardian.
-                School, studio, and team accounts must be created and managed by
-                an authorized adult.
-              </p>
-              <h3>Account suspension and termination</h3>
-              <p>
-                Nulqor may suspend, limit, or terminate accounts that violate
-                these policies, abuse the service, attempt fraud, or put other
-                users or our systems at risk. You may stop using Nulqor and
-                request deletion of your account at any time by contacting
-                support.
-              </p>
-            </section>
+        <article class="legal-doc">
+          <section class="legal-card" id="terms">
+            <h2>Terms of Service</h2>
+            <p>Nulqor provides software, tools, AI-assisted workflows, digital services, downloadable applications, cloud features, account features, marketplace features, and related products.</p>
+            <p>By using Nulqor services, you agree to these policies.</p>
 
-            <section class="policy-section" id="refunds">
-              <p class="eyebrow">02</p>
-              <h2>Refund & <span class="text-violet">Cancellation</span> Policy</h2>
-              <h3>Payments and subscriptions</h3>
-              <p>
-                Nulqor may accept payments through third-party providers such as
-                Stripe, Square, PayPal, Cash App Pay, or other supported payment
-                processors. Subscriptions may renew automatically unless canceled
-                before the renewal date.
-              </p>
-              <h3>Cancellations</h3>
-              <p>
-                You may cancel your subscription at any time through the payment
-                provider, customer portal, account dashboard, or by contacting
-                support if self-service cancellation is not yet available.
-                Canceling stops future renewals. It does not automatically
-                refund previous charges.
-              </p>
-              <!-- Future backend: connect cancellation portal, Stripe customer portal, subscription status, and billing emails here. -->
-              <h3>Refund review</h3>
-              <p>
-                Because Nulqor sells digital software, subscriptions, AI usage,
-                downloads, and online services, refunds are generally not
-                guaranteed once access has been delivered. Requests may be
-                reviewed case by case.
-              </p>
-              <ul>
-                <li>Refunds may be considered for mistaken charges, duplicate billing, system errors, or verified access failures.</li>
-                <li>Refunds may be denied for changed minds, forgotten renewals, policy violations, unsupported devices, or refund abuse.</li>
-                <li>Early access purchases support development and do not guarantee every planned feature immediately.</li>
-                <li>One-time digital purchases are generally non-refundable once delivered, downloaded, redeemed, or accessed.</li>
-              </ul>
-            </section>
+            <h3>Use of Nulqor Services</h3>
+            <p>You may use Nulqor services only for lawful purposes and only in a way that does not harm Nulqor, other users, our systems, payment providers, hosting providers, AI providers, or third-party services.</p>
+            <p>You agree not to abuse, disrupt, overload, attack, bypass, exploit, reverse engineer, resell, or misuse Nulqor services.</p>
 
-            <section class="policy-section" id="privacy">
-              <p class="eyebrow">03</p>
-              <h2>Privacy <span class="text-cyan">Policy</span></h2>
-              <h3>Information we may collect</h3>
-              <ul>
-                <li>Name, email address, account username, login information, and support messages.</li>
-                <li>Payment status, subscription plan, app version, device information, crash logs, and error logs.</li>
-                <li>Usage data, waitlist submissions, project metadata, and cloud save data if cloud features are used.</li>
-              </ul>
-              <p>
-                Payment details such as full card numbers are processed by
-                third-party payment providers. Nulqor should not directly store
-                full card numbers.
-              </p>
-              <h3>How information may be used</h3>
-              <p>
-                Nulqor may use information to create accounts, provide software
-                access, process subscriptions, verify paid plans, prevent license
-                abuse, provide cloud saves and AI features, fix bugs, respond to
-                support, send important notices, and prevent fraud or security
-                issues.
-              </p>
-              <h3>AI and project data</h3>
-              <p>
-                If you use AI features, prompts, project context, selected
-                objects, scene information, error messages, or related data may
-                be processed to provide assistance. Do not submit private,
-                sensitive, illegal, or confidential information into AI tools
-                unless you understand the feature and accept the risk.
-              </p>
-              <h3>Sharing and security</h3>
-              <p>
-                Nulqor may share information with providers needed to run the
-                platform, such as payment processors, hosting providers,
-                analytics providers, email providers, AI infrastructure, support
-                tools, and fraud prevention tools. Nulqor does not sell personal
-                information to advertisers.
-              </p>
-              <h3>Cookies and local storage</h3>
-              <p>
-                Nulqor uses cookies and browser local storage to keep you logged
-                in, remember preferences, and run core features. Third-party
-                providers we rely on (such as our hosting, database, and
-                analytics providers) may set their own cookies. You can clear or
-                block cookies in your browser, but some features — including
-                login — may stop working.
-              </p>
-              <h3>Data retention</h3>
-              <p>
-                Nulqor keeps account and usage information while your account is
-                active and for as long as needed to provide the service, meet
-                legal or accounting requirements, resolve disputes, and prevent
-                abuse. We remove or anonymize data when it is no longer needed.
-              </p>
-              <h3>Your choices and rights</h3>
-              <p>
-                You may request access to, correction of, or deletion of your
-                personal information, and you may opt out of non-essential
-                messages at any time. To make a request, contact us using the
-                details in the Contact section. We may need to verify your
-                identity before acting on a request.
-              </p>
-            </section>
+            <h3>Accounts</h3>
+            <p>You agree to:</p>
+            <ul>
+              <li>Provide accurate account information.</li>
+              <li>Keep your login details secure.</li>
+              <li>Keep your payment and billing information accurate.</li>
+              <li>Be responsible for activity under your account.</li>
+              <li>Not share paid access in a way that bypasses subscriptions, license limits, team limits, or access limits.</li>
+              <li>Not create accounts to avoid bans, limits, payment obligations, or enforcement actions.</li>
+            </ul>
+            <p>Nulqor may require email verification, login verification, payment verification, device/session checks, or other security checks to protect accounts and paid access.</p>
 
-            <section class="policy-section" id="acceptable-use">
-              <p class="eyebrow">04</p>
-              <h2>Acceptable <span class="text-flare">Use</span> Policy</h2>
-              <p>You may not use Nulqor services to create, upload, distribute, sell, or assist with:</p>
-              <ul>
-                <li>Illegal content, malware, phishing, exploits, credential theft, payment fraud, or spam.</li>
-                <li>Harassment, threats, doxxing, impersonation, hate content, extremist content, or harmful abuse.</li>
-                <li>Stolen assets, copyright-infringing content, or content you do not have rights to distribute.</li>
-                <li>Sexual content involving minors or non-consensual sexual content.</li>
-                <li>Attempts to bypass Nulqor licensing, payments, security, limits, or access controls.</li>
-                <li>Attempts to overload, scrape, attack, disrupt, or compromise Nulqor systems.</li>
-              </ul>
-              <p>
-                Nulqor may remove content, restrict accounts, disable marketplace
-                listings, or terminate access for violations.
-              </p>
-            </section>
+            <h3>Software License</h3>
+            <p>When you download or use Forge Studio or another Nulqor app, Nulqor gives you a limited, non-exclusive, non-transferable license to use the software according to your access level, subscription, license, and these policies.</p>
+            <p>You may not:</p>
+            <ul>
+              <li>Resell Nulqor software without permission.</li>
+              <li>Reverse engineer, decompile, crack, modify, or bypass license systems.</li>
+              <li>Remove branding, security systems, telemetry notices, copyright information, or authenticity markers.</li>
+              <li>Share paid builds, private tester builds, license-protected files, or early access builds publicly.</li>
+              <li>Use Nulqor software to create a competing product by copying Nulqor's protected design, code, branding, systems, or private features.</li>
+              <li>Use modified, cracked, stolen, leaked, or unofficial builds.</li>
+            </ul>
+            <p>Nulqor may limit or disable software access if a license cannot be verified, payment fails, suspicious activity is detected, or these policies are violated.</p>
 
-            <section class="policy-section" id="early-access">
-              <p class="eyebrow">05</p>
-              <h2>Early Access / <span class="text-violet">Beta</span> Notice</h2>
-              <p>
-                Nulqor and Forge Studio may include early access, beta,
-                experimental, preview, or unfinished features. Early access
-                software may contain bugs, crashes, missing tools, changing
-                features, performance issues, compatibility issues, incomplete
-                documentation, limited support, and data loss risks.
-              </p>
-              <p>
-                Do not use beta or early access versions as your only copy of
-                important work. Always keep backups. Paid early access does not
-                guarantee that every planned feature will be available
-                immediately.
-              </p>
-            </section>
+            <h3>Plans, Pricing, and Access</h3>
+            <p>Nulqor may offer free plans, paid plans, team plans, organization plans, enterprise plans, early access plans, promotional plans, trials, discounts, or custom access options.</p>
+            <p>Plan names, prices, features, limits, AI usage, AI credits, storage, exports, render queues, marketplace access, team features, private deployment options, and availability may be shown on the Nulqor website, pricing page, checkout page, account dashboard, receipt, invoice, or in a separate written agreement.</p>
+            <p>Prices, features, limits, and availability may change over time.</p>
+            <p>Promotional pricing, Founders Edition pricing, discounts, trials, or special offers may be limited, changed, or ended at any time for new purchases.</p>
+            <p>Existing subscriptions may keep promotional pricing only as stated at checkout, in the account dashboard, on the receipt, on the invoice, or in a separate written agreement.</p>
+            <p>Taxes, currency conversion fees, payment processor fees, and other third-party fees may apply.</p>
 
-            <section class="policy-section" id="downloads">
-              <p class="eyebrow">06</p>
-              <h2>Download, License, and <span class="text-cyan">Access</span> Policy</h2>
-              <p>
-                Forge Studio and related Nulqor software may be distributed
-                through official Nulqor download pages, private tester links,
-                update servers, or approved platforms. Do not download Nulqor
-                software from unofficial sources.
-              </p>
-              <!-- Future backend: connect protected downloads, license verification, device/session checks, and update channels here. -->
-              <ul>
-                <li>Paid features may require login, subscription verification, license checks, device/session checks, or internet access.</li>
-                <li>Nulqor may limit access if a license cannot be verified, payment fails, or suspicious activity is detected.</li>
-                <li>Some updates may be required to continue using online, AI, cloud, marketplace, or paid features.</li>
-                <li>Nulqor may not support all devices, operating systems, GPUs, drivers, browsers, or hardware configurations.</li>
-              </ul>
-            </section>
+            <h3>Team, Organization, and Enterprise Access</h3>
+            <p>Some Nulqor access options may include seat-based access, shared workspaces, shared projects, shared asset libraries, shared theme or brand kits, version history, pooled usage, team admin controls, private deployment options, onboarding, or priority support when available.</p>
+            <p>Team, organization, or enterprise access may require:</p>
+            <ul>
+              <li>Seat verification.</li>
+              <li>Admin approval.</li>
+              <li>Organization membership.</li>
+              <li>Domain verification.</li>
+              <li>Subscription verification.</li>
+              <li>Custom deployment approval.</li>
+              <li>Separate onboarding.</li>
+              <li>A separate quote, invoice, purchase order, or written agreement.</li>
+            </ul>
+            <p>Custom access options may include custom pricing, minimum seat counts, custom usage limits, onboarding, private deployment, compliance support, security review, invoicing, and custom support terms.</p>
+            <p>If a separate written agreement applies, that agreement controls where it conflicts with these general policies.</p>
 
-            <section class="policy-section" id="support">
-              <p class="eyebrow">07</p>
-              <h2>Support <span class="text-cyan">Policy</span></h2>
-              <p>
-                Nulqor may provide support through email, website forms, Discord,
-                help center, or other support channels.
-              </p>
-              <p>
-                Join the Nulqor Discord community:
-                <a href="https://discord.gg/A5N3N67SUR" target="_blank" rel="noopener">discord.gg/A5N3N67SUR</a>.
-              </p>
-              <ul>
-                <li>Support may include billing help, account help, installation help, bug reports, basic usage questions, subscriptions, and refund review.</li>
-                <li>Support does not guarantee custom project creation, one-on-one training, fixes by a specific date, or help for modified/cracked builds.</li>
-                <li>Priority support may be offered to paid plans or team plans.</li>
-              </ul>
-            </section>
+            <h3 id="user-content">User Content and Projects</h3>
+            <p>You keep ownership of the models, rigs, animations, scenes, materials, files, textures, scripts, project files, and creative work you make using Nulqor tools, unless third-party assets, marketplace licenses, school/team agreements, employer agreements, or separate licenses apply.</p>
+            <p>By using cloud saves, collaboration, marketplace, upload, AI, or account features, you give Nulqor permission to store, process, display, transmit, back up, analyze, and access your content as needed to provide the service, protect the platform, fix bugs, support users, and enforce these policies.</p>
+            <p>Nulqor does not claim ownership over your original creative projects just because you made them using Nulqor tools.</p>
+            <p>You are responsible for making sure you have the rights to any assets, files, textures, audio, models, scripts, references, or uploads you use.</p>
 
-            <section class="policy-section" id="ai-output">
-              <p class="eyebrow">08</p>
-              <h2>AI Output Disclaimer</h2>
-              <p>
-                AI tools inside Nulqor may generate suggestions, instructions,
-                scripts, materials, animations, cleanup steps, rigging help,
-                topology suggestions, or other output. AI output may be wrong,
-                incomplete, unsafe, or unsuitable.
-              </p>
-              <ul>
-                <li>Review AI output before using it.</li>
-                <li>Test generated content and keep backups.</li>
-                <li>Confirm rights and licenses before commercial use.</li>
-                <li>Do not rely on AI output for legal, financial, medical, safety-critical, or engineering-critical decisions.</li>
-              </ul>
-            </section>
+            <h3>Third-Party Assets and Marketplace Content</h3>
+            <p>Some Nulqor features may include third-party assets, community assets, marketplace assets, templates, plugins, textures, models, sounds, scripts, or other content.</p>
+            <p>Third-party assets may have their own licenses, restrictions, attribution requirements, commercial-use rules, or redistribution limits.</p>
+            <p>You are responsible for checking whether an asset can be used in your project, sold, exported, modified, or used commercially.</p>
+            <p>Nulqor may remove, hide, disable, refund, restrict, or review marketplace listings if they violate policies, contain stolen content, include harmful files, mislead users, or create legal or safety issues.</p>
 
-            <section class="policy-section" id="liability">
-              <p class="eyebrow">09</p>
-              <h2>Limitation of Liability</h2>
-              <p>
-                To the maximum extent allowed by law, Nulqor is not responsible
-                for lost profits, lost files, corrupted projects, business
-                interruption, failed exports, AI mistakes, marketplace asset
-                issues, third-party outages, unsupported device problems, user
-                error, beta software bugs, or indirect and consequential damages.
-              </p>
-              <p>
-                Nulqor services are provided "as is" and "as available" unless
-                otherwise required by law.
-              </p>
-            </section>
+            <h3>Eligibility</h3>
+            <p>You must be at least 13 years old to use Nulqor.</p>
+            <p>If you are under the age of majority where you live, you may only use Nulqor with the permission and supervision of a parent or legal guardian.</p>
+            <p>School, studio, team, organization, and enterprise accounts must be created and managed by an authorized adult, organization owner, school administrator, team administrator, or approved representative.</p>
+            <p>Nulqor services are not intended for children under 13.</p>
 
-            <section class="policy-section" id="changes">
-              <p class="eyebrow">10</p>
-              <h2>Changes to Policies</h2>
-              <p>
-                Nulqor may update these policies as the product, payment system,
-                laws, or business changes. Updated policies will be posted on
-                the Nulqor website with a new Last updated date. Continued use
-                of Nulqor services after changes means you accept the updated
-                policies.
-              </p>
-              <h3>Governing law</h3>
-              <p>
-                These policies and your use of Nulqor are governed by the
-                applicable laws of the jurisdiction in which Nulqor operates,
-                without regard to conflict-of-law rules. Nothing here removes
-                rights you have under mandatory local consumer-protection laws.
-              </p>
-            </section>
+            <h3>Account Suspension and Termination</h3>
+            <p>Nulqor may suspend, limit, disable, or terminate accounts that:</p>
+            <ul>
+              <li>Violate these policies.</li>
+              <li>Abuse the service.</li>
+              <li>Attempt fraud.</li>
+              <li>Distribute stolen or harmful content.</li>
+              <li>Bypass payment, license, AI, export, seat, or access limits.</li>
+              <li>Put other users, Nulqor, payment providers, or systems at risk.</li>
+              <li>Use leaked, cracked, modified, or unofficial builds.</li>
+              <li>Engage in harassment, scams, malware, phishing, or illegal activity.</li>
+            </ul>
+            <p>You may stop using Nulqor and request deletion of your account at any time by contacting support.</p>
+            <p>Some information may be kept as needed for legal, accounting, billing, fraud prevention, security, dispute resolution, or abuse-prevention reasons.</p>
+          </section>
 
-            <section class="policy-section" id="contact-policy">
-              <p class="eyebrow">11</p>
-              <h2>Contact Information</h2>
-              <p>For support, billing, privacy, refund, or policy questions, contact:</p>
-              <div class="contact-card">
-                <strong>Nulqor Support</strong>
-                <a href="mailto:teamnulqor@gmail.com">teamnulqor@gmail.com</a>
-                <a href="https://discord.gg/A5N3N67SUR" target="_blank" rel="noopener">Discord community — discord.gg/A5N3N67SUR</a>
-              </div>
-              <p>
-                When contacting support, include your name, account email,
-                product or plan, payment date if billing-related, device/OS if
-                technical, and a clear explanation of the issue.
-              </p>
-              <!-- Future backend: connect support form, ticketing, email capture, refund review workflow, and account lookup here. -->
-            </section>
-          </div>
-        </div>
-      </main>
+          <section class="legal-card" id="refund">
+            <h2>Refund &amp; Cancellation Policy</h2>
 
-      <footer class="site-footer" id="contact">
-        <div>
-          <a class="brand-mark" href="index.html#top" aria-label="Nulqor home">
-            <img class="brand-icon" src="assets/nulqor-icon.png" alt="" aria-hidden="true" />
-            <span class="brand-name">Nulqor</span>
-          </a>
-          <p>Private intelligence for serious creation tools.</p>
-        </div>
-        <nav aria-label="Footer navigation">
-          <a href="#terms">Terms</a>
-          <a href="#privacy">Privacy</a>
-          <a href="#refunds">Refunds</a>
-          <a href="#acceptable-use">Acceptable Use</a>
-          <a href="#support">Support</a>
-          <a href="https://discord.gg/A5N3N67SUR" target="_blank" rel="noopener">Discord</a>
-          <a href="mailto:teamnulqor@gmail.com">Contact</a>
-        </nav>
-        <p class="copyright">&copy; 2026 Nulqor. All rights reserved.</p>
-      </footer>
-    </div>
+            <h3>Payments and Subscriptions</h3>
+            <p>Nulqor may accept payments through third-party providers such as Stripe, Square, PayPal, Cash App Pay, or other supported payment processors.</p>
+            <p>Subscriptions may renew automatically unless canceled before the renewal date.</p>
+            <p>Some access options may be billed monthly, yearly, per seat, by usage, through invoices, or through custom terms.</p>
+            <p>Seat-based access may charge based on the number of active users, invited users, assigned seats, or purchased seats depending on the billing setup.</p>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js?v=20260617-auth"></script>
-    <script src="supabase-client.js?v=20260617-auth3"></script>
-    <script src="script.js?v=20260617-auth3"></script>
-    <script src="auth.js?v=20260617-auth18"></script>
-  </body>
+            <h3>Cancellations</h3>
+            <p>You may cancel your subscription at any time through the payment provider, customer portal, account dashboard, or by contacting support if self-service cancellation is not yet available.</p>
+            <p>Canceling stops future renewals. It does not automatically refund previous charges.</p>
+            <p>Access may continue until the end of the current billing period unless otherwise stated at checkout, in the account dashboard, on the receipt, on the invoice, or in a separate written agreement.</p>
+            <p>For team, organization, enterprise, or seat-based access, removing users or reducing seats may take effect immediately or at the next billing cycle depending on the billing system and access terms.</p>
+            <p>Nulqor may continue charging for assigned seats until they are removed, canceled, or changed through the proper billing flow.</p>
+
+            <h3>Refund Review</h3>
+            <p>Because Nulqor sells digital software, subscriptions, AI usage, downloads, early access tools, and online services, refunds are generally not guaranteed once access has been delivered.</p>
+            <p>Refund requests may be reviewed case by case.</p>
+            <p>Refunds may be considered for:</p>
+            <ul>
+              <li>Mistaken charges.</li>
+              <li>Duplicate billing.</li>
+              <li>System errors.</li>
+              <li>Verified access failures.</li>
+              <li>Payment processor errors.</li>
+              <li>Cases where Nulqor charged incorrectly.</li>
+            </ul>
+            <p>Refunds may be denied for:</p>
+            <ul>
+              <li>Changed minds.</li>
+              <li>Forgotten renewals.</li>
+              <li>Unused subscriptions.</li>
+              <li>Failure to cancel before renewal.</li>
+              <li>Unsupported devices.</li>
+              <li>User error.</li>
+              <li>Policy violations.</li>
+              <li>License abuse.</li>
+              <li>Refund abuse.</li>
+              <li>Bans or removals caused by policy violations.</li>
+            </ul>
+            <p>Early access purchases support development and do not guarantee that every planned feature will be available immediately.</p>
+            <p>One-time digital purchases are generally non-refundable once delivered, downloaded, redeemed, or accessed.</p>
+          </section>
+
+          <section class="legal-card" id="privacy">
+            <h2>Privacy Policy</h2>
+
+            <h3 id="data-practices">Information We May Collect</h3>
+            <p>Nulqor may collect information such as:</p>
+            <ul>
+              <li>Name.</li>
+              <li>Email address.</li>
+              <li>Account username.</li>
+              <li>Login information.</li>
+              <li>Support messages.</li>
+              <li>Waitlist submissions.</li>
+              <li>Payment status.</li>
+              <li>Subscription status.</li>
+              <li>App version.</li>
+              <li>Device information.</li>
+              <li>Operating system.</li>
+              <li>Browser information.</li>
+              <li>Crash logs.</li>
+              <li>Error logs.</li>
+              <li>Usage data.</li>
+              <li>Project metadata.</li>
+              <li>Cloud save data if cloud features are used.</li>
+              <li>Team or organization membership information if team features are used.</li>
+              <li>Marketplace listing information if marketplace features are used.</li>
+            </ul>
+            <p>Payment details such as full card numbers are processed by third-party payment providers. Nulqor should not directly store full card numbers.</p>
+
+            <h3>How Information May Be Used</h3>
+            <p>Nulqor may use information to:</p>
+            <ul>
+              <li>Create accounts.</li>
+              <li>Provide software access.</li>
+              <li>Process subscriptions.</li>
+              <li>Verify paid access.</li>
+              <li>Verify team or organization seats.</li>
+              <li>Prevent license abuse.</li>
+              <li>Provide cloud saves.</li>
+              <li>Provide AI features.</li>
+              <li>Provide marketplace features.</li>
+              <li>Fix bugs.</li>
+              <li>Improve performance.</li>
+              <li>Respond to support requests.</li>
+              <li>Send important notices.</li>
+              <li>Prevent fraud.</li>
+              <li>Prevent security issues.</li>
+              <li>Enforce policies.</li>
+              <li>Comply with legal, billing, tax, accounting, or safety requirements.</li>
+            </ul>
+
+            <h3>AI and Project Data</h3>
+            <p>If you use AI features, prompts, project context, selected objects, scene information, error messages, file metadata, or related data may be processed to provide assistance.</p>
+            <p>Do not submit private, sensitive, illegal, confidential, or highly valuable information into AI tools unless you understand the feature and accept the risk.</p>
+            <p>AI features may use third-party AI infrastructure. Data handling may depend on the feature, provider, access level, settings, and terms available at the time.</p>
+            <p>Nulqor may add controls in the future for AI memory, AI project context, data retention, private deployment, or enterprise AI settings.</p>
+
+            <h3>Sharing and Service Providers</h3>
+            <p>Nulqor may share information with providers needed to run the platform, such as:</p>
+            <ul>
+              <li>Payment processors.</li>
+              <li>Hosting providers.</li>
+              <li>Database providers.</li>
+              <li>Analytics providers.</li>
+              <li>Email providers.</li>
+              <li>AI infrastructure providers.</li>
+              <li>Support tools.</li>
+              <li>Security tools.</li>
+              <li>Fraud prevention tools.</li>
+              <li>Marketplace service providers.</li>
+              <li>Cloud storage providers.</li>
+            </ul>
+            <p>Nulqor does not sell personal information to advertisers.</p>
+            <p>Nulqor may disclose information if required to comply with law, enforce policies, protect users, prevent fraud, investigate abuse, respond to legal requests, or protect Nulqor's rights and systems.</p>
+
+            <h3 id="cookies">Cookies and Local Storage</h3>
+            <p>Nulqor uses cookies and browser local storage to keep you logged in, remember preferences, run core features, improve performance, and support account features.</p>
+            <p>Third-party providers we rely on, such as hosting, database, analytics, payment, and support providers, may set their own cookies.</p>
+            <p>You can clear or block cookies in your browser, but some features, including login, checkout, account dashboards, and saved preferences, may stop working.</p>
+
+            <h3>Data Retention</h3>
+            <p>Nulqor keeps account and usage information while your account is active and for as long as needed to provide the service, meet legal or accounting requirements, resolve disputes, enforce agreements, prevent fraud, protect users, and prevent abuse.</p>
+            <p>We remove, delete, or anonymize data when it is no longer needed, unless we are required or allowed to keep it for legitimate reasons.</p>
+
+            <h3>Your Choices and Rights</h3>
+            <p>You may request access to, correction of, or deletion of your personal information.</p>
+            <p>You may opt out of non-essential messages at any time.</p>
+            <p>To make a request, contact us using the details in the Contact section.</p>
+            <p>We may need to verify your identity before acting on a request.</p>
+            <p>Some information may not be deleted immediately if it is needed for billing, legal, accounting, fraud prevention, security, dispute resolution, or abuse-prevention reasons.</p>
+          </section>
+
+          <section class="legal-card" id="acceptable-use">
+            <h2>Acceptable Use Policy</h2>
+            <p>You may not use Nulqor services to create, upload, distribute, sell, assist with, or promote:</p>
+            <ul>
+              <li>Illegal content.</li>
+              <li>Malware.</li>
+              <li>Phishing.</li>
+              <li>Exploits.</li>
+              <li>Credential theft.</li>
+              <li>Payment fraud.</li>
+              <li>Spam.</li>
+              <li>Scams.</li>
+              <li>Harassment.</li>
+              <li>Threats.</li>
+              <li>Doxxing.</li>
+              <li>Impersonation.</li>
+              <li>Hate content.</li>
+              <li>Extremist content.</li>
+              <li>Harmful abuse.</li>
+              <li>Stolen assets.</li>
+              <li>Copyright-infringing content.</li>
+              <li>Content you do not have rights to distribute.</li>
+              <li>Sexual content involving minors.</li>
+              <li>Non-consensual sexual content.</li>
+              <li>Attempts to bypass Nulqor licensing, payments, security, AI limits, export limits, seat limits, or access controls.</li>
+              <li>Attempts to overload, scrape, attack, disrupt, or compromise Nulqor systems.</li>
+              <li>Attempts to distribute leaked, cracked, modified, or unofficial builds.</li>
+              <li>Attempts to abuse marketplace systems, reviews, refunds, subscriptions, or support.</li>
+            </ul>
+            <p>Nulqor may remove content, restrict accounts, disable marketplace listings, suspend access, terminate accounts, or report serious abuse when appropriate.</p>
+          </section>
+
+          <section class="legal-card" id="early-access">
+            <h2>Early Access / Beta Notice</h2>
+            <p>Nulqor and Forge Studio may include early access, beta, experimental, preview, or unfinished features.</p>
+            <p>Early access software may contain:</p>
+            <ul>
+              <li>Bugs.</li>
+              <li>Crashes.</li>
+              <li>Missing tools.</li>
+              <li>Changing features.</li>
+              <li>Performance issues.</li>
+              <li>Compatibility issues.</li>
+              <li>Incomplete documentation.</li>
+              <li>Limited support.</li>
+              <li>Data loss risks.</li>
+              <li>Export issues.</li>
+              <li>AI mistakes.</li>
+              <li>Broken saves.</li>
+              <li>Marketplace limitations.</li>
+              <li>Cloud sync issues.</li>
+            </ul>
+            <p>Do not use beta or early access versions as your only copy of important work.</p>
+            <p>Always keep backups.</p>
+            <p>Paid early access does not guarantee that every planned feature will be available immediately.</p>
+            <p>Features shown in previews, screenshots, videos, roadmaps, announcements, or demos may change, be delayed, or never release.</p>
+          </section>
+
+          <section class="legal-card" id="download-license-access">
+            <h2>Download, License, and Access Policy</h2>
+            <p>Forge Studio and related Nulqor software may be distributed through official Nulqor download pages, private tester links, update servers, or approved platforms.</p>
+            <p>Do not download Nulqor software from unofficial sources.</p>
+            <p>Paid features may require:</p>
+            <ul>
+              <li>Login.</li>
+              <li>Subscription verification.</li>
+              <li>License checks.</li>
+              <li>Device checks.</li>
+              <li>Session checks.</li>
+              <li>Team or organization verification.</li>
+              <li>Admin approval.</li>
+              <li>Internet access.</li>
+            </ul>
+            <p>Nulqor may limit access if:</p>
+            <ul>
+              <li>A license cannot be verified.</li>
+              <li>Payment fails.</li>
+              <li>A chargeback occurs.</li>
+              <li>Suspicious activity is detected.</li>
+              <li>A user violates these policies.</li>
+              <li>A build is outdated, modified, cracked, leaked, or unsafe.</li>
+            </ul>
+            <p>Some updates may be required to continue using online, AI, cloud, marketplace, collaboration, or paid features.</p>
+            <p>Nulqor may not support all devices, operating systems, GPUs, drivers, browsers, hardware configurations, or third-party software setups.</p>
+            <p>Team, organization, or custom access may require seat verification, admin approval, organization membership, domain verification, custom deployment approval, or separate onboarding.</p>
+          </section>
+
+          <section class="legal-card" id="support">
+            <h2>Support Policy</h2>
+            <p>Nulqor may provide support through email, website forms, Discord, help center, account dashboard, or other support channels.</p>
+            <p>Join the Nulqor Discord community:<br><a href="https://discord.gg/A5N3N67SUR">discord.gg/A5N3N67SUR</a></p>
+            <p>Support may include:</p>
+            <ul>
+              <li>Billing help.</li>
+              <li>Account help.</li>
+              <li>Installation help.</li>
+              <li>Bug reports.</li>
+              <li>Basic usage questions.</li>
+              <li>Subscription help.</li>
+              <li>Refund review.</li>
+              <li>License access help.</li>
+              <li>Download help.</li>
+              <li>Basic troubleshooting.</li>
+            </ul>
+            <p>Support does not guarantee:</p>
+            <ul>
+              <li>Custom project creation.</li>
+              <li>One-on-one training.</li>
+              <li>Fixes by a specific date.</li>
+              <li>Support for modified builds.</li>
+              <li>Support for cracked builds.</li>
+              <li>Support for unofficial downloads.</li>
+              <li>Support for unsupported devices.</li>
+              <li>Recovery of every lost file.</li>
+              <li>Guaranteed compatibility with every system.</li>
+            </ul>
+            <p>Priority support may be offered to paid users, team users, organization users, or accounts with custom support agreements.</p>
+          </section>
+
+          <section class="legal-card" id="ai-output">
+            <h2>AI Output Disclaimer</h2>
+            <p>AI tools inside Nulqor may generate suggestions, instructions, scripts, materials, animations, cleanup steps, rigging help, topology suggestions, project guidance, or other output.</p>
+            <p>AI output may be wrong, incomplete, unsafe, biased, outdated, or unsuitable.</p>
+            <p>You should:</p>
+            <ul>
+              <li>Review AI output before using it.</li>
+              <li>Test generated content.</li>
+              <li>Keep backups.</li>
+              <li>Confirm rights and licenses before commercial use.</li>
+              <li>Check important work manually.</li>
+              <li>Avoid relying on AI as your only source of truth.</li>
+            </ul>
+            <p>Do not rely on AI output for legal, financial, medical, safety-critical, engineering-critical, or life-critical decisions.</p>
+            <p>You are responsible for how you use AI output.</p>
+          </section>
+
+          <section class="legal-card" id="liability">
+            <h2>Limitation of Liability</h2>
+            <p>To the maximum extent allowed by law, Nulqor is not responsible for:</p>
+            <ul>
+              <li>Lost profits.</li>
+              <li>Lost files.</li>
+              <li>Corrupted projects.</li>
+              <li>Business interruption.</li>
+              <li>Failed exports.</li>
+              <li>AI mistakes.</li>
+              <li>Marketplace asset issues.</li>
+              <li>Third-party outages.</li>
+              <li>Unsupported device problems.</li>
+              <li>User error.</li>
+              <li>Beta software bugs.</li>
+              <li>Subscription issues caused by third-party processors.</li>
+              <li>Failed downloads caused by user systems or third-party networks.</li>
+              <li>Compatibility issues.</li>
+              <li>Indirect damages.</li>
+              <li>Consequential damages.</li>
+              <li>Incidental damages.</li>
+              <li>Special damages.</li>
+            </ul>
+            <p>Nulqor services are provided "as is" and "as available" unless otherwise required by law.</p>
+            <p>Nothing in these policies removes rights you may have under mandatory consumer-protection laws.</p>
+          </section>
+
+          <section class="legal-card" id="changes">
+            <h2>Changes to Policies</h2>
+            <p>Nulqor may update these policies as the product, payment system, laws, features, subscriptions, marketplace, AI tools, or business changes.</p>
+            <p>Updated policies will be posted on the Nulqor website with a new Last updated date.</p>
+            <p>Continued use of Nulqor services after changes means you accept the updated policies.</p>
+            <p>If changes are important, Nulqor may also provide notice through the website, app, email, Discord, account dashboard, or another reasonable method.</p>
+          </section>
+
+          <section class="legal-card" id="governing-law">
+            <h2>Governing Law</h2>
+            <p>These policies and your use of Nulqor are governed by the applicable laws of the jurisdiction in which Nulqor operates, without regard to conflict-of-law rules.</p>
+            <p>If a separate written agreement applies, that agreement may include different governing law, venue, or dispute terms.</p>
+            <p>Nothing here removes rights you have under mandatory local consumer-protection laws.</p>
+          </section>
+
+          <section class="legal-card" id="contact">
+            <h2>Contact Information</h2>
+            <p>For support, billing, privacy, refund, or policy questions, contact:</p>
+            <p><strong>Nulqor Support</strong><br><a href="mailto:teamnulqor@gmail.com">teamnulqor@gmail.com</a></p>
+            <p><strong>Discord community</strong><br><a href="https://discord.gg/A5N3N67SUR">discord.gg/A5N3N67SUR</a></p>
+            <p>When contacting support, include your name, account email, product or access type, payment date if billing-related, device/OS if technical, and a clear explanation of the issue.</p>
+            <p>When joining the Discord community for support, open a support ticket and wait for a support team member to respond. Typical response time is 10-24 hours, but response times may vary depending on support volume, issue type, and availability.</p>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <span>(c) 2026 Nulqor Systems Inc. All rights reserved.</span>
+      <a href="#top">Back to top</a>
+    </footer>
+  </div>
+
+  <script>
+    const looks = {
+      'copper-flow': { colors: ['#060403', '#24110A', '#C46A3A', '#FFC49A'], buttonText: '#20100a' },
+      'emerald-enterprise': { colors: ['#000604', '#01120C', '#39D985', '#8DFFC2'], buttonText: '#061b11' },
+      'red-flagship-car': { colors: ['#070003', '#25000D', '#FF2D6A', '#FF9AB8'], buttonText: '#260611' },
+      'royal-blue-crystal': { colors: ['#020714', '#061D5A', '#1F7BFF', '#A8D4FF'], buttonText: '#06132c' },
+      'champagne-black': { colors: ['#050403', '#1B140C', '#D9B06A', '#FFE7B0'], buttonText: '#21170a' },
+      'molten-gold-ambition': { colors: ['#050400', '#241400', '#E7A51A', '#FFE08A'], buttonText: '#211600' },
+      'violet-rose-editorial': { colors: ['#08030E', '#281044', '#A855F7', '#FFC0D9'], buttonText: '#1f0b2c' },
+      'ice-blue-chrome': { colors: ['#03070B', '#111C28', '#BFDFFF', '#6AB8FF'], buttonText: '#071320' },
+      'molten-gold-ambition-alt': { colors: ['#050400', '#241400', '#E7A51A', '#FFE08A'], buttonText: '#211600' }
+    };
+
+    const themeAliases = {
+      copper: 'copper-flow',
+      green: 'emerald-enterprise',
+      emerald: 'emerald-enterprise',
+      rose: 'violet-rose-editorial',
+      pink: 'violet-rose-editorial',
+      red: 'red-flagship-car',
+      blue: 'royal-blue-crystal',
+      gold: 'molten-gold-ambition',
+      champagne: 'champagne-black',
+      ice: 'ice-blue-chrome'
+    };
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function hexToRgb(hex) {
+      const clean = hex.replace('#', '');
+      const value = parseInt(clean, 16);
+      return `${(value >> 16) & 255}, ${(value >> 8) & 255}, ${value & 255}`;
+    }
+
+    function applyTheme(theme) {
+      const look = looks[theme] || looks['copper-flow'];
+      const selectedTheme = looks[theme] ? theme : 'copper-flow';
+      const [shadow, core, accent, glow] = look.colors;
+      document.body.dataset.theme = selectedTheme;
+      document.body.style.setProperty('--bg', shadow);
+      document.body.style.setProperty('--bg-2', core);
+      document.body.style.setProperty('--panel', `color-mix(in srgb, ${core} 58%, black)`);
+      document.body.style.setProperty('--panel-strong', `color-mix(in srgb, ${core} 76%, black)`);
+      document.body.style.setProperty('--accent', accent);
+      document.body.style.setProperty('--accent-2', glow);
+      document.body.style.setProperty('--accent-3', core);
+      document.body.style.setProperty('--button-text', look.buttonText);
+      document.body.style.setProperty('--accent-rgb', hexToRgb(accent));
+      document.body.style.setProperty('--glow-rgb', hexToRgb(glow));
+      updateHomeLinks(selectedTheme);
+      updatePolicySelfLink(selectedTheme);
+      updateAccountLinks(selectedTheme);
+    }
+
+    function updateHomeLinks(theme) {
+      document.querySelectorAll('[data-home-anchor]').forEach((link) => {
+        const anchor = link.getAttribute('data-home-anchor') || 'top';
+        const url = new URL('index.html', window.location.href);
+        url.searchParams.set('theme', theme);
+        if (anchor && anchor !== 'top') url.hash = anchor;
+        link.href = `${url.pathname.split('/').pop()}${url.search}${url.hash}`;
+      });
+    }
+
+    function updatePolicySelfLink(theme) {
+      const link = document.querySelector('.nav a[aria-current="page"]');
+      const url = new URL('policies.html', window.location.href);
+      url.searchParams.set('theme', theme);
+      link.href = `${url.pathname.split('/').pop()}${url.search}`;
+    }
+
+    function updateAccountLinks(theme) {
+      document.querySelectorAll('[data-account-link]').forEach((link) => {
+        const url = new URL('account.html', window.location.href);
+        url.searchParams.set('theme', theme);
+        link.href = `${url.pathname.split('/').pop()}${url.search}`;
+      });
+    }
+
+    function ensurePageSwipe() {
+      let swipe = document.querySelector('.page-swipe');
+      if (!swipe) {
+        swipe = document.createElement('div');
+        swipe.className = 'page-swipe';
+        swipe.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(swipe);
+      }
+      return swipe;
+    }
+
+    function isTransitionPage(url) {
+      if (url.origin !== window.location.origin) return false;
+      const page = url.pathname.split('/').pop() || 'index.html';
+      return page === 'index.html' || page === 'policies.html' || page === 'account.html';
+    }
+
+    function wirePageTransitions() {
+      ensurePageSwipe();
+      const shouldEnter = sessionStorage.getItem('nulqor-page-transition') === '1';
+      sessionStorage.removeItem('nulqor-page-transition');
+      if (shouldEnter && !reduceMotion.matches) {
+        requestAnimationFrame(() => document.body.classList.add('is-page-entering'));
+        window.setTimeout(() => document.body.classList.remove('is-page-entering'), 650);
+      }
+
+      let isNavigating = false;
+      document.addEventListener('click', (event) => {
+        const link = event.target.closest('a[href]');
+        if (!link || isNavigating || event.defaultPrevented) return;
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (link.target && link.target !== '_self') return;
+
+        const url = new URL(link.getAttribute('href'), window.location.href);
+        const sameDocument = url.origin === window.location.origin && url.pathname === window.location.pathname;
+        if (!isTransitionPage(url) || sameDocument || reduceMotion.matches) return;
+
+        event.preventDefault();
+        isNavigating = true;
+        ensurePageSwipe();
+        document.body.classList.remove('is-page-entering');
+        document.body.classList.add('is-page-exiting');
+        window.setTimeout(() => {
+          sessionStorage.setItem('nulqor-page-transition', '1');
+          window.location.href = url.href;
+        }, 460);
+      });
+    }
+
+    async function loadSavedTheme() {
+      try {
+        return localStorage.getItem('nulqor-theme');
+      } catch (error) {
+        console.warn('Saved theme could not be loaded from this browser.', error);
+        return null;
+      }
+    }
+
+    async function initTheme() {
+      const requestedTheme = new URLSearchParams(window.location.search).get('theme');
+      const savedTheme = await loadSavedTheme();
+      applyTheme(themeAliases[requestedTheme] || requestedTheme || savedTheme || 'copper-flow');
+      wirePageTransitions();
+    }
+
+    initTheme();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=20260621-redesign"></script>
+  <script src="supabase-client.js?v=20260621-redesign"></script>
+  <script src="script.js?v=20260621-redesign"></script>
+  <script src="auth.js?v=20260621-redesign"></script>
+</body>
 </html>
