@@ -1533,7 +1533,7 @@
           <div class="toggle-row">
             <span>Profile Visibility</span>
             <label class="switch-control">
-              <input type="checkbox" data-visibility-input data-visibility-field="profile_visibility" data-on="public" data-off="private" disabled>
+              <input type="checkbox" data-visibility-input data-visibility-field="profile_visibility" data-on="public" data-off="private">
               <span class="switch-track" aria-hidden="true"></span>
               <strong class="toggle-status" id="vis-profile">Private</strong>
             </label>
@@ -1541,7 +1541,7 @@
           <div class="toggle-row">
             <span>Show on Marketplace</span>
             <label class="switch-control">
-              <input type="checkbox" data-visibility-input data-visibility-field="show_on_marketplace" disabled>
+              <input type="checkbox" data-visibility-input data-visibility-field="show_on_marketplace">
               <span class="switch-track" aria-hidden="true"></span>
               <strong class="toggle-status" id="vis-marketplace">Off</strong>
             </label>
@@ -1549,7 +1549,7 @@
           <div class="toggle-row">
             <span>Show Forge stats</span>
             <label class="switch-control">
-              <input type="checkbox" data-visibility-input data-visibility-field="show_forge_stats" disabled>
+              <input type="checkbox" data-visibility-input data-visibility-field="show_forge_stats">
               <span class="switch-track" aria-hidden="true"></span>
               <strong class="toggle-status" id="vis-forgestats">Off</strong>
             </label>
@@ -1557,7 +1557,7 @@
           <div class="toggle-row">
             <span>Show uploaded assets</span>
             <label class="switch-control">
-              <input type="checkbox" data-visibility-input data-visibility-field="show_uploaded_assets" disabled>
+              <input type="checkbox" data-visibility-input data-visibility-field="show_uploaded_assets">
               <span class="switch-track" aria-hidden="true"></span>
               <strong class="toggle-status" id="vis-assets">Off</strong>
             </label>
@@ -1606,6 +1606,21 @@
     const avatarInput = document.querySelector('#avatar-input');
     const avatarPreview = document.querySelector('#avatar-preview');
     const avatarStorageKey = 'nulqor-profile-avatar';
+    const forgeStatusCacheKey = 'nulqor-forge-status-cache-v1';
+    const visibilityStorageKey = 'nulqor-profile-visibility-v1';
+    const visibilityInputs = document.querySelectorAll('[data-visibility-input]');
+    const visibilityDefaults = {
+      profile_visibility: 'private',
+      show_on_marketplace: false,
+      show_forge_stats: false,
+      show_uploaded_assets: false
+    };
+    const visibilityLabels = {
+      profile_visibility: 'vis-profile',
+      show_on_marketplace: 'vis-marketplace',
+      show_forge_stats: 'vis-forgestats',
+      show_uploaded_assets: 'vis-assets'
+    };
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let currentThemeMode = 'manual';
     let activeTheme = null;
@@ -1705,13 +1720,89 @@
       history.replaceState(null, '', url);
     }
 
-    async function fetchAppState() {
+    function readLocalJson(key, fallback = null) {
       try {
-        return JSON.parse(localStorage.getItem('nulqor-account-state') || '{}');
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : fallback;
       } catch (error) {
-        console.warn('Saved account state could not be loaded from this browser.', error);
-        return {};
+        console.warn(`${key} could not be loaded from this browser.`, error);
+        return fallback;
       }
+    }
+
+    function writeLocalJson(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (error) {
+        console.warn(`${key} could not be saved in this browser.`, error);
+        return false;
+      }
+    }
+
+    async function fetchAppState() {
+      return readLocalJson('nulqor-account-state', {}) || {};
+    }
+
+    function normalizeVisibilityState(value = {}) {
+      return {
+        ...visibilityDefaults,
+        ...value,
+        profile_visibility: value.profile_visibility === 'public' ? 'public' : 'private',
+        show_on_marketplace: Boolean(value.show_on_marketplace),
+        show_forge_stats: Boolean(value.show_forge_stats),
+        show_uploaded_assets: Boolean(value.show_uploaded_assets)
+      };
+    }
+
+    function collectVisibilityState() {
+      const state = normalizeVisibilityState(readLocalJson(visibilityStorageKey, visibilityDefaults) || {});
+      visibilityInputs.forEach((input) => {
+        const field = input.dataset.visibilityField;
+        if (!field) return;
+        if (input.dataset.on || input.dataset.off) {
+          state[field] = input.checked ? (input.dataset.on || true) : (input.dataset.off || false);
+        } else {
+          state[field] = input.checked;
+        }
+      });
+      return normalizeVisibilityState(state);
+    }
+
+    function renderVisibilityState(nextState) {
+      const state = normalizeVisibilityState(nextState);
+      visibilityInputs.forEach((input) => {
+        const field = input.dataset.visibilityField;
+        if (!field) return;
+        input.disabled = false;
+        if (input.dataset.on || input.dataset.off) {
+          input.checked = state[field] === (input.dataset.on || true);
+        } else {
+          input.checked = Boolean(state[field]);
+        }
+        const label = document.getElementById(visibilityLabels[field]);
+        if (label) {
+          if (field === 'profile_visibility') label.textContent = state[field] === 'public' ? 'Public' : 'Private';
+          else label.textContent = state[field] ? 'On' : 'Off';
+        }
+      });
+    }
+
+    function saveVisibilityState() {
+      const state = collectVisibilityState();
+      writeLocalJson(visibilityStorageKey, state);
+      const accountState = readLocalJson('nulqor-account-state', {}) || {};
+      writeLocalJson('nulqor-account-state', { ...accountState, visibility: state });
+      renderVisibilityState(state);
+    }
+
+    function initVisibilityControls(accountState) {
+      const saved = readLocalJson(visibilityStorageKey, null);
+      const state = normalizeVisibilityState(saved || (accountState && accountState.visibility) || visibilityDefaults);
+      renderVisibilityState(state);
+      visibilityInputs.forEach((input) => {
+        input.addEventListener('change', saveVisibilityState);
+      });
     }
 
     function collectThemeSchedule() {
@@ -1731,15 +1822,19 @@
     }
 
     async function saveThemeSettings(themeOverride) {
+      const previousState = await fetchAppState();
       const state = {
+        ...previousState,
         theme: {
           current: themeOverride || document.body.dataset.theme || 'copper-flow',
           mode: currentThemeMode,
           schedule: collectThemeSchedule()
         },
         profile: {
+          ...(previousState && previousState.profile ? previousState.profile : {}),
           avatarUrl: avatarPreview && !avatarPreview.hidden ? avatarPreview.src : ''
-        }
+        },
+        visibility: collectVisibilityState()
       };
       try {
         localStorage.setItem('nulqor-account-state', JSON.stringify(state));
@@ -2081,7 +2176,7 @@
 
       if (Number.isFinite(Number(totals.cloudSavesUsed))) setTextIf('sec-cloud', `${totals.cloudSavesUsed} cloud saves`);
 
-      setTextIf('forge-telemetry-row', meta && meta.stale ? 'Live (stale)' : 'Connected (live)');
+      setTextIf('forge-telemetry-row', meta && meta.cached ? 'Cached from this browser' : (meta && meta.stale ? 'Live (stale)' : 'Connected (live)'));
 
       const weekTotal = renderWeekBars(snapshot.weeklyActivity);
       setTextIf('forge-week-total', fmtDuration(weekTotal || totals.forgeTimeMs));
@@ -2132,6 +2227,54 @@
       return null;
     }
 
+    function clonePlain(value) {
+      try {
+        return JSON.parse(JSON.stringify(value));
+      } catch {
+        return null;
+      }
+    }
+
+    function cacheForgeStatus(status) {
+      const snapshot = status && status.telemetry && status.telemetry.snapshot;
+      if (!status || !status.connected || !snapshot) return;
+      writeLocalJson(forgeStatusCacheKey, {
+        savedAt: new Date().toISOString(),
+        status: clonePlain(status)
+      });
+    }
+
+    function getCachedForgeStatus(reason) {
+      const cached = readLocalJson(forgeStatusCacheKey, null);
+      if (!cached || !cached.status || !cached.status.telemetry || !cached.status.telemetry.snapshot) return null;
+      const status = clonePlain(cached.status);
+      if (!status) return null;
+      const snapshot = status.telemetry.snapshot;
+      const projectCount = projectCountFromSnapshot(snapshot);
+      const appVersion = status.package && status.package.version
+        ? status.package.version
+        : (snapshot.app && snapshot.app.version) || 'Cached';
+      status.connected = true;
+      status.supabaseTelemetry = true;
+      status.cachedTelemetry = true;
+      status.cachedAt = cached.savedAt || status.telemetry.updatedAt || null;
+      status.root = 'Cached Forge telemetry';
+      status.package = { ...(status.package || {}), version: appVersion };
+      status.projectFiles = {
+        ...(status.projectFiles || {}),
+        observed: projectCount == null ? 0 : projectCount,
+        recent: Array.isArray(status.projectFiles && status.projectFiles.recent) ? status.projectFiles.recent : []
+      };
+      status.telemetry = {
+        ...status.telemetry,
+        liveUserTracking: true,
+        cached: true,
+        stale: true,
+        reason: reason || `Showing the last saved Forge sync from this browser. Saved ${shortDate(status.cachedAt)}.`
+      };
+      return status;
+    }
+
     async function waitForSupabaseClient() {
       for (let attempt = 0; attempt < 30; attempt += 1) {
         if (window.nulqorSupabase) return window.nulqorSupabase;
@@ -2142,12 +2285,14 @@
 
     async function fetchSupabaseForgeStatus() {
       const sb = await waitForSupabaseClient();
-      if (!sb) return null;
+      if (!sb) {
+        return getCachedForgeStatus('Showing the last saved Forge sync from this browser because the Supabase client is not available on this page.');
+      }
 
       const { data: sessionData, error: sessionError } = await sb.auth.getSession();
       const user = sessionData && sessionData.session && sessionData.session.user;
       if (sessionError || !user) {
-        return {
+        return getCachedForgeStatus('Showing the last saved Forge sync from this browser. Sign in to update it from Supabase.') || {
           connected: false,
           supabaseReady: true,
           telemetry: {
@@ -2165,7 +2310,7 @@
 
       if (error) {
         console.warn('Supabase Forge telemetry could not be loaded.', error);
-        return {
+        return getCachedForgeStatus('Showing the last saved Forge sync from this browser because Supabase telemetry could not be loaded right now.') || {
           connected: false,
           supabaseReady: false,
           telemetry: {
@@ -2176,7 +2321,7 @@
       }
 
       if (!data) {
-        return {
+        return getCachedForgeStatus("Showing the last saved Forge sync from this browser. Forge Studio has not uploaded this account's snapshot yet.") || {
           connected: false,
           supabaseReady: true,
           telemetry: {
@@ -2193,7 +2338,7 @@
       const projectCount = projectCountFromSnapshot(snapshot);
       const appVersion = data.app_version || (snapshot.app && snapshot.app.version) || snapshot.version || null;
 
-      return {
+      const status = {
         connected: true,
         supabaseTelemetry: true,
         root: 'Supabase telemetry',
@@ -2210,6 +2355,8 @@
             : `Forge telemetry loaded from Supabase. Last upload: ${shortDate(updatedAt)}.`
         }
       };
+      cacheForgeStatus(status);
+      return status;
     }
 
     async function fetchForgeStatus() {
@@ -2217,7 +2364,11 @@
       if (canUseLocalForgeApi) {
         try {
           const response = await fetch('/api/forge-studio/status', { cache: 'no-store' });
-          if (response.ok) return await response.json();
+          if (response.ok) {
+            const status = await response.json();
+            cacheForgeStatus(status);
+            return status;
+          }
         } catch (error) {
           console.warn('Local Forge Studio status could not be loaded.', error);
         }
@@ -2272,17 +2423,17 @@
       if (status.supabaseTelemetry) {
         const snapshot = status.telemetry && status.telemetry.snapshot;
         const projectCount = status.projectFiles ? status.projectFiles.observed : projectCountFromSnapshot(snapshot);
-        setText('forge-connection-stat', status.telemetry && status.telemetry.stale ? 'Stale sync' : 'Synced');
+        setText('forge-connection-stat', status.cachedTelemetry ? 'Saved sync' : (status.telemetry && status.telemetry.stale ? 'Stale sync' : 'Synced'));
         setText('forge-version-stat', status.package ? status.package.version : 'Synced');
-        setText('forge-source-stat', 'Cloud');
+        setText('forge-source-stat', status.cachedTelemetry ? 'Browser cache' : 'Cloud');
         setText('forge-release-stat', '--');
         setText('forge-project-stat', projectCount == null ? '--' : String(projectCount));
-        setText('forge-root-row', 'Supabase telemetry');
-        setText('forge-source-row', `Uploaded ${shortDate(status.telemetry && status.telemetry.updatedAt)}`);
+        setText('forge-root-row', status.cachedTelemetry ? 'Saved in this browser' : 'Supabase telemetry');
+        setText('forge-source-row', status.cachedTelemetry ? `Cached ${shortDate(status.cachedAt)}` : `Uploaded ${shortDate(status.telemetry && status.telemetry.updatedAt)}`);
         setText('forge-release-row', 'Waiting for release metadata');
         setText('forge-dist-row', 'Public-safe snapshot');
         setText('forge-project-row', projectCount == null ? 'Tracked by snapshot' : `${projectCount} tracked`);
-        setText('forge-telemetry-row', status.telemetry && status.telemetry.stale ? 'Connected (stale)' : 'Connected');
+        setText('forge-telemetry-row', status.cachedTelemetry ? 'Saved locally' : (status.telemetry && status.telemetry.stale ? 'Connected (stale)' : 'Connected'));
         setText('library-project-files', projectCount == null ? '--' : String(projectCount));
         renderTelemetry(snapshot, status.telemetry);
         return;
@@ -2436,6 +2587,7 @@
       applyThemeSchedule(state && state.theme ? state.theme.schedule : {});
       applyTheme(themeAliases[requestedTheme] || requestedTheme || (state && state.theme && state.theme.current) || 'copper-flow');
       restoreAvatarImage(state);
+      initVisibilityControls(state);
       renderForgeStatus(forgeStatus);
       setThemeMode((state && state.theme && state.theme.mode) || 'manual');
       if (requestedTheme) saveThemeSettings();
