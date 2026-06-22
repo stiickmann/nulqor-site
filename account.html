@@ -1880,10 +1880,17 @@
       });
     }
 
+    function shortDate(value) {
+      if (!value) return 'not yet';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return 'not yet';
+      return date.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+    }
+
     function fileLabel(file) {
       if (!file) return 'Not found';
       const date = formatDate(file.modifiedAt);
-      return `${file.name} · ${date}`;
+      return `${file.name} - ${date}`;
     }
 
     function makeIdentityRow(label, value) {
@@ -2114,6 +2121,97 @@
       renderTelemetryProjects(snapshot.projects);
     }
 
+    function projectCountFromSnapshot(snapshot) {
+      if (!snapshot || typeof snapshot !== 'object') return null;
+      const totals = snapshot.totals || {};
+      const library = snapshot.library || {};
+      if (Number.isFinite(Number(totals.projectsCreated))) return Number(totals.projectsCreated);
+      if (Number.isFinite(Number(library.projects))) return Number(library.projects);
+      if (Number.isFinite(Number(library.projectFiles))) return Number(library.projectFiles);
+      if (Array.isArray(snapshot.projects)) return snapshot.projects.length;
+      return null;
+    }
+
+    async function waitForSupabaseClient() {
+      for (let attempt = 0; attempt < 30; attempt += 1) {
+        if (window.nulqorSupabase) return window.nulqorSupabase;
+        await new Promise((resolve) => window.setTimeout(resolve, 100));
+      }
+      return null;
+    }
+
+    async function fetchSupabaseForgeStatus() {
+      const sb = await waitForSupabaseClient();
+      if (!sb) return null;
+
+      const { data: sessionData, error: sessionError } = await sb.auth.getSession();
+      const user = sessionData && sessionData.session && sessionData.session.user;
+      if (sessionError || !user) {
+        return {
+          connected: false,
+          supabaseReady: true,
+          telemetry: {
+            liveUserTracking: false,
+            reason: 'Sign in to load Forge telemetry from Supabase. Forge Studio still needs upload support before live stats can appear here.'
+          }
+        };
+      }
+
+      const { data, error } = await sb
+        .from('forge_telemetry_snapshots')
+        .select('updated_at, source, app_version, snapshot')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.warn('Supabase Forge telemetry could not be loaded.', error);
+        return {
+          connected: false,
+          supabaseReady: false,
+          telemetry: {
+            liveUserTracking: false,
+            reason: 'Supabase telemetry could not be loaded yet. Check the Forge telemetry table and RLS policies.'
+          }
+        };
+      }
+
+      if (!data) {
+        return {
+          connected: false,
+          supabaseReady: true,
+          telemetry: {
+            liveUserTracking: false,
+            reason: "Supabase telemetry is ready. Forge Studio has not uploaded this account's snapshot yet."
+          }
+        };
+      }
+
+      const snapshot = data.snapshot || {};
+      const updatedAt = data.updated_at;
+      const updatedTime = new Date(updatedAt).getTime();
+      const stale = !Number.isFinite(updatedTime) || Date.now() - updatedTime > 24 * 60 * 60 * 1000;
+      const projectCount = projectCountFromSnapshot(snapshot);
+      const appVersion = data.app_version || (snapshot.app && snapshot.app.version) || snapshot.version || null;
+
+      return {
+        connected: true,
+        supabaseTelemetry: true,
+        root: 'Supabase telemetry',
+        package: { version: appVersion || 'Synced' },
+        projectFiles: { observed: projectCount == null ? 0 : projectCount, recent: [] },
+        telemetry: {
+          liveUserTracking: true,
+          source: data.source || 'forge-studio',
+          updatedAt,
+          stale,
+          snapshot,
+          reason: stale
+            ? `Forge telemetry loaded from Supabase, but it is stale. Last upload: ${shortDate(updatedAt)}.`
+            : `Forge telemetry loaded from Supabase. Last upload: ${shortDate(updatedAt)}.`
+        }
+      };
+    }
+
     async function fetchForgeStatus() {
       const canUseLocalForgeApi = ['127.0.0.1', 'localhost'].includes(window.location.hostname) && window.location.port === '8120';
       if (canUseLocalForgeApi) {
@@ -2124,6 +2222,10 @@
           console.warn('Local Forge Studio status could not be loaded.', error);
         }
       }
+
+      const supabaseStatus = await fetchSupabaseForgeStatus();
+      if (supabaseStatus) return supabaseStatus;
+
       return {
         connected: false,
         telemetry: {
@@ -2135,19 +2237,20 @@
 
     function renderForgeStatus(status) {
       if (!status || !status.connected) {
-        setText('forge-connection-stat', 'Sync pending');
+        const supabaseReady = Boolean(status && status.supabaseReady);
+        setText('forge-connection-stat', supabaseReady ? 'Upload pending' : 'Sync pending');
         setText('forge-version-stat', '--');
         setText('forge-source-stat', '--');
         setText('forge-release-stat', '--');
         setText('forge-project-stat', '--');
-        setText('forge-root-row', 'Waiting for Forge sync');
-        setText('forge-source-row', 'No Forge sync connected yet');
-        setText('forge-release-row', 'No release sync connected yet');
-        setText('forge-dist-row', 'No app sync connected yet');
+        setText('forge-root-row', supabaseReady ? 'Supabase ready' : 'Waiting for Forge sync');
+        setText('forge-source-row', supabaseReady ? 'Waiting for Forge Studio upload' : 'No Forge sync connected yet');
+        setText('forge-release-row', supabaseReady ? 'Waiting for Forge Studio upload' : 'No release sync connected yet');
+        setText('forge-dist-row', supabaseReady ? 'Waiting for Forge Studio upload' : 'No app sync connected yet');
         setText('forge-project-row', 'Waiting for project telemetry');
-        setText('forge-telemetry-row', 'Waiting for Forge telemetry');
+        setText('forge-telemetry-row', supabaseReady ? 'Supabase ready, no snapshot yet' : 'Waiting for Forge telemetry');
         setText('library-project-files', '--');
-        setText('forge-week-total', 'Not connected');
+        setText('forge-week-total', supabaseReady ? 'No upload yet' : 'Not connected');
         const activityCopy = document.getElementById('forge-activity-copy');
         if (activityCopy) {
           activityCopy.textContent = status && status.telemetry
@@ -2157,12 +2260,31 @@
         const activityList = document.getElementById('forge-activity-list');
         if (activityList) {
           activityList.replaceChildren(
-            makeIdentityRow('Forge sync', 'Not connected yet'),
+            makeIdentityRow('Supabase table', supabaseReady ? 'Ready' : 'Not connected yet'),
+            makeIdentityRow('Forge upload', 'Waiting for desktop app'),
             makeIdentityRow('Session time', 'Waiting for Forge telemetry'),
-            makeIdentityRow('Projects and exports', 'Waiting for Forge telemetry'),
-            makeIdentityRow('Account data', 'Supabase connected when signed in')
+            makeIdentityRow('Projects and exports', 'Waiting for Forge telemetry')
           );
         }
+        return;
+      }
+
+      if (status.supabaseTelemetry) {
+        const snapshot = status.telemetry && status.telemetry.snapshot;
+        const projectCount = status.projectFiles ? status.projectFiles.observed : projectCountFromSnapshot(snapshot);
+        setText('forge-connection-stat', status.telemetry && status.telemetry.stale ? 'Stale sync' : 'Synced');
+        setText('forge-version-stat', status.package ? status.package.version : 'Synced');
+        setText('forge-source-stat', 'Cloud');
+        setText('forge-release-stat', '--');
+        setText('forge-project-stat', projectCount == null ? '--' : String(projectCount));
+        setText('forge-root-row', 'Supabase telemetry');
+        setText('forge-source-row', `Uploaded ${shortDate(status.telemetry && status.telemetry.updatedAt)}`);
+        setText('forge-release-row', 'Waiting for release metadata');
+        setText('forge-dist-row', 'Public-safe snapshot');
+        setText('forge-project-row', projectCount == null ? 'Tracked by snapshot' : `${projectCount} tracked`);
+        setText('forge-telemetry-row', status.telemetry && status.telemetry.stale ? 'Connected (stale)' : 'Connected');
+        setText('library-project-files', projectCount == null ? '--' : String(projectCount));
+        renderTelemetry(snapshot, status.telemetry);
         return;
       }
 
@@ -2178,9 +2300,9 @@
       setText('forge-project-stat', status.projectFiles ? String(status.projectFiles.observed) : '--');
 
       setText('forge-root-row', status.root);
-      setText('forge-source-row', latestSource ? `${latestSource.name} · ${formatDate(latestSource.modifiedAt)}` : 'No source files found');
+      setText('forge-source-row', latestSource ? `${latestSource.name} - ${formatDate(latestSource.modifiedAt)}` : 'No source files found');
       setText('forge-release-row', latestRelease ? fileLabel(latestRelease) : 'No release build found');
-      setText('forge-dist-row', latestDist ? `${formatDate(latestDist.modifiedAt)} · ${status.build.distFiles} files` : 'No dist bundle found');
+      setText('forge-dist-row', latestDist ? `${formatDate(latestDist.modifiedAt)} - ${status.build.distFiles} files` : 'No dist bundle found');
       setText('forge-project-row', status.projectFiles ? `${status.projectFiles.observed} found` : 'Not scanned');
       setText('forge-telemetry-row', status.telemetry && status.telemetry.liveUserTracking ? 'Connected' : 'Needs Forge hook');
       setText('library-project-files', status.projectFiles ? String(status.projectFiles.observed) : '--');
