@@ -144,14 +144,14 @@
       const accepted = (w.status || "pending") === "accepted";
       const action = accepted
         ? '<span class="req-accepted">Accepted</span>'
-        : `<button class="account-panel-action req-accept" data-id="${esc(w.id)}">Accept</button>`;
+        : `<button class="admin-action req-accept" data-id="${esc(w.id)}">Accept</button>`;
       tr.innerHTML =
         `<td>${esc(w.name || "--")}</td>` +
         `<td class="admin-email">${esc(w.email)}</td>` +
         `<td>${esc(w.role || "--")}</td>` +
         `<td>${fmtDate(w.created_at)}</td>` +
         `<td class="req-actions">${action}` +
-        ` <button class="account-panel-action req-dismiss" data-id="${esc(w.id)}">Delete</button></td>`;
+        ` <button class="admin-action req-dismiss" data-id="${esc(w.id)}">Delete</button></td>`;
       waitlistBody.appendChild(tr);
     });
 

@@ -8,7 +8,6 @@
   <title>NULQOR - Admin Command</title>
   <link rel="icon" href="assets/nulqor-icon.png">
   <link rel="apple-touch-icon" href="assets/nulqor-icon.png">
-  <link rel="stylesheet" href="styles.css?v=20260621-account">
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 
@@ -374,7 +373,7 @@
     }
 
     .button,
-    .account-panel-action {
+    .admin-action {
       min-height: 38px;
       display: inline-grid;
       place-items: center;
@@ -390,7 +389,7 @@
     }
 
     .button:hover,
-    .account-panel-action:hover {
+    .admin-action:hover {
       border-color: rgba(var(--accent-rgb), .64);
       background: rgba(var(--accent-rgb), .08);
       transform: translateY(-1px);
@@ -402,7 +401,7 @@
       background: linear-gradient(135deg, var(--accent-2), var(--accent));
     }
 
-    .admin-block-head .account-panel-action {
+    .admin-block-head .admin-action {
       flex: 0 0 auto;
       min-height: 32px;
       padding: 0 12px;
@@ -493,7 +492,7 @@
       white-space: nowrap;
     }
 
-    .req-actions .account-panel-action {
+    .req-actions .admin-action {
       min-height: 30px;
       padding: 0 10px;
       font-size: 11px;
@@ -535,18 +534,6 @@
 
     .fineprint a:hover {
       color: var(--accent-2);
-    }
-
-    .account-chip,
-    .account-panel {
-      border-color: rgba(var(--accent-rgb), .22);
-      background: rgba(5, 2, 0, .88);
-    }
-
-    .account-chip:hover,
-    .account-chip:focus-visible,
-    .account-panel-action:hover {
-      border-color: rgba(var(--accent-rgb), .50);
     }
 
     @media (max-width: 900px) {
@@ -633,7 +620,7 @@
               <p class="eyebrow">Members</p>
               <h2 id="members-title">Account roles <span class="admin-count" data-members-count></span></h2>
             </div>
-            <button class="account-panel-action" type="button" data-refresh-members>Refresh</button>
+            <button class="admin-action" type="button" data-refresh-members>Refresh</button>
           </div>
           <p class="admin-hint" id="membersHint">Change a member's role to grant their subscription/tier. Changes save instantly.</p>
           <div class="admin-table-wrap">
@@ -660,7 +647,7 @@
               <p class="eyebrow">Access</p>
               <h2 id="waitlist-title">Request queue <span class="admin-count" data-waitlist-count></span></h2>
             </div>
-            <button class="account-panel-action" type="button" data-refresh-waitlist>Refresh</button>
+            <button class="admin-action" type="button" data-refresh-waitlist>Refresh</button>
           </div>
           <p class="admin-hint">Emails submitted through the Request Access form on the home page.</p>
           <div class="admin-table-wrap">
@@ -725,7 +712,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=20260621-account"></script>
   <script src="supabase-client.js?v=20260621-account"></script>
-  <script src="auth.js?v=20260621-admin"></script>
-  <script src="admin.js?v=20260621-admin"></script>
+  <script src="admin.js?v=20260621-admin2"></script>
 </body>
 </html>
