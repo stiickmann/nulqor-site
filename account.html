@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NULQOR - Account Core</title>
+  <link rel="icon" href="assets/nulqor-icon.png">
+  <link rel="apple-touch-icon" href="assets/nulqor-icon.png">
+  <script src="theme-boot.js?v=20260622-themeboot"></script>
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 
@@ -1316,7 +1319,7 @@
           <p class="eyebrow">Studio footprint</p>
           <h2>Forge install status</h2>
           <div class="identity-grid">
-            <div class="identity-row"><span>Forge root</span><strong id="forge-root-row">D:\forge-studio</strong></div>
+            <div class="identity-row"><span>Forge root</span><strong id="forge-root-row">Waiting for Forge sync</strong></div>
             <div class="identity-row"><span>Latest source change</span><strong id="forge-source-row">Checking</strong></div>
             <div class="identity-row"><span>Latest release</span><strong id="forge-release-row">Checking</strong></div>
             <div class="identity-row"><span>Dist bundle</span><strong id="forge-dist-row">Checking</strong></div>
@@ -1742,6 +1745,15 @@
 
     async function fetchAppState() {
       return readLocalJson('nulqor-account-state', {}) || {};
+    }
+
+    function readSavedTheme() {
+      try {
+        return localStorage.getItem('nulqor-theme');
+      } catch (error) {
+        console.warn('Saved theme could not be loaded from this browser.', error);
+        return null;
+      }
     }
 
     function normalizeVisibilityState(value = {}) {
@@ -2584,8 +2596,11 @@
       const state = await fetchAppState();
       const forgeStatus = await fetchForgeStatus();
       const requestedTheme = new URLSearchParams(window.location.search).get('theme');
+      const savedTheme = readSavedTheme();
+      const stateTheme = state && state.theme && state.theme.current;
+      const initialTheme = themeAliases[requestedTheme] || requestedTheme || themeAliases[stateTheme] || stateTheme || themeAliases[savedTheme] || savedTheme || 'copper-flow';
       applyThemeSchedule(state && state.theme ? state.theme.schedule : {});
-      applyTheme(themeAliases[requestedTheme] || requestedTheme || (state && state.theme && state.theme.current) || 'copper-flow');
+      applyTheme(initialTheme);
       restoreAvatarImage(state);
       initVisibilityControls(state);
       renderForgeStatus(forgeStatus);
