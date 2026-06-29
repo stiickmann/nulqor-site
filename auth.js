@@ -38,6 +38,22 @@
   };
   let currentAccessRequest = null;
   const visibilityInputs = Array.from(document.querySelectorAll("[data-visibility-input]"));
+  const pageAvatarInput = document.querySelector("#avatar-input");
+
+  function clearLegacySharedAvatar() {
+    try {
+      localStorage.removeItem("nulqor-profile-avatar");
+      const raw = localStorage.getItem("nulqor-account-state");
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      if (!state || !state.profile || !Object.prototype.hasOwnProperty.call(state.profile, "avatarUrl")) return;
+      delete state.profile.avatarUrl;
+      if (!Object.keys(state.profile).length) delete state.profile;
+      localStorage.setItem("nulqor-account-state", JSON.stringify(state));
+    } catch (_error) {
+      // Legacy browser state is optional; Supabase remains the avatar source.
+    }
+  }
 
   function setNav(session) {
     if (navAccount) {
@@ -255,6 +271,7 @@
 
     setText("profile-title", name);
     setText("profile-handle", handle);
+    setText("avatar-initial", loggedIn ? (name.charAt(0) || "N").toUpperCase() : "N");
     setText("profile-role-pill", planLabel(profile));
     setText("profile-member-line", loggedIn ? `Nulqor user since ${monthYear(session.user.created_at)}` : "Sign in to connect your Nulqor profile.");
     setText("id-creator", name);
@@ -269,10 +286,22 @@
     setText("sec-sessions", loggedIn ? "This device" : "Not connected");
 
     const preview = document.querySelector("#avatar-preview");
-    if (preview && profile.avatar_url) {
-      preview.src = profile.avatar_url;
-      preview.hidden = false;
-      document.querySelector("#avatar-upload-button")?.classList.add("has-image");
+    const avatarButton = document.querySelector("#avatar-upload-button");
+    if (avatarButton) avatarButton.disabled = !loggedIn;
+    if (preview) {
+      if (loggedIn && profile.avatar_url) {
+        preview.src = profile.avatar_url;
+        preview.hidden = false;
+        avatarButton?.classList.add("has-image");
+        avatarButton?.setAttribute("aria-label", "Change profile picture");
+        if (avatarButton) avatarButton.title = "Change profile picture";
+      } else {
+        preview.removeAttribute("src");
+        preview.hidden = true;
+        avatarButton?.classList.remove("has-image");
+        avatarButton?.setAttribute("aria-label", loggedIn ? "Upload profile picture" : "Log in to upload a profile picture");
+        if (avatarButton) avatarButton.title = loggedIn ? "Upload profile picture" : "Log in to upload a profile picture";
+      }
     }
 
     const adminLink = document.querySelector("#account-admin-link");
@@ -457,8 +486,14 @@
   async function onAvatarPicked(event) {
     const file = event.target.files && event.target.files[0];
     if (!file || !currentUserId) return;
+    if (!file.type.startsWith("image/")) {
+      panelNote("Choose a PNG, JPG, GIF, or WebP image.", false);
+      event.target.value = "";
+      return;
+    }
     if (file.size > 3 * 1024 * 1024) {
       panelNote("Image must be under 3 MB.", false);
+      event.target.value = "";
       return;
     }
     panelNote("Uploading avatar...");
@@ -467,6 +502,7 @@
     const up = await sb.storage.from("avatars").upload(path, file, { upsert: true, cacheControl: "3600" });
     if (up.error) {
       panelNote("Avatar upload failed: " + up.error.message, false);
+      event.target.value = "";
       return;
     }
     const pub = sb.storage.from("avatars").getPublicUrl(path);
@@ -477,8 +513,10 @@
       .eq("id", currentUserId);
     if (error) {
       panelNote(error.message, false);
+      event.target.value = "";
       return;
     }
+    event.target.value = "";
     panelNote("Avatar updated.", true);
     refresh();
   }
@@ -802,7 +840,11 @@
     });
   });
 
+  if (pageAvatarInput) pageAvatarInput.addEventListener("change", onAvatarPicked);
+
   window.addEventListener("nulqor:access-requested", refresh);
+
+  clearLegacySharedAvatar();
 
   if (!sb) {
     setNav(null);

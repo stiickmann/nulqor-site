@@ -179,8 +179,8 @@
       padding: 0;
       overflow: hidden;
       border-radius: 50%;
-      background: linear-gradient(145deg, #fff, #d8d8d8);
-      border: 1px solid rgba(255, 255, 255, .7);
+      background: var(--panel-strong);
+      border: 1px solid rgba(var(--accent-rgb), .62);
       box-shadow: 0 0 60px rgba(var(--glow-rgb), .16);
       cursor: pointer;
       transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
@@ -194,12 +194,14 @@
       outline: none;
     }
 
-    .avatar svg {
-      width: 56px;
-      height: 56px;
+    .avatar-initial {
+      color: var(--accent-2);
+      font-family: var(--font-ui);
+      font-size: 30px;
+      font-weight: 800;
     }
 
-    .avatar.has-image svg {
+    .avatar.has-image .avatar-initial {
       display: none;
     }
 
@@ -1334,12 +1336,7 @@
       <section class="profile-hero" aria-labelledby="profile-title">
         <button class="avatar" id="avatar-upload-button" type="button" aria-label="Upload profile picture" title="Upload profile picture">
           <img class="avatar-preview" id="avatar-preview" alt="" hidden>
-          <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <circle cx="32" cy="14" r="5" stroke="#111" stroke-width="2"/>
-            <path d="M24 21h16l-2 10H26l-2-10Z" fill="#f4c54b" stroke="#111" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M32 31v14M23 55l9-10 9 10M24 37h16" stroke="#111" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M27 12h10" stroke="#111" stroke-width="2" stroke-linecap="round"/>
-          </svg>
+          <span class="avatar-initial" id="avatar-initial">N</span>
           <span class="avatar-label">Upload</span>
         </button>
         <input class="avatar-input" id="avatar-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
@@ -1715,8 +1712,6 @@
     const themeModeNote = document.querySelector('#theme-mode-note');
     const avatarButton = document.querySelector('#avatar-upload-button');
     const avatarInput = document.querySelector('#avatar-input');
-    const avatarPreview = document.querySelector('#avatar-preview');
-    const avatarStorageKey = 'nulqor-profile-avatar';
     const forgeStatusCacheKey = 'nulqor-forge-status-cache-v1';
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let currentThemeMode = 'manual';
@@ -1876,10 +1871,6 @@
           current: themeOverride || document.body.dataset.theme || 'copper-flow',
           mode: currentThemeMode,
           schedule: collectThemeSchedule()
-        },
-        profile: {
-          ...(previousState && previousState.profile ? previousState.profile : {}),
-          avatarUrl: avatarPreview && !avatarPreview.hidden ? avatarPreview.src : ''
         }
       };
       try {
@@ -1888,79 +1879,6 @@
       } catch (error) {
         console.warn('Theme settings could not be saved in this browser.', error);
       }
-    }
-
-    function setAvatarImage(src) {
-      avatarPreview.src = src;
-      avatarPreview.hidden = false;
-      avatarButton.classList.add('has-image');
-      avatarButton.setAttribute('aria-label', 'Change profile picture');
-      avatarButton.title = 'Change profile picture';
-    }
-
-    function restoreAvatarImage(state) {
-      if (state && state.profile && state.profile.avatarUrl) {
-        setAvatarImage(state.profile.avatarUrl);
-        return;
-      }
-      try {
-        const savedAvatar = localStorage.getItem(avatarStorageKey);
-        if (savedAvatar) setAvatarImage(savedAvatar);
-      } catch (error) {
-        console.warn('Avatar image could not be restored.', error);
-      }
-    }
-
-    async function uploadAvatarData(avatarData) {
-      try {
-        localStorage.setItem(avatarStorageKey, avatarData);
-        await saveThemeSettings();
-      } catch (error) {
-        console.warn('Avatar image could not be saved locally.', error);
-      }
-    }
-
-    function storeAvatarFile(file) {
-      if (!file) return;
-      if (!file.type.startsWith('image/')) {
-        window.alert('Choose an image file for your profile picture.');
-        return;
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        window.alert('Choose an image under 10 MB so it can save in this demo.');
-        avatarInput.value = '';
-        return;
-      }
-
-      const image = new Image();
-      const objectUrl = URL.createObjectURL(file);
-      image.onload = () => {
-        const size = 512;
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        const cropSize = Math.min(image.width, image.height);
-        const cropX = (image.width - cropSize) / 2;
-        const cropY = (image.height - cropSize) / 2;
-        canvas.width = size;
-        canvas.height = size;
-        context.fillStyle = '#0b0503';
-        context.fillRect(0, 0, size, size);
-        context.drawImage(image, cropX, cropY, cropSize, cropSize, 0, 0, size, size);
-        const avatarData = canvas.toDataURL('image/jpeg', .88);
-        URL.revokeObjectURL(objectUrl);
-        setAvatarImage(avatarData);
-        uploadAvatarData(avatarData);
-        try {
-          localStorage.setItem(avatarStorageKey, avatarData);
-        } catch (error) {
-          console.warn('Avatar image could not be saved locally.', error);
-        }
-      };
-      image.onerror = () => {
-        URL.revokeObjectURL(objectUrl);
-        window.alert('That image could not be loaded. Try a PNG, JPG, GIF, or WebP.');
-      };
-      image.src = objectUrl;
     }
 
     function setThemeMode(mode) {
@@ -2669,10 +2587,6 @@
       avatarInput.click();
     });
 
-    avatarInput.addEventListener('change', () => {
-      storeAvatarFile(avatarInput.files && avatarInput.files[0]);
-    });
-
     themeModeButtons.forEach((button) => {
       button.addEventListener('click', () => {
         setThemeMode(button.dataset.themeMode);
@@ -2698,7 +2612,6 @@
       const initialTheme = themeAliases[requestedTheme] || requestedTheme || themeAliases[stateTheme] || stateTheme || themeAliases[savedTheme] || savedTheme || 'copper-flow';
       applyThemeSchedule(state && state.theme ? state.theme.schedule : {});
       applyTheme(initialTheme);
-      restoreAvatarImage(state);
       renderForgeStatus(forgeStatus);
       setThemeMode((state && state.theme && state.theme.mode) || 'manual');
       if (requestedTheme) saveThemeSettings();
@@ -2711,6 +2624,6 @@
   <script src="config.js?v=20260629-access"></script>
   <script src="supabase-client.js?v=20260629-access"></script>
   <script src="script.js?v=20260629-access"></script>
-  <script src="auth.js?v=20260629-staff-view"></script>
+  <script src="auth.js?v=20260629-avatar-isolation"></script>
 </body>
 </html>
