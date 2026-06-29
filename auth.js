@@ -17,7 +17,7 @@
 
   const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
   const DASHBOARD_ROLES = ["Founder", "App Admin", "Site Admin", "App Tester", "Site Tester"];
-  const INTERNAL_ACCOUNT_ROLES = ["Founder", "Site Admin", "App Admin"];
+  const STAFF_ACCOUNT_ROLES = ["Founder", "App Admin", "Site Admin", "App Tester", "Site Tester"];
 
   let currentUserId = null;
   let currentProfile = {
@@ -250,7 +250,7 @@
     const handle = loggedIn && profile.username ? `@${profile.username}` : "@username";
     const role = profile.role || "";
     const isDashboardUser = loggedIn && hasActiveAccess(profile) && DASHBOARD_ROLES.includes(role);
-    const isInternalAdmin = loggedIn && hasActiveAccess(profile) && INTERNAL_ACCOUNT_ROLES.includes(role);
+    const isStaffAccount = loggedIn && hasActiveAccess(profile) && STAFF_ACCOUNT_ROLES.includes(role);
     const verified = Boolean(session && session.user && session.user.email_confirmed_at);
 
     setText("profile-title", name);
@@ -278,8 +278,8 @@
     const adminLink = document.querySelector("#account-admin-link");
     if (adminLink) adminLink.hidden = !isDashboardUser;
     updateDashboardLinks(loggedIn, profile);
-    document.querySelectorAll("[data-internal-admin-only]").forEach((section) => {
-      section.hidden = !isInternalAdmin;
+    document.querySelectorAll("[data-staff-only]").forEach((section) => {
+      section.hidden = !isStaffAccount;
     });
     document.querySelectorAll("[data-owner-only]").forEach((section) => {
       section.hidden = !loggedIn;

@@ -100,6 +100,20 @@
     role.hidden = !profile.role;
     role.textContent = profile.role || "";
 
+    const identityPanel = document.querySelector("#public-account-identity");
+    identityPanel.hidden = !sections.accountIdentity || !data.accountIdentity;
+    if (!identityPanel.hidden) {
+      const identity = data.accountIdentity;
+      document.querySelector("#public-identity-rows").replaceChildren(
+        row("Creator", identity.displayName),
+        row("Handle", identity.username ? `@${identity.username}` : "--"),
+        row("Product", identity.product || "Forge Studio"),
+        row("Active Plan", identity.plan || "No active plan"),
+        row("Account Status", identity.status || "pending"),
+        row("Member Since", identity.memberSince ? new Date(identity.memberSince).toLocaleDateString(undefined, { month: "long", year: "numeric" }) : "Unknown"),
+      );
+    }
+
     const activityPanel = document.querySelector("#public-activity");
     activityPanel.hidden = !sections.forgeActivity;
     if (sections.forgeActivity) {
@@ -165,7 +179,8 @@
         row("Plan", core.plan || "No active plan"),
         row("Status", pretty(core.status)),
         row("Included products", (core.includedProducts || []).join(", ") || "None"),
-        row("Cloud saves used", core.cloudSavesUsed ?? "Not connected"),
+        row("Cloud Storage", core.cloudSavesUsed == null ? "Not connected" : `${core.cloudSavesUsed} cloud saves`),
+        row("AI Usage", core.aiUsage || "Not connected"),
         row("Email verified", core.emailVerified ? "Enabled" : "Not verified"),
         row("2FA", core.twoFactorEnabled ? "Enabled" : "Not enabled"),
         row("Active sessions", core.activeSessions ?? 0),
@@ -177,11 +192,12 @@
     if (!footprintPanel.hidden) {
       const footprint = data.studioFootprint;
       document.querySelector("#public-studio-rows").replaceChildren(
-        row("App version", footprint.appVersion),
-        row("Source", footprint.source),
-        row("Last telemetry", footprint.updatedAt ? new Date(footprint.updatedAt).toLocaleString() : "Not connected"),
-        row("Projects tracked", footprint.projectsTracked ?? 0),
-        row("Telemetry", footprint.telemetryConnected ? "Connected" : "Not connected"),
+        row("Forge root", footprint.forgeRoot || "Not connected"),
+        row("Latest source change", footprint.updatedAt ? `Uploaded ${new Date(footprint.updatedAt).toLocaleString()}` : "No upload yet"),
+        row("Latest release", footprint.latestRelease || "Waiting for release metadata"),
+        row("Dist bundle", footprint.distBundle || "Not connected"),
+        row("Saved project files", `${footprint.projectsTracked ?? 0} tracked`),
+        row("User session tracking", footprint.trackingState || "Not connected"),
       );
     }
 

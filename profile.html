@@ -147,7 +147,7 @@
         <div>
           <p class="eyebrow">Public account lookup</p>
           <h1 id="lookup-title">Find a Nulqor creator.</h1>
-          <p class="sub">Only information the account owner has made public can appear here.</p>
+          <p class="sub">Public visitors only see information the account owner has shared. Staff access follows internal account permissions.</p>
         </div>
         <form class="lookup-form" id="lookup-form">
           <input id="lookup-username" name="username" type="text" minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}" placeholder="username" autocomplete="off" required>
@@ -167,6 +167,11 @@
         </section>
 
         <div class="grid">
+          <section class="panel section" id="public-account-identity" hidden>
+            <p class="eyebrow">Top Profile Card</p><h2>Account identity</h2>
+            <div class="rows" id="public-identity-rows"></div>
+          </section>
+
           <section class="panel section wide" id="public-activity" hidden>
             <p class="eyebrow">Live Forge Activity</p><h2>This week in Forge</h2>
             <div class="week" id="public-week"></div>
@@ -210,7 +215,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=20260629-profile"></script>
   <script src="supabase-client.js?v=20260629-profile"></script>
-  <script src="auth.js?v=20260629-profile"></script>
-  <script src="profile.js?v=20260629-profile"></script>
+  <script src="auth.js?v=20260629-staff-view"></script>
+  <script src="profile.js?v=20260629-staff-view"></script>
 </body>
 </html>
