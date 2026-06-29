@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NULQOR - Creator Lookup</title>
+  <link rel="icon" href="assets/nulqor-icon.png">
+  <script src="theme-boot.js?v=20260629-profile"></script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap");
+    [hidden] { display: none !important; }
+    :root {
+      color-scheme: dark;
+      --bg: #060403;
+      --bg-2: #24110a;
+      --panel: rgba(18, 9, 6, .86);
+      --panel-strong: rgba(24, 12, 8, .96);
+      --line: rgba(var(--accent-rgb), .22);
+      --text: #f7eadf;
+      --text-2: #d8c5b6;
+      --muted: #9e8878;
+      --accent: #c46a3a;
+      --accent-2: #ffc49a;
+      --accent-rgb: 196, 106, 58;
+      --glow-rgb: 255, 196, 154;
+      --button-text: #20100a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 78% 2%, rgba(var(--accent-rgb), .20), transparent 32rem),
+        linear-gradient(180deg, var(--bg), #000 48%, var(--bg));
+      color: var(--text);
+      font-family: Inter, "Segoe UI", sans-serif;
+    }
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      content: "";
+      background-image: linear-gradient(rgba(var(--accent-rgb), .035) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--accent-rgb), .028) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(#000, transparent 82%);
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+    .site { width: min(100%, 1280px); margin: 0 auto; padding: 0 20px 54px; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 64px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; letter-spacing: .24em; }
+    .mark { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--accent); border-radius: 50%; color: var(--accent-2); }
+    .nav { display: flex; align-items: center; gap: 28px; color: var(--text-2); font-size: 12px; font-weight: 600; }
+    .shell { width: min(100%, 1060px); margin: 0 auto; padding-top: 54px; }
+    .lookup-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 520px); align-items: end; gap: 30px; margin-bottom: 26px; }
+    .eyebrow { margin: 0 0 8px; color: var(--accent-2); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1, h2 { font-family: "Cormorant Garamond", Georgia, serif; }
+    h1 { margin: 0; max-width: 560px; font-size: clamp(42px, 7vw, 74px); line-height: .9; }
+    h2 { margin: 0 0 14px; font-size: 26px; }
+    .sub { margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .lookup-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; }
+    .lookup-form input {
+      min-width: 0;
+      padding: 12px 13px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      outline: none;
+      background: rgba(0, 0, 0, .42);
+      color: var(--text);
+    }
+    .lookup-form input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .12); }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 16px;
+      border: 1px solid var(--accent);
+      border-radius: 7px;
+      background: var(--accent);
+      color: var(--button-text);
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), .07), transparent 42%), rgba(4, 2, 1, .76);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .32);
+    }
+    .lookup-state { padding: 18px; color: var(--muted); font-size: 13px; }
+    .profile-hero { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 22px; padding: 24px; }
+    .avatar { display: grid; place-items: center; width: 88px; height: 88px; overflow: hidden; border: 1px solid var(--accent); border-radius: 50%; background: var(--panel-strong); color: var(--accent-2); font: 700 30px/1 Inter, sans-serif; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .profile-name { margin: 0; font: 700 clamp(34px, 5vw, 52px)/1 "Cormorant Garamond", Georgia, serif; }
+    .profile-meta { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; margin-top: 8px; color: var(--muted); font-size: 12px; }
+    .pill { padding: 5px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--accent-2); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 16px; }
+    .section { padding: 20px; }
+    .wide { grid-column: 1 / -1; }
+    .rows { display: grid; }
+    .row { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(var(--accent-rgb), .12); color: var(--muted); font-size: 12px; }
+    .row:last-child { border-bottom: 0; }
+    .row strong { color: var(--text); text-align: right; }
+    .week { display: grid; gap: 9px; }
+    .day { display: grid; grid-template-columns: 42px 1fr 64px; gap: 10px; align-items: center; color: var(--muted); font-size: 11px; }
+    .track { height: 7px; overflow: hidden; border-radius: 999px; background: rgba(255, 255, 255, .06); }
+    .track i { display: block; width: var(--fill); height: 100%; border-radius: inherit; background: var(--accent); }
+    .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .item { padding: 13px; border: 1px solid rgba(var(--accent-rgb), .14); border-radius: 7px; background: rgba(0, 0, 0, .22); }
+    .item strong { display: block; color: var(--text); font-size: 13px; }
+    .item span { display: block; margin-top: 7px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+    .empty { color: var(--muted); font-size: 12px; }
+    @media (max-width: 760px) {
+      .site { padding-inline: 12px; }
+      .topbar { align-items: flex-start; gap: 12px; padding: 12px 0; }
+      .nav { flex-wrap: wrap; justify-content: flex-end; gap: 12px 18px; }
+      .lookup-head, .grid { grid-template-columns: 1fr; }
+      .lookup-form, .cards { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .profile-hero { grid-template-columns: 1fr; text-align: center; }
+      .avatar { margin: 0 auto; }
+      .profile-meta { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="site">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Nulqor home"><span class="mark">N</span><span>NULQOR</span></a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html#forge">Product</a>
+        <a href="index.html#learn">Learn</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="policies.html">Policy</a>
+        <a href="account.html" data-account-link>Account</a>
+      </nav>
+    </header>
+
+    <main class="shell">
+      <section class="lookup-head" aria-labelledby="lookup-title">
+        <div>
+          <p class="eyebrow">Public account lookup</p>
+          <h1 id="lookup-title">Find a Nulqor creator.</h1>
+          <p class="sub">Only information the account owner has made public can appear here.</p>
+        </div>
+        <form class="lookup-form" id="lookup-form">
+          <input id="lookup-username" name="username" type="text" minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}" placeholder="username" autocomplete="off" required>
+          <button class="button" type="submit">Search</button>
+        </form>
+      </section>
+
+      <section class="panel lookup-state" id="lookup-state" role="status" aria-live="polite">Enter an exact username to search.</section>
+
+      <div id="profile-result" hidden>
+        <section class="panel profile-hero">
+          <div class="avatar" id="public-avatar">N</div>
+          <div>
+            <h2 class="profile-name" id="public-name">Creator</h2>
+            <div class="profile-meta"><span id="public-handle">@username</span><span class="pill" id="public-role" hidden></span></div>
+          </div>
+        </section>
+
+        <div class="grid">
+          <section class="panel section wide" id="public-activity" hidden>
+            <p class="eyebrow">Live Forge Activity</p><h2>This week in Forge</h2>
+            <div class="week" id="public-week"></div>
+            <div class="rows" id="public-activity-stats"></div>
+          </section>
+
+          <section class="panel section" id="public-insights" hidden>
+            <p class="eyebrow">Creation Insights</p><h2>Workflow signal</h2>
+            <div class="rows" id="public-insight-rows"></div>
+          </section>
+
+          <section class="panel section" id="public-plugins" hidden>
+            <p class="eyebrow">Plugin Stack</p><h2>Most used plugins</h2>
+            <div class="cards" id="public-plugin-list"></div>
+          </section>
+
+          <section class="panel section wide" id="public-projects" hidden>
+            <p class="eyebrow">Project Vault</p><h2>Public projects</h2>
+            <div class="cards" id="public-project-list"></div>
+          </section>
+
+          <section class="panel section" id="public-library" hidden>
+            <p class="eyebrow">Creator Library</p><h2>Asset index</h2>
+            <div class="cards" id="public-library-list"></div>
+          </section>
+
+          <section class="panel section" id="public-account-core" hidden>
+            <p class="eyebrow">Account Core</p><h2>Plan and security</h2>
+            <div class="rows" id="public-account-rows"></div>
+          </section>
+
+          <section class="panel section wide" id="public-studio-footprint" hidden>
+            <p class="eyebrow">Studio Footprint</p><h2>Internal Forge status</h2>
+            <div class="rows" id="public-studio-rows"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js?v=20260629-profile"></script>
+  <script src="supabase-client.js?v=20260629-profile"></script>
+  <script src="auth.js?v=20260629-profile"></script>
+  <script src="profile.js?v=20260629-profile"></script>
+</body>
+</html>

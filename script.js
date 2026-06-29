@@ -258,11 +258,12 @@ if (accessForm && formNote) {
       formNote.textContent = "Sending your request…";
 
       const { data: sessionData } = await sb.auth.getSession();
+      const signedInUser = sessionData?.session?.user || null;
       const { error } = await sb.from("waitlist").insert({
         name: name || null,
-        email,
+        email: signedInUser?.email || email,
         role: role || null,
-        user_id: sessionData?.session?.user?.id ?? null,
+        user_id: signedInUser?.id ?? null,
       });
 
       if (submitButton) submitButton.disabled = false;
@@ -296,6 +297,7 @@ if (accessForm && formNote) {
       : "You are on the Nulqor early access list. Plan details and founder pricing are coming to your email.";
     formNote.classList.remove("is-error");
     formNote.classList.add("is-success");
+    window.dispatchEvent(new CustomEvent("nulqor:access-requested"));
     accessForm.reset();
     accessForm.querySelectorAll("[data-select]").forEach((select) => {
       select.querySelector("[data-select-input]").value = "";

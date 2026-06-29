@@ -10,6 +10,10 @@
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap");
 
+    [hidden] {
+      display: none !important;
+    }
+
     :root {
       color-scheme: dark;
       --bg: #020100;
@@ -1776,13 +1780,12 @@
             <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
           </label>
           <label>
-            Use case
+            Requested plan
             <select name="role" required>
               <option value="">Choose one</option>
-              <option value="Creator">Creator</option>
-              <option value="Studio">Studio</option>
-              <option value="Team">Team</option>
-              <option value="Enterprise">Enterprise</option>
+              <option value="Nulqor Creator">Nulqor Creator</option>
+              <option value="Nulqor Teams">Nulqor Teams</option>
+              <option value="Nulqor Enterprise">Nulqor Enterprise</option>
             </select>
           </label>
           <button class="button primary" type="submit">Request access</button>
@@ -1795,7 +1798,7 @@
           <p class="eyebrow">Control center</p>
           <h2>Everything in place.<br>Total control.</h2>
           <p>Manage users, roles, and environments with confidence and clarity.</p>
-          <a class="button" href="#resources">Open dashboard
+          <a class="button" href="admin.html" data-admin-dashboard-link hidden>Open command center
             <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </a>
           <div class="mini-features">
@@ -2423,9 +2426,9 @@
     });
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=20260621-account"></script>
-  <script src="supabase-client.js?v=20260621-account"></script>
-  <script src="script.js?v=20260621-account"></script>
-  <script src="auth.js?v=20260621-admin"></script>
+  <script src="config.js?v=20260629-access"></script>
+  <script src="supabase-client.js?v=20260629-access"></script>
+  <script src="script.js?v=20260629-access"></script>
+  <script src="auth.js?v=20260629-access"></script>
 </body>
 </html>

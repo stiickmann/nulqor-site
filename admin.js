@@ -4,11 +4,23 @@
 (function () {
   const sb = window.nulqorSupabase;
 
-  const ROLES = ["Free", "Creator", "Studio", "Site Tester", "Site Creator", "Site Admin", "Founder"];
-  // Who can open the dashboard + accept/deny requests.
-  const STAFF_ROLES = ["Founder", "Site Admin", "Site Tester"];
+  const ROLES = [
+    "Founder",
+    "App Admin",
+    "Site Admin",
+    "App Tester",
+    "Site Tester",
+    "Nulqor Enterprise",
+    "Nulqor Teams",
+    "Nulqor Creator",
+    "Nulqor Free",
+  ];
+  const STAFF_ROLES = ["Founder", "App Admin", "Site Admin", "App Tester", "Site Tester"];
+  const SITE_ACCESS_ROLES = ["Founder", "Site Admin"];
   // Only the Founder can change anyone's role (enforced again in the database).
   let canRole = false;
+  let canViewMembers = false;
+  let canManageRequests = false;
   let myRole = null;
 
   const gate = document.querySelector("#adminGate");
@@ -67,16 +79,16 @@
 
   async function loadMembers() {
     if (!membersBody) return;
-    membersBody.innerHTML = '<tr><td colspan="5" class="admin-empty">Loading...</td></tr>';
+    membersBody.innerHTML = '<tr><td colspan="6" class="admin-empty">Loading...</td></tr>';
     const { data, error } = await sb.rpc("admin_list_members");
     if (error) {
-      membersBody.innerHTML = `<tr><td colspan="5" class="admin-empty">${esc(error.message)}</td></tr>`;
+      membersBody.innerHTML = `<tr><td colspan="6" class="admin-empty">${esc(error.message)}</td></tr>`;
       return;
     }
     const rows = data || [];
     if (membersCount) membersCount.textContent = `(${rows.length})`;
     if (!rows.length) {
-      membersBody.innerHTML = '<tr><td colspan="5" class="admin-empty">No members yet.</td></tr>';
+      membersBody.innerHTML = '<tr><td colspan="6" class="admin-empty">No members yet.</td></tr>';
       return;
     }
     membersBody.innerHTML = "";
@@ -91,13 +103,14 @@
         roleCell = `<select class="admin-role-select" data-id="${esc(m.id)}" data-prev="${esc(m.role)}">${options}</select>`;
       } else {
         // Non-founders see the role but can't change it.
-        roleCell = `<span class="admin-role-static">${esc(m.role || "Free")}</span>`;
+        roleCell = `<span class="admin-role-static">${esc(m.role || "Pending")}</span>`;
       }
       tr.innerHTML =
         `<td>${esc(name)}</td>` +
         `<td>${m.username ? "@" + esc(m.username) : "--"}</td>` +
         `<td class="admin-email">${esc(m.email)}</td>` +
         `<td>${roleCell}</td>` +
+        `<td><span class="admin-role-static">${esc(m.access_status || "pending")}</span></td>` +
         `<td>${fmtDate(m.created_at)}</td>`;
       membersBody.appendChild(tr);
     });
@@ -141,51 +154,42 @@
     waitlistBody.innerHTML = "";
     rows.forEach((w) => {
       const tr = document.createElement("tr");
-      const accepted = (w.status || "pending") === "accepted";
-      const action = accepted
-        ? '<span class="req-accepted">Accepted</span>'
-        : `<button class="admin-action req-accept" data-id="${esc(w.id)}">Accept</button>`;
+      const status = w.status || "pending";
+      const action = status === "pending"
+        ? `<button class="admin-action req-accept" data-id="${esc(w.id)}">Accept</button>` +
+          ` <button class="admin-action req-deny" data-id="${esc(w.id)}">Deny</button>`
+        : `<span class="req-accepted">${status === "accepted" ? "Accepted" : "Denied"}</span>`;
       tr.innerHTML =
         `<td>${esc(w.name || "--")}</td>` +
         `<td class="admin-email">${esc(w.email)}</td>` +
         `<td>${esc(w.role || "--")}</td>` +
         `<td>${fmtDate(w.created_at)}</td>` +
-        `<td class="req-actions">${action}` +
-        ` <button class="admin-action req-dismiss" data-id="${esc(w.id)}">Delete</button></td>`;
+        `<td class="req-actions">${action}</td>`;
       waitlistBody.appendChild(tr);
     });
 
     waitlistBody.querySelectorAll(".req-accept").forEach((b) => {
       b.addEventListener("click", () => acceptRequest(b.dataset.id, b));
     });
-    waitlistBody.querySelectorAll(".req-dismiss").forEach((b) => {
-      b.addEventListener("click", () => deleteRequest(b.dataset.id, b));
+    waitlistBody.querySelectorAll(".req-deny").forEach((b) => {
+      b.addEventListener("click", () => setRequestStatus(b.dataset.id, "denied", b));
     });
   }
 
   async function acceptRequest(id, btn) {
-    if (btn) btn.disabled = true;
-    showNote("Accepting...");
-    const { error } = await sb.rpc("admin_set_waitlist_status", { target_id: id, new_status: "accepted" });
-    if (error) {
-      showNote("Could not accept: " + error.message, false);
-      if (btn) btn.disabled = false;
-      return;
-    }
-    showNote("Access request accepted.", true);
-    loadWaitlist();
+    return setRequestStatus(id, "accepted", btn);
   }
 
-  async function deleteRequest(id, btn) {
+  async function setRequestStatus(id, status, btn) {
     if (btn) btn.disabled = true;
-    showNote("Deleting...");
-    const { error } = await sb.rpc("admin_delete_waitlist", { target_id: id });
+    showNote(status === "accepted" ? "Accepting..." : "Denying...");
+    const { error } = await sb.rpc("admin_set_waitlist_status", { target_id: id, new_status: status });
     if (error) {
-      showNote("Could not delete: " + error.message, false);
+      showNote(`Could not ${status === "accepted" ? "accept" : "deny"}: ${error.message}`, false);
       if (btn) btn.disabled = false;
       return;
     }
-    showNote("Request removed.", true);
+    showNote(`Access request ${status === "accepted" ? "accepted" : "denied"}.`, true);
     loadWaitlist();
   }
 
@@ -194,16 +198,32 @@
     started = true;
     if (gate) gate.hidden = true;
     if (content) content.hidden = false;
+    const memberSection = document.querySelector("[data-members-section]");
+    const requestSection = document.querySelector("[data-waitlist-section]");
+    if (memberSection) memberSection.hidden = !canViewMembers;
+    if (requestSection) requestSection.hidden = !canManageRequests;
+    const scopeTitle = document.querySelector("[data-scope-title]");
+    const scopeCopy = document.querySelector("[data-scope-copy]");
+    if (scopeTitle) scopeTitle.textContent = `${myRole} scope`;
+    if (scopeCopy) {
+      scopeCopy.textContent = canRole
+        ? "Full command-center access, including role assignment and access decisions."
+        : canManageRequests
+          ? "Review account requests and inspect member access. Role assignment remains Founder-only."
+          : myRole === "App Admin" || myRole === "App Tester"
+            ? "App testing and Forge administration access only. Site access requests and role assignment are hidden."
+            : "Site testing access only. Account approvals and role assignment are hidden.";
+    }
     const hint = document.querySelector("#membersHint");
     if (hint && !canRole) {
-      hint.textContent = "Only the Founder can change roles. You can view members and manage access requests.";
+      hint.textContent = "Only the Founder can change roles. Member access is read-only here.";
     }
-    loadMembers();
-    loadWaitlist();
+    if (canViewMembers) loadMembers();
+    if (canManageRequests) loadWaitlist();
     const rm = document.querySelector("[data-refresh-members]");
     const rw = document.querySelector("[data-refresh-waitlist]");
-    if (rm) rm.addEventListener("click", loadMembers);
-    if (rw) rw.addEventListener("click", loadWaitlist);
+    if (rm && canViewMembers) rm.addEventListener("click", loadMembers);
+    if (rw && canManageRequests) rw.addEventListener("click", loadWaitlist);
   }
 
   async function evaluate() {
@@ -212,12 +232,14 @@
     if (!session || !session.user) return "anon";
     const { data: profile } = await sb
       .from("profiles")
-      .select("role")
+      .select("role, access_status")
       .eq("id", session.user.id)
       .maybeSingle();
-    myRole = (profile && profile.role) || "Free";
+    myRole = (profile && profile.role) || "Pending";
     canRole = myRole === "Founder";
-    return STAFF_ROLES.includes(myRole) ? "admin" : "denied";
+    canViewMembers = SITE_ACCESS_ROLES.includes(myRole);
+    canManageRequests = SITE_ACCESS_ROLES.includes(myRole);
+    return profile && profile.access_status === "active" && STAFF_ROLES.includes(myRole) ? "admin" : "denied";
   }
 
   // fromEvent = triggered by an auth state change (we now trust a null session).

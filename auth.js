@@ -16,22 +16,27 @@
   const note = document.querySelector("#authNote");
 
   const USERNAME_RE = /^[A-Za-z0-9_]{3,20}$/;
-  // Roles that unlock Forge Studio access.
-  const FORGE_ROLES = ["Creator", "Studio", "Site Tester", "Site Creator", "Site Admin", "Founder"];
-  // Roles that can open the admin dashboard (enforced again in the database).
-  const ADMIN_ROLES = ["Founder", "Site Admin", "Site Tester"];
+  const DASHBOARD_ROLES = ["Founder", "App Admin", "Site Admin", "App Tester", "Site Tester"];
+  const INTERNAL_ACCOUNT_ROLES = ["Founder", "Site Admin", "App Admin"];
 
   let currentUserId = null;
   let currentProfile = {
     username: "",
-    role: "Free",
+    role: "",
+    access_status: "pending",
     display_name: "",
     avatar_url: "",
     profile_visibility: "private",
     show_on_marketplace: false,
     show_forge_stats: false,
     show_uploaded_assets: false,
+    allow_public_lookup: false,
+    show_role: true,
+    show_project_vault: false,
+    hide_plugin_stack: false,
+    show_forge_activity: false,
   };
+  let currentAccessRequest = null;
   const visibilityInputs = Array.from(document.querySelectorAll("[data-visibility-input]"));
 
   function setNav(session) {
@@ -81,18 +86,24 @@
   async function loadProfile(userId) {
     const empty = {
       username: "",
-      role: "Free",
+      role: "",
+      access_status: "pending",
       display_name: "",
       avatar_url: "",
       profile_visibility: "private",
       show_on_marketplace: false,
       show_forge_stats: false,
       show_uploaded_assets: false,
+      allow_public_lookup: false,
+      show_role: true,
+      show_project_vault: false,
+      hide_plugin_stack: false,
+      show_forge_activity: false,
     };
     try {
       let { data, error } = await sb
         .from("profiles")
-        .select("username, role, display_name, avatar_url, profile_visibility, show_on_marketplace, show_forge_stats, show_uploaded_assets")
+        .select("username, role, access_status, display_name, avatar_url, profile_visibility, show_on_marketplace, show_forge_stats, show_uploaded_assets, allow_public_lookup, show_role, show_project_vault, hide_plugin_stack, show_forge_activity")
         .eq("id", userId)
         .maybeSingle();
       if (error) {
@@ -102,13 +113,19 @@
       if (!data) return empty;
       return {
         username: data.username || "",
-        role: data.role || "Free",
+        role: data.role || "",
+        access_status: data.access_status || (data.role ? "active" : "pending"),
         display_name: data.display_name || "",
         avatar_url: data.avatar_url || "",
         profile_visibility: data.profile_visibility || "private",
         show_on_marketplace: Boolean(data.show_on_marketplace),
         show_forge_stats: Boolean(data.show_forge_stats),
         show_uploaded_assets: Boolean(data.show_uploaded_assets),
+        allow_public_lookup: Boolean(data.allow_public_lookup),
+        show_role: data.show_role !== false,
+        show_project_vault: Boolean(data.show_project_vault),
+        hide_plugin_stack: Boolean(data.hide_plugin_stack),
+        show_forge_activity: Boolean(data.show_forge_activity),
       };
     } catch (_e) {
       return empty;
@@ -155,8 +172,16 @@
     }
   }
 
-  function planLabel(role) {
-    return `Nulqor ${role || "Free"}`;
+  function hasActiveAccess(profile) {
+    return profile && profile.access_status === "active" && Boolean(profile.role);
+  }
+
+  function planLabel(profile) {
+    if (!profile) return "Access pending";
+    if (profile.access_status === "denied") return "Access denied";
+    if (profile.access_status === "suspended") return "Access suspended";
+    if (!hasActiveAccess(profile)) return "Access pending";
+    return profile.role;
   }
 
   function visibilityStatus(input, profile) {
@@ -164,6 +189,8 @@
     if (field === "profile_visibility") {
       return (profile.profile_visibility || "private") === "public" ? "Public" : "Private";
     }
+    if (field === "hide_plugin_stack") return profile.hide_plugin_stack ? "Hidden" : "Visible";
+    if (field === "allow_public_lookup") return profile.allow_public_lookup ? "Allowed" : "Blocked";
     return profile[field] ? "On" : "Off";
   }
 
@@ -210,25 +237,33 @@
     showNote("Visibility setting saved.", true);
   }
 
+  function updateDashboardLinks(loggedIn, profile) {
+    const allowed = loggedIn && hasActiveAccess(profile) && DASHBOARD_ROLES.includes(profile.role);
+    document.querySelectorAll("[data-admin-dashboard-link]").forEach((link) => {
+      link.hidden = !allowed;
+    });
+  }
+
   function renderAccountPage(loggedIn, profile, session) {
     if (!page) return;
     const name = loggedIn ? displayNameOf(profile) : "Account";
     const handle = loggedIn && profile.username ? `@${profile.username}` : "@username";
-    const role = profile.role || "Free";
-    const isAdmin = loggedIn && ADMIN_ROLES.includes(role);
+    const role = profile.role || "";
+    const isDashboardUser = loggedIn && hasActiveAccess(profile) && DASHBOARD_ROLES.includes(role);
+    const isInternalAdmin = loggedIn && hasActiveAccess(profile) && INTERNAL_ACCOUNT_ROLES.includes(role);
     const verified = Boolean(session && session.user && session.user.email_confirmed_at);
 
     setText("profile-title", name);
     setText("profile-handle", handle);
-    setText("profile-role-pill", planLabel(role));
+    setText("profile-role-pill", planLabel(profile));
     setText("profile-member-line", loggedIn ? `Nulqor user since ${monthYear(session.user.created_at)}` : "Sign in to connect your Nulqor profile.");
     setText("id-creator", name);
     setText("id-handle", handle);
-    setText("id-plan", loggedIn ? role : "Free");
-    setText("id-status", loggedIn ? (verified ? "Verified" : "Active") : "Signed out");
+    setText("id-plan", loggedIn ? planLabel(profile) : "Not signed in");
+    setText("id-status", loggedIn ? (profile.access_status || "pending") : "Signed out");
     setText("id-member-since", loggedIn ? monthYear(session.user.created_at) : "Not signed in");
-    setText("sec-plan", loggedIn ? planLabel(role) : "Sign in to connect");
-    setText("sec-status", loggedIn ? "Active" : "Signed out");
+    setText("sec-plan", loggedIn ? planLabel(profile) : "Sign in to connect");
+    setText("sec-status", loggedIn ? (profile.access_status || "pending") : "Signed out");
     setText("sec-email", loggedIn ? (verified ? "Verified" : "Unverified") : "Not connected");
     setText("sec-2fa", loggedIn ? "Not enabled" : "Not connected");
     setText("sec-sessions", loggedIn ? "This device" : "Not connected");
@@ -241,14 +276,28 @@
     }
 
     const adminLink = document.querySelector("#account-admin-link");
-    if (adminLink) adminLink.hidden = !isAdmin;
+    if (adminLink) adminLink.hidden = !isDashboardUser;
+    updateDashboardLinks(loggedIn, profile);
+    document.querySelectorAll("[data-internal-admin-only]").forEach((section) => {
+      section.hidden = !isInternalAdmin;
+    });
+    document.querySelectorAll("[data-owner-only]").forEach((section) => {
+      section.hidden = !loggedIn;
+    });
+
+    const publicLink = document.querySelector("#profile-public-link");
+    if (publicLink) {
+      publicLink.hidden = !loggedIn || !profile.username;
+      if (profile.username) publicLink.href = `profile.html?username=${encodeURIComponent(profile.username)}`;
+    }
 
     updateVisibilityControls(loggedIn, profile);
   }
 
-  function productsForRole(role) {
-    const forge = FORGE_ROLES.includes(role);
-    return [{ name: "Forge Studio", status: forge ? "Early access" : "Coming soon", active: forge }];
+  function productsForRole(profile) {
+    const forge = hasActiveAccess(profile);
+    const status = forge ? "Active" : (profile.access_status === "denied" ? "Not approved" : "Pending approval");
+    return [{ name: "Forge Studio", status, active: forge }];
   }
 
   /* ----------------------------- Badge + Panel ----------------------------- */
@@ -368,20 +417,20 @@
     panelEl.querySelector("[data-panel-name]").textContent = name;
     panelEl.querySelector("[data-panel-user]").textContent = profile.username ? "@" + profile.username : "set a username";
     const plan = panelEl.querySelector("[data-panel-plan]");
-    plan.textContent = profile.role || "Free";
-    plan.setAttribute("data-role", profile.role || "Free");
+    plan.textContent = planLabel(profile);
+    plan.setAttribute("data-role", profile.role || "Pending");
     applyAvatar(panelEl.querySelector("[data-panel-face]"), profile);
 
     const list = panelEl.querySelector("[data-panel-products]");
     list.innerHTML = "";
-    productsForRole(profile.role).forEach((p) => {
+    productsForRole(profile).forEach((p) => {
       const li = document.createElement("li");
       li.innerHTML = `<span>${p.name}</span><span class="product-status${p.active ? " is-active" : ""}">${p.status}</span>`;
       list.appendChild(li);
     });
 
     const adminLink = panelEl.querySelector("[data-panel-admin]");
-    if (adminLink) adminLink.hidden = !ADMIN_ROLES.includes(profile.role);
+    if (adminLink) adminLink.hidden = !hasActiveAccess(profile) || !DASHBOARD_ROLES.includes(profile.role);
 
     const dn = panelEl.querySelector("[data-panel-display]");
     const un = panelEl.querySelector("[data-panel-username]");
@@ -397,8 +446,8 @@
       return;
     }
     chipEl.querySelector("[data-chip-name]").textContent = displayNameOf(profile);
-    chipEl.querySelector("[data-chip-role]").textContent = profile.role || "Free";
-    chipEl.setAttribute("data-role", profile.role || "Free");
+    chipEl.querySelector("[data-chip-role]").textContent = planLabel(profile);
+    chipEl.setAttribute("data-role", profile.role || "Pending");
     applyAvatar(chipEl.querySelector("[data-chip-face]"), profile);
     chipEl.hidden = false;
   }
@@ -531,14 +580,14 @@
     }
   }
 
-  // Logged-out: pre-launch CTAs. Logged-in: Free is included, paid plans become
+  // Pending/guest accounts keep request CTAs. Approved accounts can register
   // a "Notify me at launch" action that records interest, then shows confirmed.
-  function relabelCTAs(loggedIn) {
+  function relabelCTAs(hasAccess) {
     document.querySelectorAll("[data-plan-cta]").forEach((btn) => {
       if (!btn.dataset.ctaDefault) btn.dataset.ctaDefault = btn.textContent.trim();
       const plan = btn.dataset.planCta;
 
-      if (!loggedIn) {
+      if (!hasAccess) {
         btn.textContent = btn.dataset.ctaDefault;
         btn.classList.remove("is-locked");
         btn.setAttribute("href", "#access");
@@ -560,7 +609,7 @@
 
   async function registerInterest(btn) {
     const plan = btn.dataset.planCta;
-    if (!currentUserId || plan === "free" || notifiedPlans.has(plan)) return;
+    if (!currentUserId || !hasActiveAccess(currentProfile) || plan === "free" || notifiedPlans.has(plan)) return;
     const previous = btn.textContent;
     btn.textContent = "Saving...";
     const { error } = await sb.from("launch_interest").insert({ user_id: currentUserId, plan });
@@ -574,13 +623,13 @@
     btn.removeAttribute("href");
   }
 
-  async function revealPrices(loggedIn) {
+  async function revealPrices(hasAccess) {
     const priceEls = document.querySelectorAll(".plan-price[data-plan]");
     if (!priceEls.length) return;
 
-    relabelCTAs(loggedIn);
+    relabelCTAs(hasAccess);
     const founderOpen = await updateFounderBanner();
-    const map = loggedIn ? await fetchPlans() : null;
+    const map = hasAccess ? await fetchPlans() : null;
 
     priceEls.forEach((el) => {
       const head = el.parentElement;
@@ -588,7 +637,7 @@
       if (oldWas) oldWas.remove();
 
       const plan = map && map[el.dataset.plan];
-      if (!loggedIn || !plan) {
+      if (!hasAccess || !plan) {
         el.textContent = "Coming Soon";
         return;
       }
@@ -606,7 +655,7 @@
     });
 
     if (priceNote) {
-      if (loggedIn && map) {
+      if (hasAccess && map) {
         priceNote.textContent = founderOpen
           ? "Founders Edition pricing - locked in for the first 1,000 members."
           : "Your Nulqor launch pricing.";
@@ -617,18 +666,18 @@
   }
 
   /* --------------------------- Logged-in access CTAs ------------------------ */
-  // Logged-in members shouldn't be prompted to "Request Access". Hide the
+  // Approved members should not be prompted to request access again.
   // top-right nav CTA and turn the hero CTA into an account link.
-  function updateAccessCTAs(loggedIn) {
+  function updateAccessCTAs(hasAccess) {
     document.querySelectorAll(".nav-action").forEach((el) => {
-      el.hidden = loggedIn;
+      el.hidden = hasAccess;
     });
     document.querySelectorAll("[data-hero-cta]").forEach((el) => {
       if (!el.dataset.guestText) {
         el.dataset.guestText = el.textContent.trim();
         el.dataset.guestHref = el.getAttribute("href") || "#access";
       }
-      if (loggedIn) {
+      if (hasAccess) {
         el.textContent = "Your account";
         el.setAttribute("href", "account.html");
       } else {
@@ -638,24 +687,56 @@
     });
   }
 
-  // Replace the "Request Access" waitlist form with a confirmation for members.
-  function updateAccessSection(loggedIn, profile) {
+  async function loadAccessRequest(userId) {
+    if (!userId) return null;
+    try {
+      const { data, error } = await sb
+        .from("waitlist")
+        .select("id, role, status, created_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return error ? null : data;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function updateAccessSection(loggedIn, profile, session, request) {
     const form = document.querySelector("#accessForm");
     if (!form) return;
     let msg = document.querySelector("[data-access-member]");
-    if (loggedIn) {
+    const active = loggedIn && hasActiveAccess(profile);
+    const denied = loggedIn && profile.access_status === "denied";
+    const pendingRequest = loggedIn && request && request.status === "pending";
+
+    if (active || denied || pendingRequest) {
       if (!msg) {
         msg = document.createElement("p");
         msg.setAttribute("data-access-member", "");
-        msg.className = "form-note is-success";
         form.parentNode.insertBefore(msg, form);
       }
-      msg.textContent = `You're signed in as ${displayNameOf(profile)} - you already have a Nulqor account. We'll email you the moment Forge Studio opens.`;
+      msg.className = `form-note ${denied ? "is-error" : "is-success"}`;
+      msg.textContent = active
+        ? `${displayNameOf(profile)}, your ${profile.role} access is active.`
+        : denied
+          ? "Your access request was not approved. Contact Nulqor support if you believe this is a mistake."
+          : `Your request for ${request.role || "Nulqor access"} is pending review.`;
       msg.hidden = false;
       form.hidden = true;
     } else {
       if (msg) msg.hidden = true;
       form.hidden = false;
+      if (loggedIn && session && session.user) {
+        const email = form.querySelector('[name="email"]');
+        const name = form.querySelector('[name="name"]');
+        if (email) {
+          email.value = session.user.email || "";
+          email.readOnly = true;
+        }
+        if (name && !name.value) name.value = displayNameOf(profile);
+      }
     }
   }
 
@@ -666,25 +747,34 @@
     const loggedIn = Boolean(session && session.user);
     let profile = {
       username: "",
-      role: "Free",
+      role: "",
+      access_status: "pending",
       display_name: "",
       avatar_url: "",
       profile_visibility: "private",
       show_on_marketplace: false,
       show_forge_stats: false,
       show_uploaded_assets: false,
+      allow_public_lookup: false,
+      show_role: true,
+      show_project_vault: false,
+      hide_plugin_stack: false,
+      show_forge_activity: false,
     };
     if (loggedIn) profile = await loadProfile(session.user.id);
     currentProfile = profile;
     currentUserId = loggedIn ? session.user.id : null;
+    currentAccessRequest = loggedIn ? await loadAccessRequest(session.user.id) : null;
+    const active = loggedIn && hasActiveAccess(profile);
 
-    if (loggedIn) await loadInterests(session.user.id);
+    if (active) await loadInterests(session.user.id);
     else notifiedPlans.clear();
 
     updateChip(loggedIn, profile);
-    revealPrices(loggedIn);
-    updateAccessCTAs(loggedIn);
-    updateAccessSection(loggedIn, profile);
+    updateDashboardLinks(loggedIn, profile);
+    revealPrices(active);
+    updateAccessCTAs(active);
+    updateAccessSection(loggedIn, profile, session, currentAccessRequest);
     renderAccountPage(loggedIn, profile, session);
     if (loggedIn) renderPanel(profile);
 
@@ -712,6 +802,8 @@
     });
   });
 
+  window.addEventListener("nulqor:access-requested", refresh);
+
   if (!sb) {
     setNav(null);
     if (page) showNote("Accounts aren't connected yet. Add your Supabase keys to config.js.", false);
@@ -726,7 +818,7 @@
     const btn = event.target.closest("[data-plan-cta]");
     if (!btn) return;
     const plan = btn.dataset.planCta;
-    if (!currentUserId || plan === "free" || notifiedPlans.has(plan)) return;
+    if (!currentUserId || !hasActiveAccess(currentProfile) || plan === "free" || notifiedPlans.has(plan)) return;
     event.preventDefault();
     registerInterest(btn);
   });
@@ -747,8 +839,8 @@
         showNote(problem, false);
         return;
       }
-      if (password.length < 6) {
-        showNote("Password must be at least 6 characters.", false);
+      if (password.length < 8) {
+        showNote("Password must be at least 8 characters.", false);
         return;
       }
 

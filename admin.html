@@ -601,7 +601,7 @@
         <div>
           <p class="eyebrow">Site Admin</p>
           <h1 id="admin-title">Command<br>center.</h1>
-          <p>Manage Nulqor members, account roles, founder access, and homepage requests without leaving the new site design.</p>
+          <p>Role-aware tools for Nulqor account access, site operations, and Forge testing.</p>
         </div>
         <aside class="admin-hero-card" aria-label="Admin status">
           <strong>Supabase</strong>
@@ -615,7 +615,13 @@
       </section>
 
       <div class="admin-content-grid" id="adminContent" hidden>
-        <section class="admin-block" aria-labelledby="members-title">
+        <section class="admin-block" aria-labelledby="scope-title">
+          <p class="eyebrow">Permissions</p>
+          <h2 id="scope-title" data-scope-title>Command-center scope</h2>
+          <p class="admin-hint" data-scope-copy>Your available tools are based on your assigned Nulqor role.</p>
+        </section>
+
+        <section class="admin-block" data-members-section hidden aria-labelledby="members-title">
           <div class="admin-block-head">
             <div>
               <p class="eyebrow">Members</p>
@@ -632,17 +638,18 @@
                   <th>Username</th>
                   <th>Email</th>
                   <th>Role / Subscription</th>
+                  <th>Access</th>
                   <th>Joined</th>
                 </tr>
               </thead>
               <tbody data-members-body>
-                <tr><td colspan="5" class="admin-empty">Loading...</td></tr>
+                <tr><td colspan="6" class="admin-empty">Loading...</td></tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <section class="admin-block" aria-labelledby="waitlist-title">
+        <section class="admin-block" data-waitlist-section hidden aria-labelledby="waitlist-title">
           <div class="admin-block-head">
             <div>
               <p class="eyebrow">Access</p>
@@ -711,8 +718,8 @@
     })();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=20260621-account"></script>
-  <script src="supabase-client.js?v=20260621-account"></script>
-  <script src="admin.js?v=20260621-admin2"></script>
+  <script src="config.js?v=20260629-access"></script>
+  <script src="supabase-client.js?v=20260629-access"></script>
+  <script src="admin.js?v=20260629-access"></script>
 </body>
 </html>

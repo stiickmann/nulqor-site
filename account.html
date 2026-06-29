@@ -10,6 +10,10 @@
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap");
 
+    [hidden] {
+      display: none !important;
+    }
+
     :root {
       color-scheme: dark;
       --bg: #020100;
@@ -920,6 +924,34 @@
       line-height: 1.45;
     }
 
+    .project-visibility {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(var(--accent-rgb), .14);
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .project-visibility button {
+      min-width: 78px;
+      padding: 7px 10px;
+      border: 1px solid rgba(var(--accent-rgb), .28);
+      border-radius: 7px;
+      background: rgba(0, 0, 0, .24);
+      color: var(--text-2);
+      cursor: pointer;
+    }
+
+    .project-visibility button[aria-pressed="true"] {
+      border-color: rgba(var(--accent-rgb), .65);
+      background: rgba(var(--accent-rgb), .20);
+      color: var(--accent-2);
+    }
+
     .library-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -1034,6 +1066,30 @@
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 12px;
+    }
+
+    .lookup-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 18px;
+    }
+
+    .lookup-form {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 10px;
+      width: min(100%, 520px);
+    }
+
+    .lookup-form input {
+      min-width: 0;
+      padding: 11px 12px;
+      border: 1px solid rgba(var(--accent-rgb), .25);
+      border-radius: 7px;
+      outline: 0;
+      background: rgba(0, 0, 0, .28);
+      color: var(--text);
     }
 
     .theme-flicker {
@@ -1172,6 +1228,7 @@
       .topbar,
       .profile-card,
       .auth-live-head,
+      .lookup-panel,
       .two-col {
         grid-template-columns: 1fr;
       }
@@ -1212,6 +1269,10 @@
       .theme-control-grid,
       .schedule-grid,
       .toggle-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lookup-form {
         grid-template-columns: 1fr;
       }
 
@@ -1283,18 +1344,11 @@
         </button>
         <input class="avatar-input" id="avatar-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
         <h1 id="profile-title">Account</h1>
-        <div class="handle"><span id="profile-handle">@username</span><span class="pill" id="profile-role-pill">Nulqor Free</span></div>
+        <div class="handle"><span id="profile-handle">@username</span><span class="pill" id="profile-role-pill">Access pending</span></div>
         <p class="member-line" id="profile-member-line">Sign in to connect your Nulqor profile.</p>
-        <div class="badge-row" aria-label="Creator badges">
-          <span class="badge">Founder</span>
-          <span class="badge">Early Access</span>
-          <span class="badge">Verified Creator</span>
-          <span class="badge">Plugin Developer</span>
-          <span class="badge">Studio Member</span>
-        </div>
       </section>
 
-      <section class="stat-bar" aria-label="Main account stats">
+      <section class="stat-bar" aria-label="Main account stats" data-owner-only hidden>
         <div class="stat"><div><strong id="forge-connection-stat">Checking</strong><span>Forge Studio</span></div></div>
         <div class="stat"><div><strong id="forge-version-stat">--</strong><span>Installed version</span></div></div>
         <div class="stat"><div><strong id="forge-source-stat">--</strong><span>Source modules</span></div></div>
@@ -1310,12 +1364,12 @@
             <div class="identity-row"><span>Creator</span><strong id="id-creator">Account</strong></div>
             <div class="identity-row"><span>Handle</span><strong id="id-handle">@username</strong></div>
             <div class="identity-row"><span>Product</span><strong>Forge Studio</strong></div>
-            <div class="identity-row"><span>Active Plan</span><strong id="id-plan">Creator</strong></div>
+            <div class="identity-row"><span>Active Plan</span><strong id="id-plan">Access pending</strong></div>
             <div class="identity-row"><span>Account Status</span><strong id="id-status">Verified</strong></div>
             <div class="identity-row"><span>Member Since</span><strong id="id-member-since">Not signed in</strong></div>
           </div>
         </article>
-        <article class="panel">
+        <article class="panel" data-internal-admin-only hidden>
           <p class="eyebrow">Studio footprint</p>
           <h2>Forge install status</h2>
           <div class="identity-grid">
@@ -1366,7 +1420,7 @@
             </label>
             <label>
               Password
-              <input type="password" name="password" autocomplete="new-password" placeholder="At least 6 characters" minlength="6" required>
+              <input type="password" name="password" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" required>
             </label>
             <button class="button button-primary" type="submit">Create account</button>
           </form>
@@ -1377,12 +1431,26 @@
           <p class="session-line">You are <strong id="sessionUsername">--</strong> <span class="session-email">(<span id="sessionEmail"></span>)</span></p>
           <p class="session-hint">Your Supabase account is connected. Staff tools appear here when your role allows them.</p>
           <div class="inline-actions">
-            <a class="button button-primary" id="account-admin-link" href="admin.html" hidden>Open admin dashboard</a>
+            <a class="button button-primary" id="profile-public-link" href="profile.html" hidden>View account</a>
+            <a class="button button-secondary" href="#visibility-title">Manage profile</a>
+            <a class="button button-primary" id="account-admin-link" data-admin-dashboard-link href="admin.html" hidden>Open admin dashboard</a>
           </div>
           <button class="button button-secondary" type="button" id="logoutButton">Log out</button>
         </div>
 
         <p class="form-note" id="authNote" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="panel lookup-panel" aria-labelledby="lookup-title">
+        <div>
+          <p class="eyebrow">Public account lookup</p>
+          <h2 id="lookup-title">Find a Nulqor creator</h2>
+          <p class="settings-copy">Search by exact username. Private and lookup-disabled accounts stay hidden.</p>
+        </div>
+        <form class="lookup-form" action="profile.html" method="get">
+          <input type="text" name="username" autocomplete="off" minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}" placeholder="username" aria-label="Nulqor username" required>
+          <button class="button button-primary" type="submit">Search</button>
+        </form>
       </section>
 
       <section class="panel theme-settings" aria-labelledby="theme-settings-title">
@@ -1444,7 +1512,7 @@
         </div>
       </section>
 
-      <section class="panel" aria-labelledby="activity-title">
+      <section class="panel" aria-labelledby="activity-title" data-owner-only hidden>
         <div class="activity-summary">
           <div>
             <p class="eyebrow">Activity</p>
@@ -1465,7 +1533,7 @@
         </div>
       </section>
 
-      <section class="two-col">
+      <section class="two-col" data-owner-only hidden>
         <article class="panel">
           <p class="eyebrow">Creation Insights</p>
           <h2>Workflow signal</h2>
@@ -1490,7 +1558,7 @@
         </article>
       </section>
 
-      <section class="panel" style="margin-top:18px" aria-labelledby="projects-title">
+      <section class="panel" style="margin-top:18px" aria-labelledby="projects-title" data-owner-only hidden>
         <p class="eyebrow">Project Vault</p>
         <h2 id="projects-title">Recent Projects</h2>
         <div class="project-grid" id="forge-project-list">
@@ -1501,7 +1569,7 @@
         </div>
       </section>
 
-      <section class="two-col">
+      <section class="two-col" data-owner-only hidden>
         <article class="panel">
           <p class="eyebrow">Creator Library</p>
           <h2>Asset Index</h2>
@@ -1529,7 +1597,7 @@
         </article>
       </section>
 
-      <section class="panel" style="margin-top:18px" aria-labelledby="visibility-title">
+      <section class="panel" style="margin-top:18px" aria-labelledby="visibility-title" data-owner-only hidden>
         <p class="eyebrow">Security Layer</p>
         <h2 id="visibility-title">Profile visibility</h2>
         <div class="toggle-grid">
@@ -1550,7 +1618,7 @@
             </label>
           </div>
           <div class="toggle-row">
-            <span>Show Forge stats</span>
+            <span>Show Creation Insights</span>
             <label class="switch-control">
               <input type="checkbox" data-visibility-input data-visibility-field="show_forge_stats">
               <span class="switch-track" aria-hidden="true"></span>
@@ -1563,6 +1631,46 @@
               <input type="checkbox" data-visibility-input data-visibility-field="show_uploaded_assets">
               <span class="switch-track" aria-hidden="true"></span>
               <strong class="toggle-status" id="vis-assets">Off</strong>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Allow public lookup</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="allow_public_lookup">
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-lookup">Blocked</strong>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Show role or plan</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="show_role">
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-role">On</strong>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Show Project Vault</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="show_project_vault">
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-projects">Off</strong>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Hide Plugin Stack</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="hide_plugin_stack">
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-plugins">Visible</strong>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <span>Show Live Forge Activity</span>
+            <label class="switch-control">
+              <input type="checkbox" data-visibility-input data-visibility-field="show_forge_activity">
+              <span class="switch-track" aria-hidden="true"></span>
+              <strong class="toggle-status" id="vis-activity">Off</strong>
             </label>
           </div>
         </div>
@@ -1610,25 +1718,13 @@
     const avatarPreview = document.querySelector('#avatar-preview');
     const avatarStorageKey = 'nulqor-profile-avatar';
     const forgeStatusCacheKey = 'nulqor-forge-status-cache-v1';
-    const visibilityStorageKey = 'nulqor-profile-visibility-v1';
-    const visibilityInputs = document.querySelectorAll('[data-visibility-input]');
-    const visibilityDefaults = {
-      profile_visibility: 'private',
-      show_on_marketplace: false,
-      show_forge_stats: false,
-      show_uploaded_assets: false
-    };
-    const visibilityLabels = {
-      profile_visibility: 'vis-profile',
-      show_on_marketplace: 'vis-marketplace',
-      show_forge_stats: 'vis-forgestats',
-      show_uploaded_assets: 'vis-assets'
-    };
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let currentThemeMode = 'manual';
     let activeTheme = null;
     let themeTransitionId = 0;
     let themeTimers = [];
+    let currentAccountUserId = null;
+    let projectVisibility = new Map();
 
     function hexToRgb(hex) {
       const clean = hex.replace('#', '');
@@ -1756,67 +1852,6 @@
       }
     }
 
-    function normalizeVisibilityState(value = {}) {
-      return {
-        ...visibilityDefaults,
-        ...value,
-        profile_visibility: value.profile_visibility === 'public' ? 'public' : 'private',
-        show_on_marketplace: Boolean(value.show_on_marketplace),
-        show_forge_stats: Boolean(value.show_forge_stats),
-        show_uploaded_assets: Boolean(value.show_uploaded_assets)
-      };
-    }
-
-    function collectVisibilityState() {
-      const state = normalizeVisibilityState(readLocalJson(visibilityStorageKey, visibilityDefaults) || {});
-      visibilityInputs.forEach((input) => {
-        const field = input.dataset.visibilityField;
-        if (!field) return;
-        if (input.dataset.on || input.dataset.off) {
-          state[field] = input.checked ? (input.dataset.on || true) : (input.dataset.off || false);
-        } else {
-          state[field] = input.checked;
-        }
-      });
-      return normalizeVisibilityState(state);
-    }
-
-    function renderVisibilityState(nextState) {
-      const state = normalizeVisibilityState(nextState);
-      visibilityInputs.forEach((input) => {
-        const field = input.dataset.visibilityField;
-        if (!field) return;
-        input.disabled = false;
-        if (input.dataset.on || input.dataset.off) {
-          input.checked = state[field] === (input.dataset.on || true);
-        } else {
-          input.checked = Boolean(state[field]);
-        }
-        const label = document.getElementById(visibilityLabels[field]);
-        if (label) {
-          if (field === 'profile_visibility') label.textContent = state[field] === 'public' ? 'Public' : 'Private';
-          else label.textContent = state[field] ? 'On' : 'Off';
-        }
-      });
-    }
-
-    function saveVisibilityState() {
-      const state = collectVisibilityState();
-      writeLocalJson(visibilityStorageKey, state);
-      const accountState = readLocalJson('nulqor-account-state', {}) || {};
-      writeLocalJson('nulqor-account-state', { ...accountState, visibility: state });
-      renderVisibilityState(state);
-    }
-
-    function initVisibilityControls(accountState) {
-      const saved = readLocalJson(visibilityStorageKey, null);
-      const state = normalizeVisibilityState(saved || (accountState && accountState.visibility) || visibilityDefaults);
-      renderVisibilityState(state);
-      visibilityInputs.forEach((input) => {
-        input.addEventListener('change', saveVisibilityState);
-      });
-    }
-
     function collectThemeSchedule() {
       const schedule = {};
       themeSchedule.querySelectorAll('[data-schedule-theme]').forEach((row) => {
@@ -1845,8 +1880,7 @@
         profile: {
           ...(previousState && previousState.profile ? previousState.profile : {}),
           avatarUrl: avatarPreview && !avatarPreview.hidden ? avatarPreview.src : ''
-        },
-        visibility: collectVisibilityState()
+        }
       };
       try {
         localStorage.setItem('nulqor-account-state', JSON.stringify(state));
@@ -2011,6 +2045,66 @@
       return row;
     }
 
+    function projectKey(name) {
+      return String(name || '').trim().toLowerCase().slice(0, 160);
+    }
+
+    function appendProjectVisibility(body, name) {
+      if (!body || !currentAccountUserId || !name) return;
+      const key = projectKey(name);
+      if (!key) return;
+      const row = document.createElement('div');
+      row.className = 'project-visibility';
+      const label = document.createElement('span');
+      label.textContent = 'Public profile';
+      const button = document.createElement('button');
+      button.type = 'button';
+      const render = () => {
+        const isPublic = projectVisibility.get(key) === true;
+        button.textContent = isPublic ? 'Public' : 'Private';
+        button.setAttribute('aria-pressed', isPublic ? 'true' : 'false');
+      };
+      render();
+      button.addEventListener('click', async () => {
+        const sb = await waitForSupabaseClient();
+        if (!sb || button.disabled) return;
+        const next = projectVisibility.get(key) !== true;
+        button.disabled = true;
+        const { error } = await sb.from('forge_project_visibility').upsert({
+          user_id: currentAccountUserId,
+          project_key: key,
+          project_name: String(name).slice(0, 160),
+          is_public: next,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id,project_key' });
+        button.disabled = false;
+        if (error) {
+          window.alert(`Project visibility could not be saved: ${error.message}`);
+          return;
+        }
+        projectVisibility.set(key, next);
+        render();
+      });
+      row.append(label, button);
+      body.appendChild(row);
+    }
+
+    async function loadProjectVisibility() {
+      const sb = await waitForSupabaseClient();
+      if (!sb) return;
+      const { data: sessionData } = await sb.auth.getSession();
+      const user = sessionData && sessionData.session && sessionData.session.user;
+      currentAccountUserId = user ? user.id : null;
+      projectVisibility = new Map();
+      if (!currentAccountUserId) return;
+      const { data, error } = await sb
+        .from('forge_project_visibility')
+        .select('project_key, is_public')
+        .eq('user_id', currentAccountUserId);
+      if (error) return;
+      (data || []).forEach((item) => projectVisibility.set(item.project_key, item.is_public === true));
+    }
+
     function renderProjectFiles(files = []) {
       const list = document.getElementById('forge-project-list');
       if (!list) return;
@@ -2027,7 +2121,7 @@
         title.textContent = 'No exported projects found yet';
         const meta = document.createElement('div');
         meta.className = 'project-meta';
-        ['Forge active autosave lives in Electron localStorage.', 'Claude needs to mirror project metadata for this to become live.'].forEach((line) => {
+        ['Forge active autosave lives in Electron localStorage.', 'Forge Studio will publish project metadata with the next account sync.'].forEach((line) => {
           const item = document.createElement('span');
           item.textContent = line;
           meta.appendChild(item);
@@ -2059,6 +2153,7 @@
           meta.appendChild(item);
         });
         body.append(title, meta);
+        appendProjectVisibility(body, file.name);
         card.append(thumb, body);
         return card;
       }));
@@ -2174,6 +2269,7 @@
         if (!lines.length) lines.push('Tracked live in Forge Studio');
         lines.forEach((line) => { const span = document.createElement('span'); span.textContent = line; meta.appendChild(span); });
         body.append(title, meta);
+        appendProjectVisibility(body, project.name || 'Untitled project');
         card.append(thumb, body);
         return card;
       }));
@@ -2594,6 +2690,7 @@
 
     async function initAccountPage() {
       const state = await fetchAppState();
+      await loadProjectVisibility();
       const forgeStatus = await fetchForgeStatus();
       const requestedTheme = new URLSearchParams(window.location.search).get('theme');
       const savedTheme = readSavedTheme();
@@ -2602,7 +2699,6 @@
       applyThemeSchedule(state && state.theme ? state.theme.schedule : {});
       applyTheme(initialTheme);
       restoreAvatarImage(state);
-      initVisibilityControls(state);
       renderForgeStatus(forgeStatus);
       setThemeMode((state && state.theme && state.theme.mode) || 'manual');
       if (requestedTheme) saveThemeSettings();
@@ -2612,9 +2708,9 @@
     initAccountPage();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=20260621-account"></script>
-  <script src="supabase-client.js?v=20260621-account"></script>
-  <script src="script.js?v=20260621-account"></script>
-  <script src="auth.js?v=20260621-admin"></script>
+  <script src="config.js?v=20260629-access"></script>
+  <script src="supabase-client.js?v=20260629-access"></script>
+  <script src="script.js?v=20260629-access"></script>
+  <script src="auth.js?v=20260629-access"></script>
 </body>
 </html>
