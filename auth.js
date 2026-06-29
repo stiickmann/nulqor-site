@@ -152,9 +152,14 @@
     return profile.display_name || profile.username || "Member";
   }
 
+  function avatarInitial(profile) {
+    const source = `${profile.username || ""}${profile.display_name || ""}`;
+    const letter = source.match(/[A-Za-z]/);
+    return letter ? letter[0].toUpperCase() : "N";
+  }
+
   function applyAvatar(faceEl, profile) {
     if (!faceEl) return;
-    const name = displayNameOf(profile);
     if (profile.avatar_url) {
       // Set sizing inline so it beats role-based `background` shorthand rules
       // (those reset background-size/position and would crop to a corner).
@@ -169,7 +174,7 @@
       faceEl.style.backgroundSize = "";
       faceEl.style.backgroundPosition = "";
       faceEl.style.backgroundRepeat = "";
-      faceEl.textContent = (name[0] || "N").toUpperCase();
+      faceEl.textContent = avatarInitial(profile);
       faceEl.classList.remove("has-image");
     }
   }
@@ -271,7 +276,7 @@
 
     setText("profile-title", name);
     setText("profile-handle", handle);
-    setText("avatar-initial", loggedIn ? (name.charAt(0) || "N").toUpperCase() : "N");
+    setText("avatar-initial", loggedIn ? avatarInitial(profile) : "N");
     setText("profile-role-pill", planLabel(profile));
     setText("profile-member-line", loggedIn ? `Nulqor user since ${monthYear(session.user.created_at)}` : "Sign in to connect your Nulqor profile.");
     setText("id-creator", name);

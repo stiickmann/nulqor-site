@@ -65,7 +65,9 @@
       image.referrerPolicy = "no-referrer";
       host.appendChild(image);
     } else {
-      host.textContent = (profile.displayName || profile.username || "N").charAt(0).toUpperCase();
+      const source = `${profile.username || ""}${profile.displayName || ""}`;
+      const letter = source.match(/[A-Za-z]/);
+      host.textContent = letter ? letter[0].toUpperCase() : "N";
     }
   }
 
